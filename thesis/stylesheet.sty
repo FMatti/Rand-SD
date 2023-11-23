@@ -1,0 +1,342 @@
+%%% LANGUAGE AND FONTS
+
+% Typesetting packages
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[activate={true,nocompatibility},
+            final,
+            tracking=true,
+            kerning=true,
+            spacing=false,
+            factor=1100,
+            stretch=10,
+            shrink=10]{microtype}
+
+% English language package
+\usepackage[english]{babel}
+
+% Package for stylizing quotes
+\usepackage{csquotes}
+
+% Set font to Palatino with Euler math
+\usepackage{palatino}
+\usepackage{eulervm}
+\renewcommand\familydefault{\rmdefault}
+
+% Comment
+\newcommand\todo[1]{{{\color{red}#1}}}
+
+
+%%% COLOR THEME
+
+% Color package
+\usepackage{xcolor}
+
+% Color definitions
+\definecolor{darkblue}{HTML}{2F455C}
+\definecolor{mainblue}{HTML}{0e437c}
+\colorlet{lightblue}{darkblue!10!white}
+\colorlet{linkcolor}{mainblue}
+
+
+%%% PAGE THEME
+
+% Page layout
+\usepackage[textwidth=420pt,
+            textheight=640pt,
+            headheight=15pt,
+            voffset=40pt]{geometry}
+
+% Section title styles
+\renewcommand\section{\@startsection{section}{1}{\z@}
+                                   {-3.5ex \@plus -1.3ex \@minus -.7ex}
+                                   {2.3ex \@plus.4ex \@minus .4ex}
+                                   {\scshape\Large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}
+                                   {-2.3ex\@plus -1ex \@minus -.5ex}
+                                   {1.2ex \@plus .3ex \@minus .3ex}
+                                   {\scshape\large\bfseries}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}
+                                   {-2.3ex\@plus -1ex \@minus -.5ex}
+                                   {1ex \@plus .2ex \@minus .2ex}
+                                   {\scshape\normalsize\bfseries}}
+
+% Command for adding empty page
+\newcommand\emptypage{
+  \newpage
+  \thispagestyle{empty}
+  \mbox{}
+  \newpage
+}
+
+
+%%% REFERENCING
+
+% Bibliography management
+\usepackage[square, numbers]{natbib}
+\bibliographystyle{plainnat}
+\newcommand*{\doi}[1]{\href{https://doi.org/#1}{doi: #1}}
+
+% Links
+\usepackage{url}
+\urlstyle{same}
+
+% Clickable references
+\usepackage[linktoc=all]{hyperref}
+\hypersetup{citecolor=linkcolor}
+\bibpunct{\color{linkcolor}[}{\color{linkcolor}]}{,}{n}{}{;}
+
+% Enumerations within section (Figure 3.4 instead of maybe Figure 42)
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+\counterwithin{equation}{chapter}
+\usepackage[list=true, listformat=simple]{subcaption}
+
+% Reference commands
+\newcommand{\reffig}[1]{\hyperref[#1]{\textcolor{linkcolor}{figure \ref*{#1}}}}
+\newcommand{\Reffig}[1]{\hyperref[#1]{\textcolor{linkcolor}{Figure \ref*{#1}}}}
+\newcommand{\reftab}[1]{\hyperref[#1]{\textcolor{linkcolor}{table \ref*{#1}}}}
+\newcommand{\Reftab}[1]{\hyperref[#1]{\textcolor{linkcolor}{Table \ref*{#1}}}}
+\newcommand{\refdef}[1]{\hyperref[#1]{\textcolor{linkcolor}{definition \ref*{#1}}}}
+\newcommand{\Refdef}[1]{\hyperref[#1]{\textcolor{linkcolor}{Definition \ref*{#1}}}}
+\newcommand{\reflem}[1]{\hyperref[#1]{\textcolor{linkcolor}{lemma \ref*{#1}}}}
+\newcommand{\Reflem}[1]{\hyperref[#1]{\textcolor{linkcolor}{Lemma \ref*{#1}}}}
+\newcommand{\refthm}[1]{\hyperref[#1]{\textcolor{linkcolor}{theorem \ref*{#1}}}}
+\newcommand{\Refthm}[1]{\hyperref[#1]{\textcolor{linkcolor}{Theorem \ref*{#1}}}}
+\newcommand{\refalg}[1]{\hyperref[#1]{\textcolor{linkcolor}{algorithm \ref*{#1}}}}
+\newcommand{\Refalg}[1]{\hyperref[#1]{\textcolor{linkcolor}{Algorithm \ref*{#1}}}}
+\newcommand{\refsec}[1]{\hyperref[#1]{\textcolor{linkcolor}{section \ref*{#1}}}}
+\newcommand{\Refsec}[1]{\hyperref[#1]{\textcolor{linkcolor}{Section \ref*{#1}}}}
+\newcommand{\refchp}[1]{\hyperref[#1]{\textcolor{linkcolor}{chapter \ref*{#1}}}}
+\newcommand{\Refchp}[1]{\hyperref[#1]{\textcolor{linkcolor}{Chapter \ref*{#1}}}}
+\newcommand{\refequ}[1]{\hyperref[#1]{\textcolor{linkcolor}{(\ref*{#1})}}}
+\newcommand{\reflin}[1]{\hyperref[#1]{\textcolor{linkcolor}{ \ref*{#1}}}}
+
+
+%%% GLOSSARY
+
+\usepackage{glossaries}
+
+\makeglossaries
+
+\newglossaryentry{DGC}% the label
+{%
+  name={DGC},%
+  description={Delta-Gauss-Chebyshev},%
+  first={Delta-Gauss-Chebyshev (DGC)},%
+  firstplural={Delta-Gauss-Chebyshev (DGC)},%
+  text={DGC},%
+  plural={DGC}%
+}
+
+\newglossaryentry{spectral-density}
+{%
+  name={$\phi(A, t)$},%
+  description={spectral density},%
+  first={spectral density $\phi(A, t)$},%
+  firstplural={spectral densities $\phi(A, t)$},%
+  text={$\phi(A, t)$},%
+  plural={$\phi(A, t)$}%
+}
+
+\newglossaryentry{smooth-spectral-density}
+{%
+  name={$\phi_{\sigma}(A, t)$},%
+  description={smoothened spectral density},%
+  first={smoothened spectral density $\phi_{\sigma}(A, t)$},%
+  firstplural={smoothened spectral densities $\phi(A, t)$},%
+  text={$\phi_{\sigma}(A, t)$},%
+  plural={$\phi_{\sigma}(A, t)$}%
+}
+
+\newglossaryentry{dirac-delta}
+{%
+  name={$\delta(t)$},%
+  description={Dirac delta distribution},%
+  first={Dirac delta distribution $\delta(t)$},%
+  firstplural={Dirac delta distributions $\delta(t)$},%
+  text={$\delta(t)$},%
+  plural={$\delta(t)$}%
+}
+
+\newglossaryentry{chebyshev-degree}
+{%
+  name={$m$},%
+  description={degree of expansion},%
+  first={degree of expansion $m$},%
+  firstplural={degrees of expansion $m$},%
+  text={$m$},%
+  plural={$m$}%
+}
+
+\newglossaryentry{identity-matrix}
+{%
+  name={$I$},%
+  description={identity matrix},%
+  first={identity matrix $I$},%
+  firstplural={identity matrices $I$},%
+  text={$I$},%
+  plural={$I$}%
+}
+
+\newglossaryentry{matrix-size}
+{%
+  name={$N$},%
+  description={size of the matrix},%
+  first={size of the matrix $N$},%
+  firstplural={size of the matrices $N$},%
+  text={$N$},%
+  plural={$N$}%
+}
+
+\newglossaryentry{DCT}% the label
+{%
+  name={DCT},%
+  description={discrete cosine transform},%
+  first={discrete cosine transform (DCT)},%
+  firstplural={discrete cosine transforms (DGC)},%
+  text={DCT},%
+  plural={DCT}%
+}
+
+%%% FLOATS
+
+% Figures
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{fadings}
+\usetikzlibrary{calc}
+
+% Table layouting
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% Caption
+\usepackage[font=small,
+            labelfont=sc,
+            labelsep=endash,
+            margin=\parindent,
+            tableposition=top]{caption}
+
+% Algorithms
+\usepackage[noend]{algpseudocode}
+
+
+%%% MATHEMATICS
+
+% Mathematics packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{relsize}
+
+% Custom commands
+\newcommand{\pp}{\text{\raisebox{0.3ex}{\relscale{0.9}++}}}
+\newcommand{\mtx}[1]{\boldsymbol{#1}}
+\newcommand{\vct}[1]{\boldsymbol{#1}}
+
+% Custom opertators
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\rank}{rank}
+
+% Colorboxes
+\usepackage[many]{tcolorbox}
+\newtcolorbox{block}[2][]
+{
+  colframe = darkblue,
+  colback  = lightblue,
+  coltitle = white,
+  title    = {#2},
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+  #1,
+}
+
+\tcbuselibrary{theorems}
+
+\newtcbtheorem[]{lemma}{Lemma}%
+{
+  colframe = darkblue,
+  colback  = lightblue,
+  coltitle = white,
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+}{lem}
+
+\newtcbtheorem[]{definition}{Definition}%
+{
+  colframe = darkblue,
+  colback  = lightblue,
+  coltitle = white,
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+}{def}
+
+\newtcbtheorem[]{theorem}{Theorem}%
+{
+  colframe = darkblue,
+  colback  = lightblue,
+  coltitle = white,
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+}{thm}
+
+\newtcbtheorem[]{algo}{Algorithm}%
+{
+  colframe = darkblue,
+  colback  = lightblue,
+  coltitle = white,
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+}{alg}
+
+
+%%% TITLEPAGE LAYOUT
+
+% Declare report information commands
+\newcommand*{\project}[1]{\gdef\@project{#1}}
+\newcommand*{\institution}[1]{\gdef\@institution{#1}}
+\newcommand*{\supervisor}[1]{\gdef\@supervisor{#1}}
+
+% Redefinition of the \maketitle command
+\renewcommand*{\maketitle}{
+    \begin{titlepage}
+    \centering
+    {\scshape\LARGE\@institution\unskip\strut\par}
+    \vspace{1cm}
+    {\scshape\Large\@project\unskip\strut\par}
+    \vspace{2cm}
+    {\huge\bfseries\@title\unskip\strut\par}
+    \vspace{2cm}
+    {\Large\itshape\@author\unskip\strut\par}
+    \vfill
+    supervised by\par
+    \@supervisor\unskip\strut\par
+    \vfill
+    {\large \@date\par}
+    \end{titlepage}
+}

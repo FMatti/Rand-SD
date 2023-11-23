@@ -1,0 +1,145 @@
+\chapter{Introduction}
+\label{chp:1-introduction}
+
+Define eigenvalues
+
+\begin{equation}
+    \mtx{A} \vct{v} = \lambda \vct{v}
+    \label{equ:1-introduction-eigenvalue}
+\end{equation}
+
+Often prohibitively expensive to compute, hence often alternatively
+
+\begin{definition}{Spectral density of a matrix}{spectral-density}
+    Let $A \in \mathbb{C}^{N \times N}$ be a matrix with eigenvalues $\lambda_i, i=1, \dots, N$.
+    We define the \glsfirst{spectral-density} as
+    \begin{equation}
+        \phi(A, t) = \frac{1}{N} \sum_{i=1}^{N} \delta(t - \lambda_i),
+        \label{equ:1-introduction-def-spectral-density}
+    \end{equation}
+    where we used the \gls{dirac-delta} \cite[Chapter~15]{dirac1947quantum}.
+\end{definition}
+
+Relevance in science (electronic structure, matrix analysis)
+
+Electronic structure calculations \cite{haydock1972electronic, lin2017randomized}
+
+Hessian matrix in neural network optimization \cite{ghorbani2019investigation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Properties of the spectral density}
+\label{sec:1-introduction-properties}
+
+Properties of spectral density (count eigenvalues, ...)
+
+No convergence in p-norms [cite],
+smoothing kernel [cite, kernel density estimation?], width $\sigma > 0$
+\begin{equation}
+    g_{\sigma}(t) = \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{-\frac{t^2}{2\sigma^2}}
+    \label{equ:1-introduction-def-gaussian-kernel}
+\end{equation}
+
+\gls{smooth-spectral-density}
+Absorbed \gls{matrix-size} in $g_{\sigma}$
+\begin{equation}
+    \phi_{\sigma}(A, t) = N (\phi(A, \cdot) \ast g_{\sigma})(t) = \sum_{i=1}^{N} g_{\sigma}(t - \lambda_i)
+    \label{equ:1-introduction-def-smooth-spectral-density}
+\end{equation}
+
+\begin{figure}[ht]
+    \begin{subfigure}[b]{0.33\columnwidth}
+        %\begin{tikzpicture}
+        %    \node at (0, 0) {};
+        %    \draw[line width=2, ->] (-2.1, -1.95) -- (2.1, -1.95) node[midway,below] {$t$};
+        %\end{tikzpicture}
+        \input{plots/spectral_density_example_0.01.pgf}
+        \caption{small $\sigma$}
+        \label{fig:1-introduction-spectral-density-example-0.01}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.33\columnwidth}
+        \input{plots/spectral_density_example_0.02.pgf}
+        \caption{medium $\sigma$}
+        \label{fig:1-introduction-spectral-density-example-0.02}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.33\columnwidth}
+        \input{plots/spectral_density_example_0.05.pgf}
+        \caption{large $\sigma$}
+        \label{fig:1-introduction-spectral-density-example-0.05}
+    \end{subfigure}
+    \caption{Schematic depiction of the spectral density of a simple matrix with
+    10 eigenvalues for different values of the smothing parameter $\sigma$.}
+    \label{fig:1-introduction-smoothened-spectral-density}
+\end{figure}
+\reffig{fig:1-introduction-smoothened-spectral-density}
+\Reffig{fig:1-introduction-smoothened-spectral-density}
+
+$A^{\ast} = A$ Hermitian,
+eigenvalue decomposition $U \Lambda U^{\ast}$,
+$S$ diagonal matrix with eigenvalues of $A$ on its diagonal and $U^{\ast} U = I$ \cite[Theorem~4.1.5]{horn1985matrix},
+matrix function $f(A) = U^{\ast} f(\Lambda) U$,
+with $f(\Lambda) = \operatorname{diag}(f(\lambda_1), \dots, f(\lambda_N))$ \cite[Definition~1.2]{higham2008functions}.
+Using cyclic property of trace and $U$ unitary
+\gls{identity-matrix}
+
+\begin{equation}
+    \phi_{\sigma}(A, t) = \operatorname{Tr}(g_{\sigma}(tI - A)) 
+    \label{equ:1-introduction-spectral-density-as-trace}
+\end{equation}
+
+Usually two problems
+
+Apparently, compute eigenvalues directly often expensive
+
+Use information from mat-vec (which can be computed efficiently for matrix functions [cite])
+
+\begin{enumerate}
+    \item Evaluating $g_{\sigma}(tI - A)$ without access to eigenvalues of $A$
+    \item Computing trace of a matrix which we can only access through matvecs
+\end{enumerate}
+
+Hutch\pp
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Related work}
+\label{sec:1-introduction-related}
+
+Spectral density \cite{lin2017randomized}
+
+Overview of different methods (Haydock \cite{lin2016review}, KPM \cite{weisse2006kpm}, DGC \cite{lin2017randomized}, DGL \cite{lin2016review}, SLQ \cite{chen2021slq})
+
+[Visualize history in a tree, time vs. methods]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Main contributions}
+\label{sec:1-introduction-contributions}
+
+\begin{itemize}
+    \item Corrected proof
+    \item Consistent and fast interpolation
+    \item Fix rank 0 issue
+    \item Inappropriate filtering
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Structure of the thesis}
+\label{sec:1-introduction-structure}
+
+Chebyshev interpolation and randomized trace estimation \refchp{chp:2-chebyshev}
+Randomized low-rank approximation \refchp{chp:3-nystrom}
+Putting the two together for a powerful algorithm \refchp{chp:4-nystromchebyshev}
+Numerical experiments \refchp{chp:5-experiments}
+Conclusion \refchp{chp:6-conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Notation}
+\label{sec:1-introduction-notation}
+
+We follow the notation which appears in contemporary literature in this field:
+matrices are represented as bold upper case roman or greek letters ($\mtx{A}$, $\mtx{\Lambda}$, \dots), 
+similarly, vectors in lower case ($\vct{v}$, $\vct{\omega}$, \dots), and finally
+scalars ($n$, $\phi$, \dots).

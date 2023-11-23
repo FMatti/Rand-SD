@@ -1,0 +1,215 @@
+\chapter{Interpolation and trace estimation}
+\label{chp:2-chebyshev}
+
+Often matrix function hard to evaluate.
+
+Disadvantage of Lanczos algorithm.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Chebyshev interpolation}
+\label{sec:2-chebyshev-interpolation}
+
+Chebyshev expansion \cite[Chapter~3]{trefethen2019chebyshev},
+\gls{chebyshev-degree}
+\begin{equation}
+    g_{\sigma}^m(tI - A) = \frac{\mu_0(t)}{2} + \sum_{l=1}^m \mu_l(t) T_l(A)
+    \label{equ:2-chebyshev-DGC-chebyshev-expansion}
+\end{equation}
+
+\begin{equation}
+    \phi_{\sigma}^m(t) = \operatorname{Tr}(g_{\sigma}^m(tI - A))
+    \label{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion}
+\end{equation}
+
+Bernstein theorem \cite[Theorem~73]{meinardus1967approximation} \todo{Also prove this for Lorentzian}
+
+Convergence corollary and new proof \cite[Theorem~2]{lin2017randomized}
+\begin{theorem}{Chebyshev interpolation error}{chebyshev-error}
+    Let $A \in \mathbb{C}^{N \times N}$ be a Hermitian matrix with spectrum in
+    $(-1, 1)$. For any $t \in \mathbb{R}$ it holds
+    \begin{equation}
+        \left|  \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right| \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
+        \label{equ:2-chebyshev-interpolation-error}
+    \end{equation}
+    with constants $C_1, C_2 > 0$ independent of $\sigma$, $m$, and $t$.
+\end{theorem}
+
+New proof since different result
+\begin{proof}
+    Using basic properties of matrix functions, we obtain
+    \begin{align}
+        \left| \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right|
+        &= \left| \operatorname{Tr}(g_{\sigma}(tI - A)) - \operatorname{Tr}(g_{\sigma}^m(tI - A)) \right|
+        && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion})} \notag \\
+        &= \left| \sum_{i=1}^N \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i)\right) \right|
+        && \text{(property of matrix function)} \notag \\
+        &\leq N \max_{i = 1, \dots, N} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i) \right|
+        && \text{(pessimistic upper bound)} \notag \\
+        &\leq N \max_{s \in (-1, 1)} \left| g_{\sigma}(t - s) - g_{\sigma}^m(t - s) \right|
+        && \text{(extension of domain)} \notag \\
+        &\leq N \frac{2}{\chi^m(\chi - 1)} \max_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
+        && \text{(Bernstein \cite[Theorem~73]{meinardus1967approximation})}
+        \label{equ:2-chebyshev-proof-bernstein-general-expression}
+    \end{align}
+    where in the last step we define the ellipse $\mathcal{E}_{\chi}$
+    with foci $\{-1, 1\}$ and with sum of half-axes $\chi = a + b > 1$
+    (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
+    Since $g_{\sigma}(t - \cdot)$ of the form \refequ{equ:1-introduction-def-gaussian-kernel}
+    is holomorphic, $\chi$ may be chosen arbitrarily.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{tikzpicture}
+            \draw[thick, darkblue, fill=lightblue] (0, 0) ellipse (2.5 and 1.5);
+            \draw[->] (0, -2) to (0, 2) node[above] {$\Imag(z)$};
+            \draw[->] (-3, 0) to (3, 0) node[right] {$\Real(z)$};
+            \fill[darkblue] (-1.5, 0) circle (0.05) node[below] {$-1$};
+            \fill[darkblue] (1.5, 0) circle (0.05) node[below] {$+1$};
+            \draw[<->, darkblue] (0.1, 0.15) to  node[midway, right] {$b$} (0.1, 1.4);
+            \draw[<->, darkblue] (0.15, 0.1) to  node[midway, above] {$a$} (2.4, 0.1);
+        \end{tikzpicture}
+        \caption{The Bernstein ellipse $\mathcal{E}_{\chi}$ with half axes $a$ and$b$ visualized in $\mathbb{C}$.}
+        \label{fig:2-chebyshev-proof-bernstein-ellipse}
+    \end{figure}
+
+    Writing $z = x + iy$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Real(z)}$)
+    \begin{equation}
+        |g_{\sigma}(t - (x + iy))| %&= \frac{1}{N \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
+        = \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{- \frac{(t - x)^2 - y^2}{2 \sigma^2}}
+        \leq \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}
+    \end{equation}
+
+    Expressing $\chi = 1 + \alpha \sigma$ for any $\alpha > 0$,
+    we can estimate $\chi - \chi^{-1} \leq 2\alpha\sigma$.
+    This can be established by observing
+    $h(\chi) = 2\alpha\sigma - \chi + \chi^{-1} = \chi + \chi^{-1} - 2 \geq 0$
+    for which $h(1) = 0$ and $h'(\chi) \geq 0$ for all $\chi > 1$.
+    Furthermore, because $z$ is
+    contained in $\mathcal{E}_{\chi}$ we know that the absolute value of its
+    imaginary part is upper bound by the imaginary half axis $b$, which we can
+    express in terms of $\chi$ to get [cite or proof]
+    \begin{equation}
+        |y| \leq b = \frac{\chi - \chi^{-1}}{2} \leq \alpha\sigma
+    \end{equation}
+
+    Consequently, for all $t \in \mathbb{R}$
+    \begin{equation}
+        \max_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)| 
+        \leq \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+    \end{equation}
+
+    Plugging this estimate into \refequ{equ:2-chebyshev-proof-bernstein-general-expression}, we get
+    \begin{equation}
+        \left| \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right|
+        \leq N \frac{2}{(1 + \alpha\sigma)^m\alpha \sigma} \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+        = \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}
+    \end{equation}
+    with $C_1=\sqrt{\frac{2}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
+\end{proof}
+
+\gls{DCT}\footnote{There exist multiple conventions for the DCT.
+The formulation which we use is often referred to as a type 1 DCT,
+and is efficiently implemented in the SciPy Python package:
+\url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.dct.html}}
+\todo{Nope, make this better (no trapezoidal rule), maybe even point out error of Lin Lin}
+\begin{align}
+    \mu_l(t) 
+    &= \frac{2}{\pi} \int_{-1}^1 \frac{1}{\sqrt{1 + s^2}} g_{\sigma}(t - s) T_l(s) \mathrm{d}s
+    && \text{(\cite[Theorem~3.1]{trefethen2019chebyshev})} \notag \\
+    &= \frac{2}{\pi} \int_{0}^{\pi} g_{\sigma}(t - \cos(\theta)) \cos(l\theta) \mathrm{d}\theta
+    && \text{($s = \cos(\theta))$} \notag \\
+    &\approx \frac{2}{n_q} \sum_{j=0}^{n_q} {\vphantom{\sum}}' g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right)\right) \cos\left(\frac{\pi j l}{n_q}\right)
+    && \text{(trapezoidal rule [cite])} \notag \\
+    &= \frac{1}{n_q} \operatorname{DCT}\left\{g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right) \right)\right\}_{j=0}^{n_q}
+    && \text{(\gls{DCT})}
+    %&\approx \frac{2}{n_q} \sum_{j=0}^{n_q-1} g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right)\right) \cos\left(\frac{\pi j l}{n_q}\right)
+    %&& \text{(quadrature [cite])} \notag \\
+    %&= \frac{2}{n_q} \operatorname{DCT}\left\{g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right) \right)\right\}_{j=0}^{n_q-1}
+    %&& \text{(\gls{DCT} [cite])}
+    %&= \frac{1}{\pi} \int_{0}^{2 \pi} g_{\sigma}(t - \cos(\theta)) \cos(l\theta) \mathrm{d}\theta
+    %&& \text{($\cos(\theta) = \cos(2\pi - \theta)$)} \notag \\
+    %&\approx \frac{2}{n_q} \sum_{j=0}^{n_q-1} g_{\sigma}\left(t - \cos\left(\frac{2 \pi j}{n_q}\right)\right) \cos\left(\frac{2 \pi j l}{n_q}\right)
+    %&& \text{(quadrature [cite])} \notag \\
+    %&= \frac{2}{n_q} \operatorname{DCT}\left\{g_{\sigma}\left(t - \cos\left(\frac{2 \pi j}{n_q}\right) \right)\right\}_{j=0}^{n_q-1}
+    %&& \text{(\gls{DCT} [cite])}
+    \label{equ:2-chebyshev-SS-DCT}
+\end{align}
+$\sum{\vphantom{\sum}}'$ means first and last summand are divided by two
+(Mention not specific type of DCT, this is only approximation, choice of $n_q$,
+expected error)
+$\boldsymbol{\mu} = (\mu_0, \dots, \mu_m)^T$
+
+\begin{equation}
+    (\boldsymbol{g}_{\sigma})_j = g_{\sigma}(t - \cos(\pi j / n_q))
+    \label{equ:2-chebyshev-function-vector}
+\end{equation}
+
+\begin{equation}
+    \boldsymbol{\mu} = \frac{1}{n_q} \operatorname{DCT}\{\boldsymbol{g}_{\sigma}\}
+    \label{equ:2-chebyshev-DCT-vector}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Stochastic trace estimation}
+\label{sec:2-chebyshev-stochastic-trace-estimation}
+
+Hutchinson \cite{hutchinson1990trace}, $B \in \mathbb{C}^{N \times N}$ Hermitian,
+$\boldsymbol{\omega} \in \mathbb{C}^N$, $\mathbb{E}[\boldsymbol{\omega}] = \boldsymbol{0}$, $\mathbb{E}[\boldsymbol{\omega}\boldsymbol{\omega}^{\ast}] = I$ 
+\begin{equation}
+    \mathbb{E}[\omega^{\ast} B \omega] = \operatorname{Tr}(B)
+    \label{equ:2-chebyshev-DGC-hutchinson}
+\end{equation}
+
+Variance of Hutchinson \cite[Proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
+\begin{equation}
+    \operatorname{Var}(\omega^{\ast} B \omega) = 2 \sum_{i \neq j} \operatorname{Re}(b_{ij})^2
+    \label{equ:2-chebyshev-DGC-hutchinson-variance}
+\end{equation}
+
+Estimator $\Omega = [\omega_1, \dots, \omega_{n_v}] \in \mathbb{C}^{N \times n_v}$
+\begin{equation}
+    h_{n_v}(B) = \frac{1}{n_v} \operatorname{Tr}(\Omega^{\ast} B \Omega)
+    \label{equ:2-chebyshev-DGC-hutchionson-estimator}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Delta-Gauss-Chebyshev method}
+\label{sec:2-chebyshev-delta-gauss-chebyshev}
+
+\gls{DGC} puts together
+\begin{equation}
+    \widetilde{\phi}_{\sigma}^m = \frac{1}{n_v} \operatorname{Tr}(\Omega^{\ast} g_{\sigma}^m(tI - A) \Omega)
+    \label{equ:2-chebyshev-DGC-final-estimator}
+\end{equation}
+
+Efficient implementation \cite[Chapter~3]{trefethen2019chebyshev}
+\begin{equation}
+    T_0(x) = 1, T_1(x) = x, T_{l+1}(x) = 2x T_l(x) - T_{l-1}(x)
+    \label{equ:2-chebyshev-DGC-chebyshev-recursion}
+\end{equation}
+
+\begin{algo}{Delta-Gauss-Chebyshev method}{DGC}
+    Hermitian matrix $A \in \mathbb{C}^{N \times N}$, number of random vectors $n_v$,
+    evaluation points $\{t_i\}_{i=1}^{n_t}$
+    \begin{algorithmic}[1]
+        \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-DCT-vector}
+        \State Generate $\Omega \in \mathbb{C}^{N \times n_v}$
+        \State $[V_1, V_2, V_3] \gets [0_{N \times n_v}, \Omega, 0_{N \times n_v}]$
+        \State $\widetilde{\phi}_{\sigma}(t_i) \gets 0$
+        \For {$l = 0, \dots, m$} 
+          \State $z \gets \operatorname{Tr}(\Omega^{\ast} V_2)$
+          \For {$i = 1, \dots, n_t$}
+            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets \widetilde{\phi}_{\sigma}^m(t_i) + \mu_l(t_i) z$
+          \EndFor
+          \State $V_3 \gets (2 - \delta_{l0}) A V_2 - V_1$ \Comment{Chebyshev recursion \refequ{equ:2-chebyshev-DGC-chebyshev-recursion}}
+          \State $V_1 \gets V_2, V_2 \gets V_3$
+        \EndFor
+    \end{algorithmic}
+\end{algo}
+
+Complexity: $\mathcal{O}(m \log(m) + m n_t + m N^2 n_v)$
+
+[Summary box, formula, complexity, \dots]

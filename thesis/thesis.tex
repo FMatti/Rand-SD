@@ -1,0 +1,55 @@
+\documentclass[11pt, a4paper, leqno]{book}
+
+\usepackage{stylesheet}
+ 
+\institution{EPFL}
+\project{Master's Thesis}
+\title{Randomized Estimation of the Spectral Density of Large Matrices}
+\author{Fabio Matti}
+\supervisor{Daniel Kressner}
+\date{\today}
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+
+\emptypage
+
+\input{chapters/0_abstract.tex}
+
+\emptypage
+
+\tableofcontents
+
+\emptypage
+
+\printglossary[title={List of Symbols and Acronyms}]
+
+\emptypage
+
+\mainmatter
+
+\input{chapters/1_introduction.tex}
+
+\input{chapters/2_chebyshev.tex}
+
+\input{chapters/3_nystrom.tex}
+
+\input{chapters/4_nystromchebyshev.tex}
+
+\input{chapters/5_experiments.tex}
+
+\input{chapters/6_conclusion.tex}
+
+\clearpage
+\bibliography{bibliography.bib}
+
+\appendix
+
+\clearpage
+\input{chapters/A_appendix.tex}
+
+\end{document}
+
