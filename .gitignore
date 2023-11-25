@@ -8,6 +8,9 @@
 ## PDFs
 *.pdf
 
+## Jupyter notebooks
+*.ipynb
+
 ### LATEX
 
 ## Core latex/pdflatex auxiliary files:

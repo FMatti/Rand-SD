@@ -11,43 +11,77 @@ Motivate low-rank approximation.
 \label{sec:3-nystrom-numerical-rank}
 
 Low-rank structure of matrix.
-Formula for $\varepsilon$-numerical rank \cite[Definition~1.1]{noga2013rank} of a matrix $B \in \mathbb{C}^{N \times N}$
+Formula for $\varepsilon$-numerical rank \cite[Definition~1.1]{noga2013rank} of a matrix $\mtx{\mtx{B}} \in \mathbb{R}^{N \times N}$
 \begin{equation}
-    r_{\epsilon, \ast}(B) = \min \{\operatorname{rank}(C): C \in \mathbb{C}^{N \times N}: \lVert B - C \rVert_{\ast} \leq \varepsilon \}
+    r_{\varepsilon, \cdot}(\mtx{\mtx{B}}) = \min \{\operatorname{rank}(C): C \in \mathbb{R}^{N \times N}: \lVert \mtx{\mtx{B}} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}
     \label{equ:3-nystrom-SS-def-numerical-low-rank}
 \end{equation}
 
 For unitarily invariant norms \cite[Theorem~5]{mirsky1960truncation},
+Eigenvalues $\mu_1, \dots, \mu_N$ of symmetric matrix $\mtx{B}$
 For spectral norm,
-Singular values $\sigma_1, \dots, \sigma_N$
 \begin{equation}
-    r_{\epsilon, 2}(B) = \min \{r: \sigma_{r+1} \leq \varepsilon \}
+    r_{\varepsilon, 2}(\mtx{\mtx{B}}) = \min \{1 \leq r \leq N: \mu_{r+1} \leq \varepsilon \}
     \label{equ:3-nystrom-SS-def-numerical-low-rank-spectral-norm}
 \end{equation}
 
-For Frobenius norm \textcolor{red}{Nope, the singular values should be squared..}
+For Frobenius norm
 \begin{equation}
-    r_{\epsilon, F}(B) = \min \{r: \sum_{j=r+1}^N \sigma_{j} \leq \varepsilon \}
+    r_{\varepsilon, F}(\mtx{\mtx{B}}) = \min \{1 \leq r \leq N: \sqrt{\sum_{j=r+1}^N \mu_{j}^2} \leq \varepsilon \}
     \label{equ:3-nystrom-SS-def-numerical-low-rank-frobenius-norm}
 \end{equation}
+
+The eigenvalues of $g_{\sigma}(t\mtx{I} - \mtx{A})$ are
+\begin{equation}
+    \mu_i(t) = g_{\sigma}(t - \lambda_{(i)}) = \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{-\frac{(t - \lambda_{(i)})^2}{2 \sigma^2}}
+\end{equation}
+Hence, 
+\begin{equation}
+    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) = \#\{1\leq i\leq N: |t - \mu_i(t)| \leq C_{\varepsilon, \cdot}(\sigma)\}
+\end{equation}
+with the distances
+\begin{align}
+    C_{\varepsilon, 2}(\sigma) = \sigma \sqrt{-2 \log(N \sqrt{2 \pi} \sigma \varepsilon)} \\
+    C_{\varepsilon, F}(\sigma) = \sigma \sqrt{-2 \log(\sqrt{2 \pi} \sigma \varepsilon)}
+\end{align}
+
+If we assume the eigenvalues of the matrix $\mtx{A}$ in \refequ{equ:1-introduction-spectral-density-as-trace}
+to be evenly distributed in $[a, b]$, i.e. in any subinterval of fixed length in
+$[a, b]$ we can expect to find roughly the same number of eigenvalues, then
+we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$.
+\begin{equation}
+    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) = \frac{2 N}{b - a} C_{\varepsilon, \cdot}(\sigma)
+\end{equation}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        \node at (0, 0) {\input{plots/singular_value_decay.pgf}};
+        \node at (2.9, 2.4) {\input{plots/singular_value_decay_colormap.pgf}};
+    \end{tikzpicture}
+    \caption{Singular value decay.}
+    \label{fig:3-nystrom-singular-value-decay}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{The Nystr\"om low-rank approximation}
 \label{sec:3-nystrom-nystrom}
 
+Explain sketching [Tropp/Webber 2023, Lin 2017]
+
 Nyström approximation \cite{gittens2013nystrom}
-Sketching matrix $\Omega \in \mathbb{C}^{N \times n_v}$ [cite]
+Sketching matrix $\mtx{\Omega} \in \mathbb{R}^{N \times n_v}$ [cite]
 \begin{equation}
-    \widehat{B} = (B \Omega) (\Omega^{\ast} B \Omega)^{\dagger} (B \Omega)^{\ast}
+    \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) (\mtx{\Omega}^{\top} B \mtx{\Omega})^{\dagger} (\mtx{B} \mtx{\Omega})^{\top}
     \label{equ:3-nystrom-SS-nystrom}
 \end{equation}
 
 Cyclic property of trace
 \begin{equation}
-    \operatorname{Tr}(\widehat{B})
-        = \operatorname{Tr}\left((B \Omega) (\Omega^{\ast} B \Omega)^{\dagger} (B \Omega)^{\ast} \right)
-        = \operatorname{Tr}\left((\Omega^{\ast} B \Omega)^{\dagger} (\Omega^{\ast} B^2 \Omega) \right)
+    \operatorname{Tr}(\widehat{\mtx{B}})
+        = \operatorname{Tr}\left((\mtx{B} \mtx{\Omega}) (\mtx{\Omega}^{\top} B \mtx{\Omega})^{\dagger} (\mtx{B} \mtx{\Omega})^{\top} \right)
+        = \operatorname{Tr}\left((\mtx{\Omega}^{\top} B \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} B^2 \mtx{\Omega}) \right)
     \label{equ:3-nystrom-SS-nystrom-trace}
 \end{equation}
 
@@ -55,24 +89,24 @@ Consistency between the two matrices (maybe don't even mention spectrum sweeping
 
 Efficient computation with Chebyshev recurrence
 \begin{equation}
-    Z(t) = g_{\sigma}^m(tI - A) \Omega
+    Z(t) = g_{\sigma}^m(tI - A) \mtx{\Omega}
     \label{equ:3-nystrom-SS-Z}
 \end{equation}
 
 \begin{equation}
     \widetilde{\phi}_{\sigma}^m(t)
-        = \operatorname{Tr}\left((\Omega^{\ast} Z(t))^{\dagger} (Z(t)^{\ast} Z(t))\right)
+        = \operatorname{Tr}\left((\mtx{\Omega}^{\top} Z(t))^{\dagger} (Z(t)^{\top} Z(t))\right)
     \label{equ:3-nystrom-SS-spectral-density}
 \end{equation}
 
 \begin{equation}
-    (Z(t)^{\ast} Z(t)) C(t) = (\Omega^{\ast} Z(t)) C(t) \Xi(t)
+    (Z(t)^{\top} Z(t)) C(t) = (\mtx{\Omega}^{\top} Z(t)) C(t) \Xi(t)
     \label{equ:3-nystrom-SS-generalized-eigenproblem}
 \end{equation}
 
 Efficient implementation
 \begin{equation}
-    Y(t) = (g_{\sigma}^m(tI - A))^2 \Omega
+    Y(t) = (g_{\sigma}^m(tI - A))^2 \mtx{\Omega}
     \label{equ:3-nystrom-SS-Y}
 \end{equation}
 
@@ -82,15 +116,27 @@ Analogous to \refequ{equ:2-chebyshev-DGC-chebyshev-expansion}
     \label{equ:3-nystrom-ESS-chebyshev-expansion}
 \end{equation}
 
-\cite{lin2017randomized} suggests interpolation using \refequ{equ:2-chebyshev-SS-DCT}.
+\cite{lin2017randomized} suggests interpolation using a quadrature rule.
 
-\cite[Proposition~3.1]{baszenski1997cosine}
-Zero padding $\widehat{\boldsymbol{\mu}} = [\boldsymbol{\mu}^{\top}, \boldsymbol{0}_{m}^{\top}]^{\top}$ (very sensitive for consistency)
-(Mention $2m = \operatorname{size}(\boldsymbol{g}_{\sigma})$ after padding)
+Discuss inconsistency issue. Need to do direct squaring to get consistent.
+
+The \gls{DCT}-property of the Chebyshev interpolation shown in \refequ{equ:2-chebyshev-chebyshev-DCT}
+gives rise to fast exact multiplication algorithms between polynomials
+of the form \refequ{equ:2-chebyshev-chebyshev-expansion} \cite[Proposition~3.1]{baszenski1997cosine}.
+In fact, raising such a Chebyshev expansion to an integer power can be achieved
+efficiently via a \gls{DCT} and inverse \gls{DCT}.
+
+Suppose we have computed the coefficients $\vct{mu} \in \mathbb{R}^{m+1}$
+of a Chebyshev expansion \refequ{equ:2-chebyshev-chebyshev-expansion}.
+Then we may quickly compute the coefficients $\vct{mu}^{(k)} \in \mathbb{R}^{km+1}$
+of the same expansion raised to the power $k \geq 2$ by first zero-padding
+$\widehat{\vct{\mu}} = [\vct{\mu}^{\top}, \vct{0}_{(k-1)m}^{\top}]^{\top}$
+and subsequently compute
 \begin{equation}
-    \boldsymbol{\nu} = 2 m \operatorname{DCT}\left\{ \operatorname{DCT}^{-1}\{\boldsymbol{\mu}\} \odot \operatorname{DCT}^{-1}\{\boldsymbol{\mu}\} \right\}
+    \vct{\mu} = (m+1)^{k - 1} \operatorname{DCT}^{-1}\left\{ \operatorname{DCT}\{\widehat{\vct{\mu}}^{\odot k}\} \right\}
     \label{equ:3-nystrom-ESS-square-coefficients}
 \end{equation}
+where $\phantom{x}^\odot$ denotes the elementwise power.
 
 [Plots justifying this choice]
 
@@ -101,31 +147,31 @@ Adding some tolerance to avoid filtering
 Not solving the generalized eigenvalue problem if spectral density zero (rank matrix zero).
 
 \begin{algo}{Efficient spectrum sweeping Delta-Gauss-Chebyshev method}{ESS-DGC}
-    Hermitian matrix $A \in \mathbb{C}^{N \times N}$, number of random vectors $n_v$,
+    Hermitian matrix $A \in \mathbb{R}^{N \times N}$, number of random vectors $n_v$,
     evaluation points $\{t_i\}_{i=1}^{n_t}$
     \begin{algorithmic}[1]
         \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-DCT-vector}
         \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refequ{equ:3-nystrom-ESS-square-coefficients}
-        \State Generate $\Omega \in \mathbb{C}^{N \times n_v}$
-        \State $[V_1, V_2, V_3] \gets [0_{N \times n_v}, \Omega, 0_{N \times n_v}]$
-        \State $[K_{Z^{\ast}Z}(t_i), K_{\Omega^{\ast}Z}(t_i)] \gets [0_{N_v \times N_v}, 0_{N_v \times N_v}]$
+        \State Generate $\mtx{\Omega} \in \mathbb{R}^{N \times n_v}$
+        \State $[V_1, V_2, V_3] \gets [0_{N \times n_v}, \mtx{\Omega}, 0_{N \times n_v}]$
+        \State $[K_{Z^{\top}Z}(t_i), K_{\mtx{\Omega}^{\top}Z}(t_i)] \gets [0_{N_v \times N_v}, 0_{N_v \times N_v}]$
         \For {$l = 0, \dots, m$}
-          \State $X = \Omega^{\ast} V_2$
+          \State $X = \mtx{\Omega}^{\top} V_2$
           \For {$i = 1, \dots, n_t$}
             \If {$l \leq m$}
-              \State $K_{Z^{\ast}Z}(t_i) \gets K_{Z^{\ast}Z}(t_i) + \mu_l(t_i) X$
+              \State $K_{Z^{\top}Z}(t_i) \gets K_{Z^{\top}Z}(t_i) + \mu_l(t_i) X$
             \EndIf
-            \State $K_{\Omega^{\ast}Z}(t_i) \gets K_{\Omega^{\ast}Z}(t_i) + \nu_l(t_i) X$
+            \State $K_{\mtx{\Omega}^{\top}Z}(t_i) \gets K_{\mtx{\Omega}^{\top}Z}(t_i) + \nu_l(t_i) X$
           \EndFor
           \State $V_3 \gets (2 - \delta_{l0}) A V_2 - V_1$ \Comment{Chebyshev recursion \refequ{equ:2-chebyshev-DGC-chebyshev-recursion}}
           \State $V_1 \gets V_2, V_2 \gets V_3$
         \EndFor
         \For {$i = 1, \dots, n_t$}
-          \If {$\operatorname{Tr}(K_{\Omega^{\ast}Z}(t_i)) \leq \delta$}
+          \If {$\operatorname{Tr}(K_{\mtx{\Omega}^{\top}Z}(t_i)) \leq \delta$}
             \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets 0$
           \Else
-            \State Solve $ X(t_i) = (\Omega^{\ast} Z(t_i)) X(t_i) S(t_i)$
-            \State Solve $K_{Z^{\ast}Z}(t_i) X(t_i) = K_{\Omega^{\ast}Z}(t_i) X(t_i) S(t_i)$
+            \State Solve $ X(t_i) = (\mtx{\Omega}^{\top} Z(t_i)) X(t_i) S(t_i)$
+            \State Solve $K_{Z^{\top}Z}(t_i) X(t_i) = K_{\mtx{\Omega}^{\top}Z}(t_i) X(t_i) S(t_i)$
             \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets \Tr(S(t))$
           \EndIf
         \EndFor
@@ -136,13 +182,13 @@ Complexity: $\mathcal{O}(m \log(m) + m n_t + m N N_v^2 + n_t N N_v^2)$
 
 
 %\begin{algo}{Spectrum sweeping Delta-Gauss-Chebyshev method}{SS-DGC}
-%    Hermitian matrix $A \in \mathbb{C}^{N \times N}$, number of random vectors $n_v$,
+%    Hermitian matrix $A \in \mathbb{R}^{N \times N}$, number of random vectors $n_v$,
 %    evaluation points $\{t_i\}_{i=1}^{n_t}$
 %    \begin{algorithmic}[1]
 %        \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-DCT-vector}
-%        \State Generate $\Omega \in \mathbb{C}^{N \times n_v}$
-%        \State $[V_1, V_2, V_3] \gets [0_{N \times n_v}, \Omega, 0_{N \times n_v}]$
-%        \State $Z(t_i) \gets 0 \in \mathbb{C}^{N \times N_v}$
+%        \State Generate $\mtx{\Omega} \in \mathbb{R}^{N \times n_v}$
+%        \State $[V_1, V_2, V_3] \gets [0_{N \times n_v}, \mtx{\Omega}, 0_{N \times n_v}]$
+%        \State $Z(t_i) \gets 0 \in \mathbb{R}^{N \times N_v}$
 %        \State $\widetilde{\phi}_{\sigma}(t_i) \gets 0$ for all $t_i$
 %        \For {$l = 0, \dots, m$}
 %          \For {$i = 1, \dots, n_t$}
@@ -152,12 +198,12 @@ Complexity: $\mathcal{O}(m \log(m) + m n_t + m N N_v^2 + n_t N N_v^2)$
 %          \State $V_1 \gets V_2, V_2 \gets V_3$
 %        \EndFor
 %        \For {$i = 1, \dots, n_t$}
-%          \State $K_{Z^{\ast}Z}(t_i) = Z(t_i)^{\ast} Z(t_i)$
-%          \State $K_{\Omega^{\ast}Z}(t_i) = \Omega^{\ast} Z(t_i)$
-%          \If {$\operatorname{Tr}(K_{\Omega^{\ast}Z}(t_i)) \leq \delta$}
+%          \State $K_{Z^{\top}Z}(t_i) = Z(t_i)^{\top} Z(t_i)$
+%          \State $K_{\mtx{\Omega}^{\top}Z}(t_i) = \mtx{\Omega}^{\top} Z(t_i)$
+%          \If {$\operatorname{Tr}(K_{\mtx{\Omega}^{\top}Z}(t_i)) \leq \delta$}
 %            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets 0$
 %          \Else
-%            \State Solve $K_{Z^{\ast}Z}(t_i) C(t_i) = K_{\Omega^{\ast}Z}(t_i) C(t_i) \Xi(t_i)$
+%            \State Solve $K_{Z^{\top}Z}(t_i) C(t_i) = K_{\mtx{\Omega}^{\top}Z}(t_i) C(t_i) \Xi(t_i)$
 %            \State Filter $\Xi$
 %            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets \Tr(\Xi(t))$
 %          \EndIf

@@ -3,4 +3,43 @@
 
 Different matrices (ModES3D, ...)
 
+Matrix which results from second order finite difference discretization of
+\begin{equation}
+    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V_n(\vct{x}) u(\vct{x})
+    \label{equ:5-experiments-electronic-hamiltonian}
+\end{equation}
+
+with mesh size $h=0.6$ \cite{lin2017randomized}.
+
+Potential is periodic repetition of length $L=6$ unit cell in whose
+center there is a Gaussian
+\begin{equation}
+    V_1(\vct{x}) = \alpha \exp(-\frac{\lVert \vct{x} \rVert_2^2}{ 2 \beta^2 })
+\end{equation}
+
+with $\alpha = 4$, $\beta = 2$ located in the center of the unit cell. For $n=2, 3, \dots$,
+we consider $n$ cells together in each dimension in our computation.
+
+[Plot in 2D]
+
 Different kernels (Haydock's method)
+
+\begin{figure}[ht]
+    \begin{subfigure}[b]{0.33\columnwidth}
+        \input{plots/periodic_gaussian_well_1.pgf}
+        \caption{$n=1$}
+        \label{fig:5-experiments-periodic-gaussian-well-1}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.33\columnwidth}
+        \input{plots/periodic_gaussian_well_2.pgf}
+        \caption{$n=2$}
+        \label{fig:5-experiments-periodic-gaussian-well-2}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.33\columnwidth}
+        \input{plots/periodic_gaussian_well_5.pgf}
+        \caption{$n=5$}
+        \label{fig:5-experiments-periodic-gaussian-well-5}
+    \end{subfigure}
+    \caption{Two dimensional periodic Gaussian wells for different $n$.}
+    \label{fig:5-experiments-periodic-gaussian-well}
+\end{figure}

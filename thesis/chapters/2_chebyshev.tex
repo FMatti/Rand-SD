@@ -10,22 +10,69 @@ Disadvantage of Lanczos algorithm.
 \section{Chebyshev interpolation}
 \label{sec:2-chebyshev-interpolation}
 
+Definition of \glsfirst{chebyshev-polynomial} \cite[Chapter~3]{trefethen2019chebyshev}
+\begin{equation}
+    T_l: [-1, 1] \to \mathbb{R},~T_l(x) = \cos(l \arccos(x))
+    \label{equ:2-chebyshev-chebyshev-definition}
+\end{equation}
+Recursion formula (verified standard trigonometric formulae)
+\begin{equation}
+    \begin{cases}
+        T_0(x) = 1, T_1(x) = x \\ T_{l+1}(x) = 2x T_l(x) - T_{l-1}(x), l \geq 2
+    \end{cases}
+    \label{equ:2-chebyshev-chebyshev-recursion}
+\end{equation}
+
+[Plot of Chebyshev polynomials?]
+
 Chebyshev expansion \cite[Chapter~3]{trefethen2019chebyshev},
 \gls{chebyshev-degree}
 \begin{equation}
     g_{\sigma}^m(tI - A) = \frac{\mu_0(t)}{2} + \sum_{l=1}^m \mu_l(t) T_l(A)
-    \label{equ:2-chebyshev-DGC-chebyshev-expansion}
+    \label{equ:2-chebyshev-chebyshev-expansion}
 \end{equation}
 
+Polynomials of degree $m$ are uniquely defined by $m+1$ distinct evaluations [cite Fundamental theorem of algebra?].
+Hence, if we know the values $g_{\sigma}^m(t - \cdot)$ at the $m+1$ distinct points 
+$\{s_i\}_{i=0}^m$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^m$
+of this polynomial. For convenience, we may choose $s_i = \cos(2 \pi i/m), i=0,\dots,m$.
+In that case,
 \begin{equation}
-    \phi_{\sigma}^m(t) = \operatorname{Tr}(g_{\sigma}^m(tI - A))
+    g_{\sigma}^m(t - s_i) = \frac{\mu_0(t)}{2} + \sum_{l=1}^{m} \mu_l(t) \cos\left(\frac{2 \pi l i}{m}\right),
+    \label{equ:2-chebyshev-chebyshev-nodes-evaluation}
+\end{equation}
+which coincides with the \glsfirst{DCT}\footnote{There exist multiple conventions for the DCT.
+The formulation which we use is often referred to as a type 1 DCT,
+and is efficiently implemented in the SciPy Python package:
+\url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.dct.html}} of the coefficients $\{\mu_l\}_{l=0}^m$.
+If we collect the coefficients $\{\mu_l(t)\}_{l=0}^{m}$ in a vector $\vct{\mu}(t) \in \mathbb{R}^{m+1}$ 
+and the function evaluations $\{g_{\sigma}^m(t - s_i)\}_{i=0}^{m}$ in another
+vector $\vct{g}(t)$, we find that
+\begin{equation}
+    \vct{g}(t) = \DCT \{ \vct{\mu}(t) \} \implies \vct{\mu}(t) = \DCT^{-1}\{ \vct{g}(t) \}.
+    \label{equ:2-chebyshev-chebyshev-DCT}
+\end{equation}
+In short, computing the coefficients of the Chebyshev expansion \refequ{equ:2-chebyshev-chebyshev-expansion}
+of the function $g_{\sigma}$ amounts to evaluating this function at $m+1$ well
+chosen points and computing the inverse \gls{DCT} of these evaluations. 
+This procedure is usually inexpensive and can be done in $\mathcal{O}(m \log(m))$
+operations [cite fft algorithm].
+\textcolor{red}{Contrary to popular belief \cite[Algorithm~1]{lin2017randomized},
+the coefficients should not be computed using a quadrature rule for the integral
+expression of the coefficients \cite[Theorem~3.1]{trefethen2019chebyshev}, since
+in general this is not guaranteed to be exact and is furthermore more complicated
+and slower than the \gls{DCT}.}
+
+\glsfirst{DGC}
+\begin{equation}
+    \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(tI - A))
     \label{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion}
 \end{equation}
 
 Bernstein theorem \cite[Theorem~73]{meinardus1967approximation} \todo{Also prove this for Lorentzian}
 
 Convergence corollary and new proof \cite[Theorem~2]{lin2017randomized}
-\begin{theorem}{Chebyshev interpolation error}{chebyshev-error}
+\begin{theorem}{Chebyshev interpolation error for Gaussian smoothing kernel}{chebyshev-error}
     Let $A \in \mathbb{C}^{N \times N}$ be a Hermitian matrix with spectrum in
     $(-1, 1)$. For any $t \in \mathbb{R}$ it holds
     \begin{equation}
@@ -40,7 +87,7 @@ New proof since different result
     Using basic properties of matrix functions, we obtain
     \begin{align}
         \left| \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right|
-        &= \left| \operatorname{Tr}(g_{\sigma}(tI - A)) - \operatorname{Tr}(g_{\sigma}^m(tI - A)) \right|
+        &= \left| \Tr(g_{\sigma}(tI - A)) - \Tr(g_{\sigma}^m(tI - A)) \right|
         && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion})} \notag \\
         &= \left| \sum_{i=1}^N \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i)\right) \right|
         && \text{(property of matrix function)} \notag \\
@@ -108,69 +155,29 @@ New proof since different result
     with $C_1=\sqrt{\frac{2}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
 \end{proof}
 
-\gls{DCT}\footnote{There exist multiple conventions for the DCT.
-The formulation which we use is often referred to as a type 1 DCT,
-and is efficiently implemented in the SciPy Python package:
-\url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.dct.html}}
-\todo{Nope, make this better (no trapezoidal rule), maybe even point out error of Lin Lin}
-\begin{align}
-    \mu_l(t) 
-    &= \frac{2}{\pi} \int_{-1}^1 \frac{1}{\sqrt{1 + s^2}} g_{\sigma}(t - s) T_l(s) \mathrm{d}s
-    && \text{(\cite[Theorem~3.1]{trefethen2019chebyshev})} \notag \\
-    &= \frac{2}{\pi} \int_{0}^{\pi} g_{\sigma}(t - \cos(\theta)) \cos(l\theta) \mathrm{d}\theta
-    && \text{($s = \cos(\theta))$} \notag \\
-    &\approx \frac{2}{n_q} \sum_{j=0}^{n_q} {\vphantom{\sum}}' g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right)\right) \cos\left(\frac{\pi j l}{n_q}\right)
-    && \text{(trapezoidal rule [cite])} \notag \\
-    &= \frac{1}{n_q} \operatorname{DCT}\left\{g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right) \right)\right\}_{j=0}^{n_q}
-    && \text{(\gls{DCT})}
-    %&\approx \frac{2}{n_q} \sum_{j=0}^{n_q-1} g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right)\right) \cos\left(\frac{\pi j l}{n_q}\right)
-    %&& \text{(quadrature [cite])} \notag \\
-    %&= \frac{2}{n_q} \operatorname{DCT}\left\{g_{\sigma}\left(t - \cos\left(\frac{\pi j}{n_q}\right) \right)\right\}_{j=0}^{n_q-1}
-    %&& \text{(\gls{DCT} [cite])}
-    %&= \frac{1}{\pi} \int_{0}^{2 \pi} g_{\sigma}(t - \cos(\theta)) \cos(l\theta) \mathrm{d}\theta
-    %&& \text{($\cos(\theta) = \cos(2\pi - \theta)$)} \notag \\
-    %&\approx \frac{2}{n_q} \sum_{j=0}^{n_q-1} g_{\sigma}\left(t - \cos\left(\frac{2 \pi j}{n_q}\right)\right) \cos\left(\frac{2 \pi j l}{n_q}\right)
-    %&& \text{(quadrature [cite])} \notag \\
-    %&= \frac{2}{n_q} \operatorname{DCT}\left\{g_{\sigma}\left(t - \cos\left(\frac{2 \pi j}{n_q}\right) \right)\right\}_{j=0}^{n_q-1}
-    %&& \text{(\gls{DCT} [cite])}
-    \label{equ:2-chebyshev-SS-DCT}
-\end{align}
-$\sum{\vphantom{\sum}}'$ means first and last summand are divided by two
-(Mention not specific type of DCT, this is only approximation, choice of $n_q$,
-expected error)
-$\boldsymbol{\mu} = (\mu_0, \dots, \mu_m)^T$
-
-\begin{equation}
-    (\boldsymbol{g}_{\sigma})_j = g_{\sigma}(t - \cos(\pi j / n_q))
-    \label{equ:2-chebyshev-function-vector}
-\end{equation}
-
-\begin{equation}
-    \boldsymbol{\mu} = \frac{1}{n_q} \operatorname{DCT}\{\boldsymbol{g}_{\sigma}\}
-    \label{equ:2-chebyshev-DCT-vector}
-\end{equation}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Stochastic trace estimation}
 \label{sec:2-chebyshev-stochastic-trace-estimation}
 
-Hutchinson \cite{hutchinson1990trace}, $B \in \mathbb{C}^{N \times N}$ Hermitian,
-$\boldsymbol{\omega} \in \mathbb{C}^N$, $\mathbb{E}[\boldsymbol{\omega}] = \boldsymbol{0}$, $\mathbb{E}[\boldsymbol{\omega}\boldsymbol{\omega}^{\ast}] = I$ 
+Hutchinson \cite{hutchinson1990trace}, $\mtx{B} \in \mathbb{R}^{N \times N}$ Hermitian,
+$\vct{\psi} \in \mathbb{R}^N$, $\mathbb{E}[\vct{\psi}] = \vct{0}$, $\mathbb{E}[\vct{\psi}\vct{\psi}^{\top}] = \mtx{I}$ 
 \begin{equation}
-    \mathbb{E}[\omega^{\ast} B \omega] = \operatorname{Tr}(B)
+    \mathbb{E}[\vct{\psi}^{\top} \mtx{B} \vct{\psi}] = \Tr(\mtx{B})
     \label{equ:2-chebyshev-DGC-hutchinson}
 \end{equation}
 
 Variance of Hutchinson \cite[Proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
 \begin{equation}
-    \operatorname{Var}(\omega^{\ast} B \omega) = 2 \sum_{i \neq j} \operatorname{Re}(b_{ij})^2
+    \operatorname{Var}(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) = 2 \sum_{i \neq j} \operatorname{Re}(b_{ij})^2
     \label{equ:2-chebyshev-DGC-hutchinson-variance}
 \end{equation}
 
-Estimator $\Omega = [\omega_1, \dots, \omega_{n_v}] \in \mathbb{C}^{N \times n_v}$
+Taking a certain \glsfirst{num-random-vectors} to form the
+\glsfirst{sketching-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_v}] \in \mathbb{R}^{N \times n_v}$
+
 \begin{equation}
-    h_{n_v}(B) = \frac{1}{n_v} \operatorname{Tr}(\Omega^{\ast} B \Omega)
+    H_{n_v}(\mtx{B}) = \frac{1}{n_v} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi})
     \label{equ:2-chebyshev-DGC-hutchionson-estimator}
 \end{equation}
 
@@ -179,37 +186,47 @@ Estimator $\Omega = [\omega_1, \dots, \omega_{n_v}] \in \mathbb{C}^{N \times n_v
 \section{The Delta-Gauss-Chebyshev method}
 \label{sec:2-chebyshev-delta-gauss-chebyshev}
 
-\gls{DGC} puts together
+The \glsfirst{DGC} method \cite[Algorithm~2]{lin2017randomized} puts together the 
+Chebyshev expansion discussed in \refsec{sec:2-chebyshev-interpolation} and 
+the stochastic trace estimation in \refsec{sec:2-chebyshev-stochastic-trace-estimation}
+to approximate the \glsfirst{smooth-spectral-density} as
 \begin{equation}
-    \widetilde{\phi}_{\sigma}^m = \frac{1}{n_v} \operatorname{Tr}(\Omega^{\ast} g_{\sigma}^m(tI - A) \Omega)
+    \widetilde{\phi}_{\sigma}^m(t) = H_{n_v}(g_{\sigma}^m(t\mtx{I} - \mtx{A}))
     \label{equ:2-chebyshev-DGC-final-estimator}
 \end{equation}
 
-Efficient implementation \cite[Chapter~3]{trefethen2019chebyshev}
+Efficient implementation thanks to recursion formula \refequ{equ:2-chebyshev-chebyshev-recursion}.
+
+Trace of product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{N \times M}$
 \begin{equation}
-    T_0(x) = 1, T_1(x) = x, T_{l+1}(x) = 2x T_l(x) - T_{l-1}(x)
-    \label{equ:2-chebyshev-DGC-chebyshev-recursion}
+    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{N} \sum_{j=1}^{M} B_{ij} C_{ij}.
+    \label{equ:2-chebyshev-fast-trace}
 \end{equation}
 
 \begin{algo}{Delta-Gauss-Chebyshev method}{DGC}
-    Hermitian matrix $A \in \mathbb{C}^{N \times N}$, number of random vectors $n_v$,
+    Hermitian matrix $\mtx{A} \in \mathbb{R}^{N \times N}$, number of random vectors $n_v$,
     evaluation points $\{t_i\}_{i=1}^{n_t}$
     \begin{algorithmic}[1]
-        \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-DCT-vector}
-        \State Generate $\Omega \in \mathbb{C}^{N \times n_v}$
-        \State $[V_1, V_2, V_3] \gets [0_{N \times n_v}, \Omega, 0_{N \times n_v}]$
-        \State $\widetilde{\phi}_{\sigma}(t_i) \gets 0$
-        \For {$l = 0, \dots, m$} 
-          \State $z \gets \operatorname{Tr}(\Omega^{\ast} V_2)$
+        \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
+        \State Generate \glsfirst{sketching-matrix} $\in \mathbb{R}^{N \times n_v}$
+        \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{N \times n_v}, \mtx{\Psi}, \mtx{0}_{N \times n_v}]$
+        \State Set ${\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
+        \For {$l = 0, \dots, m$}
+          \State $z \gets \Tr(\mtx{\Psi}^{\top} \mtx{V}_2)$
           \For {$i = 1, \dots, n_t$}
             \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets \widetilde{\phi}_{\sigma}^m(t_i) + \mu_l(t_i) z$
           \EndFor
-          \State $V_3 \gets (2 - \delta_{l0}) A V_2 - V_1$ \Comment{Chebyshev recursion \refequ{equ:2-chebyshev-DGC-chebyshev-recursion}}
-          \State $V_1 \gets V_2, V_2 \gets V_3$
+          \State $\mtx{V}_3 \gets (2 - \delta_{l0}) \mtx{A} \mtx{V}_2 - \mtx{V}_1$ \Comment{Chebyshev recurrence \refequ{equ:2-chebyshev-chebyshev-recursion}}
+          \State $\mtx{V}_1 \gets \mtx{V}_2, \mtx{V}_2 \gets \mtx{V}_3$
         \EndFor
     \end{algorithmic}
 \end{algo}
 
-Complexity: $\mathcal{O}(m \log(m) + m n_t + m N^2 n_v)$
+Cost of matvec $c$, usually $\mathcal{O}(c(N)) = N^2$ for dense and
+$\mathcal{O}(c(N)) = N$ for sparse matrices
+
+Computational complexity: $\mathcal{O}(m \log(m) n_t + m c(N) n_v)$
+
+Additional storage complexity: $\mathcal{O}(m n_t + N n_v)$
 
 [Summary box, formula, complexity, \dots]
