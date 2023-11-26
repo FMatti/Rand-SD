@@ -9,7 +9,7 @@ import numpy as np
 import scipy as sp
 
 
-def chebyshev_coefficients(t, M, function, adjust_first=True):
+def chebyshev_coefficients(t, m, function, adjust_first=True):
     """
     Chebyshev expansion of a function.
 
@@ -17,16 +17,16 @@ def chebyshev_coefficients(t, M, function, adjust_first=True):
     ----------
     t : int, float, list, or np.ndarray of shape (n,)
         Point(s) where the expansion should be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the Chebyshev polynomial.
-    N_theta : int > M
+    N_theta : int > m
         The (half) number of integration points.
     function : function
         The kernel used to regularize the spectral density.
 
     Returns
     -------
-    mu : np.ndarray of shape (N_t, M + 1)
+    mu : np.ndarray of shape (n_t, m + 1)
         The coefficients of the Chebyshev polynomials. Format: mu[t, l].
 
     References
@@ -39,11 +39,11 @@ def chebyshev_coefficients(t, M, function, adjust_first=True):
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
 
-    theta = np.arange(M + 1) * np.pi / M
+    theta = np.arange(m + 1) * np.pi / m
 
     # Compute the coefficients mu for all t and l simultaneously with FFT
     t_minus_theta = np.subtract.outer(t, np.cos(theta))
-    mu = 1 / M * sp.fft.dct(function(t_minus_theta), type=1)
+    mu = 1 / m * sp.fft.dct(function(t_minus_theta), type=1)
 
     if adjust_first:
         mu[:, 0] /= 2
@@ -51,29 +51,29 @@ def chebyshev_coefficients(t, M, function, adjust_first=True):
     return mu
 
 
-def squared_chebyshev_coefficients(t, M, function, adjust_first=True):
+def squared_chebyshev_coefficients(t, m, function, adjust_first=True):
     """
     Determine the Che.
 
     Parameters
     ----------
-    mu : np.ndarray (N_t, M_mu + 1)
+    mu : np.ndarray (n_t, M_mu + 1)
         Chebyshev coefficients corresponding to an expansion of a function.
-    M : int > 0 or None
+    m : int > 0 or None
         Degree of the squared Chebyshev polynomial.
 
     Returns
     -------
-    nu : np.ndarray of shape (N_t, M + 1)
+    nu : np.ndarray of shape (n_t, m + 1)
         Chebyshev coefficients for square of expansion defined by mu.
     """
     function_squared = lambda x: function(x) ** 2
-    nu = chebyshev_coefficients(t, M, function=function_squared, adjust_first=adjust_first)
+    nu = chebyshev_coefficients(t, m, function=function_squared, adjust_first=adjust_first)
 
     return nu
 
 
-def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, M=None, adjust_first=True):
+def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None, adjust_first=True):
     """
     Squared expansion of the polynomial defined by Chebyshev coefficients mu.
     The discrete cosine transform is used to efficiently compute the
@@ -81,23 +81,23 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, M=None, adjust
 
     Parameters
     ----------
-    mu : np.ndarray (N_t, M_mu + 1)
+    mu : np.ndarray (n_t, M_mu + 1)
         Chebyshev coefficients corresponding to an expansion of a function.
     k : int > 0
         The power to which the Chebyshev polynomial should be raised.
-    M : int > 0 or None
+    m : int > 0 or None
         Degree of the squared Chebyshev polynomial.
     adjust_first : bool
         Whether to use the convention to divide the first coefficient mu_0 by 2.
 
     Returns
     -------
-    nu : np.ndarray of shape (N_t, M + 1)
+    nu : np.ndarray of shape (n_t, m + 1)
         Chebyshev coefficients for square of expansion defined by mu.
 
     References
     ----------
-    [4] G. Baszenski, M. Tasche. Fast Polynomial Multiplication and Convolutions
+    [4] G. Baszenski, m. Tasche. Fast Polynomial Multiplication and Convolutions
         Related to the Discrete Cosine Transform.
         Linear Algebra and its Applications 252:1-25. (1997)
         DOI: https://doi.org/10.1016/0024-3795(95)00696-6
@@ -105,12 +105,12 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, M=None, adjust
     if k == 1:
         return mu
     M_mu = mu.shape[1] - 1
-    if M is None:
-        M = k * M_mu
-    mu_tilde = np.hstack((mu, np.zeros((mu.shape[0], M + 1 - M_mu))))
+    if m is None:
+        m = k * M_mu
+    mu_tilde = np.hstack((mu, np.zeros((mu.shape[0], m + 1 - M_mu))))
     if adjust_first:
         mu_tilde[:, 0] *= 2
-    nu = (M + 1) ** (k - 1) * sp.fft.dct(sp.fft.idct(mu_tilde, type=1) ** k, type=1)[:, : M + 1]
+    nu = (m + 1) ** (k - 1) * sp.fft.dct(sp.fft.idct(mu_tilde, type=1) ** k, type=1)[:, : m + 1]
 
     if adjust_first:
         nu[:, 0] /= 2
@@ -118,7 +118,7 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, M=None, adjust
     return nu
 
 
-def multiply_chebyshev_coefficients_cosine_transform(mu_1, mu_2, M=None, adjust_first=True):
+def multiply_chebyshev_coefficients_cosine_transform(mu_1, mu_2, m=None, adjust_first=True):
     """
     Squared expansion of the polynomial defined by Chebyshev coefficients mu.
     The discrete cosine transform is used to efficiently compute the
@@ -126,35 +126,35 @@ def multiply_chebyshev_coefficients_cosine_transform(mu_1, mu_2, M=None, adjust_
 
     Parameters
     ----------
-    mu : np.ndarray (N_t, M_mu + 1)
+    mu : np.ndarray (n_t, M_mu + 1)
         Chebyshev coefficients corresponding to an expansion of a function.
-    M : int > 0 or None
+    m : int > 0 or None
         Degree of the squared Chebyshev polynomial.
 
     Returns
     -------
-    nu : np.ndarray of shape (N_t, M + 1)
+    nu : np.ndarray of shape (n_t, m + 1)
         Chebyshev coefficients for square of expansion defined by mu.
 
     References
     ----------
-    [4] G. Baszenski, M. Tasche. Fast Polynomial Multiplication and Convolutions
+    [4] G. Baszenski, m. Tasche. Fast Polynomial Multiplication and Convolutions
         Related to the Discrete Cosine Transform.
         Linear Algebra and its Applications 252:1-25. (1997)
         DOI: https://doi.org/10.1016/0024-3795(95)00696-6
     """
     M_mu_1 = mu_1.shape[1] - 1
     M_mu_2 = mu_2.shape[1] - 1
-    if M is None:
-        M = M_mu_1 + M_mu_2
-    mu_1_tilde = np.hstack((mu_1, np.zeros((mu_1.shape[0], M + 1 - M_mu_1))))
-    mu_2_tilde = np.hstack((mu_2, np.zeros((mu_2.shape[0], M + 1 - M_mu_2))))
+    if m is None:
+        m = M_mu_1 + M_mu_2
+    mu_1_tilde = np.hstack((mu_1, np.zeros((mu_1.shape[0], m + 1 - M_mu_1))))
+    mu_2_tilde = np.hstack((mu_2, np.zeros((mu_2.shape[0], m + 1 - M_mu_2))))
 
     if adjust_first:
         mu_1_tilde[:, 0] *= 2
         mu_2_tilde[:, 0] *= 2
 
-    nu = (M + 1) * sp.fft.dct(sp.fft.idct(mu_1_tilde, type=1) * sp.fft.idct(mu_2_tilde, type=1), type=1)[:, : M + 1]
+    nu = (m + 1) * sp.fft.dct(sp.fft.idct(mu_1_tilde, type=1) * sp.fft.idct(mu_2_tilde, type=1), type=1)[:, : m + 1]
 
     if adjust_first:
         nu[:, 0] /= 2
@@ -166,13 +166,13 @@ def chebyshev_recurrence(mu, A, T_0=None, L=None, final_shape=()):
     """
     Implements Chebyshev-recurrence to compute
 
-        Z = L( \\sum_{l=0}^{M} mu_l T_l(A) T_0 )
+        Z = L( \\sum_{l=0}^{m} mu_l T_l(A) T_0 )
 
     Parameters
     ----------
-    mu : np.ndarray (N_t, M)
+    mu : np.ndarray (n_t, m)
         The Chebyshev-coefficients at each time step.
-    A : sp.sparse.matrix or np.ndarray (N, N)
+    A : sp.sparse.matrix or np.ndarray (n, n)
         The matrix used as argument in the Chebyshev-polynomial.
     T_0 : np.ndarray
         The initial value of the recurrence (for speed).
@@ -183,7 +183,7 @@ def chebyshev_recurrence(mu, A, T_0=None, L=None, final_shape=()):
 
     Returns 
     -------
-    Z : np.ndarray (N_t, final_shape)
+    Z : np.ndarray (n_t, final_shape)
         The evaluated Chebyshev matrix polynomial for A with coefficients mu.
     """
     if L is None:
@@ -210,11 +210,11 @@ def chebyshev_recurrence(mu, A, T_0=None, L=None, final_shape=()):
     return Z
 
 
-def _squared_chebyshev_coefficients_ifft(t, M, function, N_theta=None):
+def _squared_chebyshev_coefficients_ifft(t, m, function, N_theta=None):
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
     if N_theta is None:
-        N_theta = 2 * M + 1
+        N_theta = 2 * m + 1
     theta = np.arange(2 * N_theta) * np.pi / N_theta
 
     # Compute the coefficients mu for all t and l simultaneously with FFT
@@ -231,7 +231,7 @@ def _squared_chebyshev_coefficients_ifft(t, M, function, N_theta=None):
 
     nu_tilde = np.fft.fft(function_double_sampled, axis=1)
 
-    nu = np.real(nu_tilde)[:, :2 * M+1]
+    nu = np.real(nu_tilde)[:, :2 * m+1]
 
     # Rescale the coefficients (as required by the definition)
     nu[:, 0] /= 4 * N_theta
@@ -240,23 +240,23 @@ def _squared_chebyshev_coefficients_ifft(t, M, function, N_theta=None):
     return nu
 
 
-def _squared_chebyshev_coefficients_quadrature(mu, M=None, N_theta=None):
+def _squared_chebyshev_coefficients_quadrature(mu, m=None, N_theta=None):
     """
     Squared expansion of the polynomial defined by Chebyshev coefficients mu 
     computed using the formula found in [2].
 
     Parameters
     ----------
-    mu : np.ndarray (N_t, M_mu + 1)
+    mu : np.ndarray (n_t, M_mu + 1)
         Chebyshev coefficients corresponding to an expansion of a function.
-    M : int > 0 or None
+    m : int > 0 or None
         Degree of the squared Chebyshev polynomial.
-    N_theta : int > M
+    N_theta : int > m
         The number of integration points to be used in the quadrature.
 
     Returns
     -------
-    nu : np.ndarray of shape (N_t, M + 1)
+    nu : np.ndarray of shape (n_t, m + 1)
         Chebyshev coefficients for square of expansion defined by mu.
 
     References
@@ -266,16 +266,16 @@ def _squared_chebyshev_coefficients_quadrature(mu, M=None, N_theta=None):
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
     M_mu = mu.shape[1] - 1
-    if M is None:
-        M = 2 * M_mu
+    if m is None:
+        m = 2 * M_mu
     if N_theta is None:
-        N_theta = M + 1
+        N_theta = m + 1
     theta = np.arange(2 * N_theta) * np.pi / N_theta
 
     # Compute the coefficients mu for all t and l simultaneously with FFT
     k = np.arange(M_mu + 1)
     k_times_theta = np.multiply.outer(k, theta)
-    nu = np.real(np.fft.fft((mu @ np.cos(k_times_theta))**2, axis=1)[:, :M+1])
+    nu = np.real(np.fft.fft((mu @ np.cos(k_times_theta))**2, axis=1)[:, :m+1])
 
     # Rescale the coefficients (as required by the definition)
     nu[:, 0] /= 2 * N_theta
@@ -283,7 +283,7 @@ def _squared_chebyshev_coefficients_quadrature(mu, M=None, N_theta=None):
     return nu
 
 
-def _squared_chebyshev_coefficients_summation(mu, M=None):
+def _squared_chebyshev_coefficients_summation(mu, m=None):
     """
     Squared expansion of the polynomial defined by Chebyshev coefficients mu.
     Trigonometric identities are used to represent the product of two Chebyshev
@@ -292,22 +292,22 @@ def _squared_chebyshev_coefficients_summation(mu, M=None):
 
     Parameters
     ----------
-    mu : np.ndarray (N_t, M_mu + 1)
+    mu : np.ndarray (n_t, M_mu + 1)
         Chebyshev coefficients corresponding to an expansion of a function.
-    M : int > 0 or None
+    m : int > 0 or None
         Degree of the squared Chebyshev polynomial.
 
     Returns
     -------
-    nu : np.ndarray of shape (N_t, M + 1)
+    nu : np.ndarray of shape (n_t, m + 1)
         Chebyshev coefficients for square of expansion defined by mu.
     """
     M_mu = mu.shape[1] - 1
-    if M is None:
-        M = 2 * M_mu
-    nu = np.zeros((mu.shape[0], M + 1))
+    if m is None:
+        m = 2 * M_mu
+    nu = np.zeros((mu.shape[0], m + 1))
 
-    for n in range(M + 1):
+    for n in range(m + 1):
         nu[:, n] = np.sum(mu[:, 0 : max(0, M_mu + 1 - n)] * mu[:, min(n, M_mu + 1) : M_mu + 1], axis=1)
         if n == 0:
             nu[:, n] /= 2

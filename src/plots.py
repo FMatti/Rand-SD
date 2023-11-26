@@ -16,7 +16,7 @@ from src.metrics import p_norm
 from src.kernel import gaussian_kernel
 
 
-def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_kernel, N_t=1000, add_baseline=False):
+def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_kernel, n_t=1000, add_baseline=False):
     parameters = deepcopy(parameters)
 
     eigenvalues = np.linalg.eigvalsh(A.toarray())
@@ -35,7 +35,7 @@ def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_k
         else:
             labels = [labels]
 
-    t = np.linspace(-1, 1, N_t)
+    t = np.linspace(-1, 1, n_t)
     for parameter in parameters:
         parameter["sigma"] /= (max_ev - min_ev) / 2
 
@@ -46,7 +46,7 @@ def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_k
 
     spectral_densities = {}
     if add_baseline:
-        spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, N=A_transformed.shape[0], a=-1, b=1, N_t=N_t, sigma=parameters[0]["sigma"])
+        spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, n=A_transformed.shape[0], a=-1, b=1, n_t=n_t, sigma=parameters[0]["sigma"])
         spectral_densities["baseline"] = spectral_density_baseline
 
     for method, parameter, label in zip(methods, parameters, labels):
@@ -83,7 +83,7 @@ def plot_spectral_densities(spectral_densities, parameters, variable_parameter=N
     return ax
 
 
-def compute_spectral_density_errors(A, methods, labels, variable_parameter, variable_parameter_values, parameters, kernel=gaussian_kernel, N_t=1000, error_metric=p_norm, correlated_parameter=None, correlated_parameter_values=None):
+def compute_spectral_density_errors(A, methods, labels, variable_parameter, variable_parameter_values, parameters, kernel=gaussian_kernel, n_t=1000, error_metric=p_norm, correlated_parameter=None, correlated_parameter_values=None):
     parameters = deepcopy(parameters)
 
     # Spectral transform of matrix
@@ -114,7 +114,7 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
     parameters *= l if len(parameters) < l else 1
     labels *= l if len(labels) < l else 1
 
-    t = np.linspace(-1, 1, N_t)
+    t = np.linspace(-1, 1, n_t)
 
     dos_errors = {}
     for label, method, parameter in zip(labels, methods, parameters):
@@ -126,13 +126,13 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
                     parameter[correlated_parameter] /= (max_ev - min_ev) / 2
             if variable_parameter == "sigma":
                 param /= (max_ev - min_ev) / 2
-                #parameter["M"] = int(120 / param)
+                #parameter["m"] = int(120 / param)
             try:
                 kernel = parameter["kernel"]
             except:
                 pass
             parameter[variable_parameter] = param
-            spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, N=A_transformed.shape[0], N_t=N_t, sigma=parameter["sigma"])
+            spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, n=A_transformed.shape[0], n_t=n_t, sigma=parameter["sigma"])
             spectral_density = method(A=A_transformed, t=t, **parameter)
             dos_errors[label].append(error_metric(spectral_density_baseline, spectral_density))
 
@@ -167,7 +167,7 @@ def plot_spectral_density_errors(spectral_density_errors, parameters, variable_p
     return ax
 
 
-def compute_spectral_density_errors_heatmap(A, method, variable_parameters, parameters, kernel=gaussian_kernel, N_t=1000, error_metric=p_norm):
+def compute_spectral_density_errors_heatmap(A, method, variable_parameters, parameters, kernel=gaussian_kernel, n_t=1000, error_metric=p_norm):
     parameters = deepcopy(parameters)
 
     # Spectral transform of matrix
@@ -187,8 +187,8 @@ def compute_spectral_density_errors_heatmap(A, method, variable_parameters, para
 
     dos_errors = np.empty((len(values_1), len(values_2)))
 
-    t = np.linspace(-1, 1, N_t)
-    spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, N=A_transformed.shape[0], N_t=N_t, sigma=parameters["sigma"])
+    t = np.linspace(-1, 1, n_t)
+    spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, n=A_transformed.shape[0], n_t=n_t, sigma=parameters["sigma"])
     for i, value_1 in enumerate(values_1):
         for j, value_2 in enumerate(values_2):
             spectral_density = method(A=A_transformed, t=t, **{param_1: value_1, param_2: value_2}, **parameters)

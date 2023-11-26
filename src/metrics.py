@@ -8,7 +8,6 @@ Error metrics for measuring accuracy of spectral density approximations.
 import numpy as np
 import scipy as sp
 
-from src.utils import density_to_distribution
 
 def p_norm(phi, phi_tilde, p=1, relative=True):
     """
@@ -16,9 +15,9 @@ def p_norm(phi, phi_tilde, p=1, relative=True):
 
     Parameters
     ----------
-    phi : np.ndarray of shape (N,)
+    phi : np.ndarray of shape (n,)
         The true DOS evaluated at a series of uniformly distributed points.
-    phi_tilde : np.ndarray of shape (N,)
+    phi_tilde : np.ndarray of shape (n,)
         The approximated DOS evaluated at the same points as phi.
 
     Returns
@@ -38,9 +37,9 @@ def KL_divergence(phi, phi_tilde, epsilon=0):
 
     Parameters
     ----------
-    phi : np.ndarray of shape (N,)
+    phi : np.ndarray of shape (n,)
         The true DOS evaluated at a series of uniformly distributed points.
-    phi_tilde : np.ndarray of shape (N,)
+    phi_tilde : np.ndarray of shape (n,)
         The approximated DOS evaluated at the same points as phi.
     epsilon : float > 0
         The threshold for values in phi/phi_tilde to be assumed as zero.
@@ -61,9 +60,9 @@ def KS_distance(phi, phi_tilde):
 
     Parameters
     ----------
-    phi : np.ndarray of shape (N,)
+    phi : np.ndarray of shape (n,)
         The true DOS evaluated at a series of uniformly distributed points.
-    phi_tilde : np.ndarray of shape (N,)
+    phi_tilde : np.ndarray of shape (n,)
         The approximated DOS evaluated at the same points as phi.
 
     Returns
@@ -81,9 +80,9 @@ def JS_distance(phi, phi_tilde, epsilon=0):
 
     Parameters
     ----------
-    phi : np.ndarray of shape (N,)
+    phi : np.ndarray of shape (n,)
         The true DOS evaluated at a series of uniformly distributed points.
-    phi_tilde : np.ndarray of shape (N,)
+    phi_tilde : np.ndarray of shape (n,)
         The approximated DOS evaluated at the same points as phi.
     epsilon : float > 0
         The threshold for values in phi/phi_tilde to be assumed as zero.
@@ -104,11 +103,11 @@ def Wasserstein_distance(phi, phi_tilde, t=None, normalize=False):
 
     Parameters
     ----------
-    phi : np.ndarray of shape (N,)
+    phi : np.ndarray of shape (n,)
         The true DOS evaluated at a series of uniformly distributed points.
-    phi_tilde : np.ndarray of shape (N,)
+    phi_tilde : np.ndarray of shape (n,)
         The approximated DOS evaluated at the same points as phi.
-    t : np.ndarray of shape (N,)
+    t : np.ndarray of shape (n,)
         The points at which the spectral density was evaluated.
     normalize : bool
         Whether to normalize the approximated CDFs before computing the distance.

@@ -60,38 +60,38 @@ def download_matrix(url, save_path="matrices", save_name=None):
         shutil.rmtree(temp_dir)
 
 
-def form_spectral_density(eigenvalues, kernel=gaussian_kernel, N=None, a=-1, b=1, N_t=100, sigma=0.1):
+def form_spectral_density(eigenvalues, kernel=gaussian_kernel, n=None, a=-1, b=1, n_t=100, sigma=0.1):
     """
-    Compute the (regularized) spectral density of a (small) matrix A at N_t
+    Compute the (regularized) spectral density of a (small) matrix A at n_t
     evenly spaced grid-points within the interval [a, b].
 
     Parameters
     ----------
-    eigenvalues : np.ndarray of shape (N,)
+    eigenvalues : np.ndarray of shape (n,)
         The eigenvalues for which the spectral density should be computed.
-    N : int > 0
+    n : int > 0
         Size of the matrix A. If None, then the size is assumed to be equal to
         the number of computed eigenvalues.
     a : int or float
         The starting point of the interval within which the density is computed.
     b : int or float > a
         The ending point of the interval within which the density is computed.
-    N_t : int > 0
+    n_t : int > 0
         Number of evenly spaced grid points at which the density is evaluated.
     sigma : int or float > 0
         Smearing parameter of the spectral density.
 
     Returns
     -------
-    spectral_density : np.ndarray of shape (N_t,)
+    spectral_density : np.ndarray of shape (n_t,)
         The value of the spectral density evaluated at the grid points.
     """
-    spectral_density = np.zeros(N_t)
-    grid_points = np.linspace(a, b, N_t)
+    spectral_density = np.zeros(n_t)
+    grid_points = np.linspace(a, b, n_t)
 
     for eigenvalue in eigenvalues:
         spectral_density += kernel(
-            grid_points - eigenvalue, N=N if N else len(eigenvalues), sigma=sigma
+            grid_points - eigenvalue, n=n if n else len(eigenvalues), sigma=sigma
         )
 
     return spectral_density
@@ -107,38 +107,38 @@ def density_to_distribution(phi, t=None, normalize=False):
     return spectral_distribution
 
 
-def form_spectral_distribution(eigenvalues, kernel=gaussian_kernel, N=None, a=-1, b=1, N_t=100, sigma=0.1):
+def form_spectral_distribution(eigenvalues, kernel=gaussian_kernel, n=None, a=-1, b=1, n_t=100, sigma=0.1):
     """
-    Compute the (regularized) spectral distribution of a (small) matrix A at N_t
+    Compute the (regularized) spectral distribution of a (small) matrix A at n_t
     evenly spaced grid-points within the interval [a, b].
 
     Parameters
     ----------
-    eigenvalues : np.ndarray of shape (N,)
+    eigenvalues : np.ndarray of shape (n,)
         The eigenvalues for which the spectral distribution should be computed.
-    N : int > 0
+    n : int > 0
         Size of the matrix A. If None, then the size is assumed to be equal to
         the number of computed eigenvalues.
     a : int or float
         The starting point of the interval within which the distribution is computed.
     b : int or float > a
         The ending point of the interval within which the distribution is computed.
-    N_t : int > 0
+    n_t : int > 0
         Number of evenly spaced grid points at which the distribution is evaluated.
     sigma : int or float > 0
         Smearing parameter of the spectral distribution.
 
     Returns
     -------
-    spectral_distribution : np.ndarray of shape (N_t,)
+    spectral_distribution : np.ndarray of shape (n_t,)
         The value of the spectral distribution evaluated at the grid points.
     """
-    spectral_density = np.zeros(N_t)
-    grid_points = np.linspace(a, b, N_t)
+    spectral_density = np.zeros(n_t)
+    grid_points = np.linspace(a, b, n_t)
 
     for eigenvalue in eigenvalues:
         spectral_density += kernel(
-            grid_points - eigenvalue, N=N if N else len(eigenvalues), sigma=sigma
+            grid_points - eigenvalue, n=n if n else len(eigenvalues), sigma=sigma
         )
     spectral_distribution = np.cumsum(spectral_density)
     return spectral_distribution
@@ -151,7 +151,7 @@ def spectral_transformation(A, min_ev=None, max_ev=None, return_ev=False):
 
     Parameters
     ----------
-    A : np.ndarray of shape (N, N) or (N,)
+    A : np.ndarray of shape (n, n) or (n,)
         The matrix or vector to be spectrally transformed.
     min_ev : int, float or None
         The starting point of the spectrum. If None is specified, the smallest
@@ -186,7 +186,7 @@ def inverse_spectral_transformation(A, min_ev, max_ev):
 
     Parameters
     ----------
-    A : np.ndarray of shape (N, N)
+    A : np.ndarray of shape (n, n)
         A matrix which was spectrally transformed from (a, b) to (-1, 1).
     min_ev : int, float or None
         The starting point of the spectrum.
@@ -226,20 +226,20 @@ def continued_fraction(z, a, b):
     return 1 / (z - a[0] - b[0]**2 * continued_fraction(z, a[1:], b[1:]))
 
 
-def theoretical_numerical_rank(N, sigma, epsilon=1e-16):
+def theoretical_numerical_rank(n, sigma, epsilon=1e-16):
     """
     Determine the theoretical numerical rank.
 
     Parameters
     ----------
-    N : int > 0
+    n : int > 0
         The size of the matrix, i.e. the number of eigenvalues.
     sigma : int or float > 0
         The smearing-parameters, i.e. the width of the Gaussians.
     epsilon : float > 0
         The value below which singular values are considered equal to zero.
     """
-    return N * sigma * np.sqrt(- 2 * np.log(sigma * epsilon * np.sqrt(2 * np.pi)))
+    return n * sigma * np.sqrt(- 2 * np.log(sigma * epsilon * np.sqrt(2 * np.pi)))
 
 
 def theoretical_chebyshev_degree(sigma, epsilon=1e-16):
@@ -256,11 +256,11 @@ def theoretical_chebyshev_degree(sigma, epsilon=1e-16):
     return - np.log(epsilon * sigma**2) / np.log(1 + sigma)
 
 
-def verify_parameters(N, sigma, M, N_v, N_v_tilde=None, epsilon=1e-16):
+def verify_parameters(n, sigma, m, n_v, n_v_tilde=None, epsilon=1e-16):
     M_min = theoretical_chebyshev_degree(sigma, epsilon)
-    N_v_min = theoretical_numerical_rank(N, sigma, epsilon)
+    N_v_min = theoretical_numerical_rank(n, sigma, epsilon)
 
-    if M < M_min:
+    if m < M_min:
         print("Degree of Chebyshev polynomial too low.")
-    if N_v < N_v_min:
+    if n_v < N_v_min:
         print("Number of random vectors for low-rank approximation too low.")

@@ -26,13 +26,13 @@ def g_sigma_eigenvalues(A, t, sigma):
 
 sigma = 0.05
 epsilon = 1e-16 
-N_t = 100
-t = np.linspace(0, 1, N_t)
+n_t = 100
+t = np.linspace(0, 1, n_t)
 eigenvalues = g_sigma_eigenvalues(A, t=t, sigma=sigma / ((max_ev - min_ev) / 2))
 
 plt.figure(figsize=(4, 3))
-for i in range(N_t):
-    plt.plot(eigenvalues[i], color=colors(i / N_t), label="$t$ = {:.2f}".format(t[i]))
+for i in range(n_t):
+    plt.plot(eigenvalues[i], color=colors(i / n_t), label="$t$ = {:.2f}".format(t[i]))
 #plt.axvline(theoretical_numerical_rank(A.shape[0], sigma / ((max_ev - min_ev) / 2), epsilon=epsilon), linewidth=3, color="white")
 plt.axvline(theoretical_numerical_rank(A.shape[0], sigma / ((max_ev - min_ev) / 2), epsilon=epsilon), linewidth=1, linestyle="dashed", color="black")
 plt.text(theoretical_numerical_rank(A.shape[0], sigma / ((max_ev - min_ev) / 2), epsilon=epsilon), 8e-1, "$r_{\\varepsilon, 2}$", va="top", rotation=270)

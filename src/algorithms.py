@@ -21,7 +21,7 @@ from src.utils import continued_fraction
 sys.setrecursionlimit(5000)
 
 
-def DGC(A, t, M, sigma, N_v, kernel=gaussian_kernel, seed=0):
+def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
     """
     Delta-Gauss-Chebyshev method for computing the spectral density.
 
@@ -29,13 +29,13 @@ def DGC(A, t, M, sigma, N_v, kernel=gaussian_kernel, seed=0):
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the polynomial.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors.
     kernel : function
         The smoothing kernel applied to the spectral density.
@@ -57,32 +57,32 @@ def DGC(A, t, M, sigma, N_v, kernel=gaussian_kernel, seed=0):
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     # Polynomial expansion
-    g = lambda x: kernel(x, N=N, sigma=sigma)
-    mu = chebyshev_coefficients(t, M, function=g)
+    g = lambda x: kernel(x, n=n, sigma=sigma)
+    mu = chebyshev_coefficients(t, m, function=g)
 
     # Do recurrence
-    W = np.random.randn(N, N_v)
-    phi_tilde = chebyshev_recurrence(mu, A, T_0=W, L=lambda x: np.trace(W.T @ x) / N_v)
+    W = np.random.randn(n, n_v)
+    phi_tilde = chebyshev_recurrence(mu, A, T_0=W, L=lambda x: np.trace(W.T @ x) / n_v)
 
     return phi_tilde
 
 
-def KPM(A, t, M, N_v, seed=0, sigma=None):
+def KPM(A, t, m, n_v, seed=0, sigma=None):
     """
     Kernel polynomial method for computing the spectral density.
 
     Parameters
     ----------
-    A : np.ndarray of shape (N, N)
+    A : np.ndarray of shape (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray of shape (N_t,)
+    t : np.ndarray of shape (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the polynomial.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors.
     seed : int >= 0
         The seed for generating the random matrix W.
@@ -104,18 +104,18 @@ def KPM(A, t, M, N_v, seed=0, sigma=None):
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     # Initializations
-    mu = np.zeros(M + 1)
-    W = np.random.randn(N, N_v)
+    mu = np.zeros(m + 1)
+    W = np.random.randn(n, n_v)
     V_c = W.copy()
-    V_m = np.zeros((N, N_v))
-    V_p = np.zeros((N, N_v))
+    V_m = np.zeros((n, n_v))
+    V_p = np.zeros((n, n_v))
 
     # Chebyshev recursion
-    for l in range(M + 1):
-        mu[l] = np.trace(W.T @ V_c) / (N_v * N * np.pi)
+    for l in range(m + 1):
+        mu[l] = np.trace(W.T @ V_c) / (n_v * n * np.pi)
         V_p = (1 if l == 0 else 2) * A @ V_c - V_m
         V_m = V_c.copy()
         V_c = V_p.copy()
@@ -125,7 +125,7 @@ def KPM(A, t, M, N_v, seed=0, sigma=None):
     return phi_tilde
 
 
-def NyCheb(A, t, M, sigma, N_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def NyCheb(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -134,13 +134,13 @@ def NyCheb(A, t, M, sigma, N_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, 
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the polynomial.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors.
     tau : int or float in (0, 1]
         Truncation parameter.
@@ -174,37 +174,37 @@ def NyCheb(A, t, M, sigma, N_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, 
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
 
     # Polynomial expansion
-    g = lambda x: kernel(x, N=N, sigma=sigma)
-    mu = chebyshev_coefficients(t, M, function=g)
+    g = lambda x: kernel(x, n=n, sigma=sigma)
+    mu = chebyshev_coefficients(t, m, function=g)
 
     # Do recurrence
-    W = np.random.randn(N, N_v)
-    Z = chebyshev_recurrence(mu, A, T_0=W, final_shape=(N, N_v))
+    W = np.random.randn(n, n_v)
+    Z = chebyshev_recurrence(mu, A, T_0=W, final_shape=(n, n_v))
 
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
         if eigenproblem == "kernelunion":
-            Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         elif eigenproblem == "pinv":
-            Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         elif eigenproblem == "dggev":
-            Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         elif eigenproblem == "lstsq":
-            Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         else:
-            Xi = generalized_eigenproblem_standard(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_standard(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         phi_tilde[i] = np.sum(Xi)
 
     return phi_tilde
 
 
-def NyChebSI(A, t, M, sigma, N_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def NyChebSI(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -213,13 +213,13 @@ def NyChebSI(A, t, M, sigma, N_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the polynomial.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors.
     tau : int or float in (0, 1]
         Truncation parameter.
@@ -253,40 +253,40 @@ def NyChebSI(A, t, M, sigma, N_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
 
     # Polynomial expansion
-    g = lambda x: kernel(x, N=N, sigma=sigma)
-    mu = chebyshev_coefficients(t, M, function=g)
+    g = lambda x: kernel(x, n=n, sigma=sigma)
+    mu = chebyshev_coefficients(t, m, function=g)
     #nu = squared_chebyshev_coefficients_cosine_transform(mu)
 
     # Do recurrence
-    W = np.random.randn(N, N_v)
-    Z = chebyshev_recurrence(mu, A, T_0=W, final_shape=(N, N_v))
-    Y = chebyshev_recurrence(mu, A, final_shape=(N, N))
+    W = np.random.randn(n, n_v)
+    Z = chebyshev_recurrence(mu, A, T_0=W, final_shape=(n, n_v))
+    Y = chebyshev_recurrence(mu, A, final_shape=(n, n))
 
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
         phi_tilde[i] = np.trace(Z[i] @ np.linalg.pinv(Z[i].T @ Z[i]) @ Z[i].T @ Y[i])
         #if eigenproblem == "kernelunion":
-        #    Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         #elif eigenproblem == "pinv":
-        #    Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         #elif eigenproblem == "dggev":
-        #    Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         #elif eigenproblem == "lstsq":
-        #    Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         #else:
-        #    Xi = generalized_eigenproblem_standard(Y[i].T @ Y[i], Z[i].T @ Y[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_standard(Y[i].T @ Y[i], Z[i].T @ Y[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
         #phi_tilde[i] = np.sum(Xi)
 
     return phi_tilde
 
 
-def GenNyCheb(A, t, M, sigma, N_v, c1=1/4, c2=1/2, nystrom_version="pinv", seed=0):
+def GenNyCheb(A, t, m, sigma, n_v, c1=1/4, c2=1/2, nystrom_version="pinv", seed=0):
     """
     TODO
     
@@ -294,13 +294,13 @@ def GenNyCheb(A, t, M, sigma, N_v, c1=1/4, c2=1/2, nystrom_version="pinv", seed=
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the polynomial.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors.
     c_1 : TODO
 
@@ -319,27 +319,27 @@ def GenNyCheb(A, t, M, sigma, N_v, c1=1/4, c2=1/2, nystrom_version="pinv", seed=
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
 
-    N_v_1 = round(N_v * c1)
-    N_v_2 = round(N_v * c2)
-    N_v_3 = N_v - N_v_1 - N_v_2
+    N_v_1 = round(n_v * c1)
+    N_v_2 = round(n_v * c2)
+    N_v_3 = n_v - N_v_1 - N_v_2
 
     # Polynomial expansion
-    g = lambda x: gaussian_kernel(x, N=N, sigma=sigma)
-    mu = chebyshev_coefficients(t, M, function=g)
+    g = lambda x: gaussian_kernel(x, n=n, sigma=sigma)
+    mu = chebyshev_coefficients(t, m, function=g)
 
     # Initializations
-    W_1 = np.random.rand(N, N_v_1)
-    W_2 = np.random.rand(N, N_v_2)
-    W_3 = np.random.rand(N, N_v_3)
+    W_1 = np.random.rand(n, N_v_1)
+    W_2 = np.random.rand(n, N_v_2)
+    W_3 = np.random.rand(n, N_v_3)
 
-    Z_1 = chebyshev_recurrence(mu, A, T_0=W_1, final_shape=(N, N_v_1))
-    Z_2 = chebyshev_recurrence(mu, A, T_0=W_2, final_shape=(N, N_v_2))
-    Z_3 = chebyshev_recurrence(mu, A, T_0=W_3, final_shape=(N, N_v_3))
+    Z_1 = chebyshev_recurrence(mu, A, T_0=W_1, final_shape=(n, N_v_1))
+    Z_2 = chebyshev_recurrence(mu, A, T_0=W_2, final_shape=(n, N_v_2))
+    Z_3 = chebyshev_recurrence(mu, A, T_0=W_3, final_shape=(n, N_v_3))
 
     phi_tilde = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
@@ -354,7 +354,7 @@ def GenNyCheb(A, t, M, sigma, N_v, c1=1/4, c2=1/2, nystrom_version="pinv", seed=
     return phi_tilde
 
 
-def FastNyCheb(A, t, M, sigma, N_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -363,13 +363,13 @@ def FastNyCheb(A, t, M, sigma, N_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the Chebyshev polynomial.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors.
     k : int > 0
         The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
@@ -416,59 +416,59 @@ def FastNyCheb(A, t, M, sigma, N_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
     np.random.seed(seed)
 
     # Determine size of matrix
-    N = A.shape[0]
+    n = A.shape[0]
 
     # Convert evaluation point(s) to numpy array
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
 
     # Chebyshev expansion
-    g = lambda x: kernel(x, N=N, sigma=sigma) + (1e-3 if eigenproblem == "cholesky" else 0)
+    g = lambda x: kernel(x, n=n, sigma=sigma) + (1e-3 if eigenproblem == "cholesky" else 0)
 
     if square_coefficients == "interpolation":
-        mu_W = chebyshev_coefficients(t, k * M, function=lambda x: g(x) ** k)
-        mu_Z = chebyshev_coefficients(t, (k + 1) * M, function=lambda x: g(x) ** (k + 1))
+        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
+        mu_Z = chebyshev_coefficients(t, (k + 1) * m, function=lambda x: g(x) ** (k + 1))
     elif square_coefficients == "transformation":
-        mu = chebyshev_coefficients(t, M, function=g)
+        mu = chebyshev_coefficients(t, m, function=g)
         mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
         mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
     else:  # square_coefficients == None:
-        return NyCheb(A, t, M, sigma, N_v, tau, epsilon, kernel, seed)
+        return NyCheb(A, t, m, sigma, n_v, tau, epsilon, kernel, seed)
 
     # Chebyshev recurrence
-    W = np.random.randn(N, N_v)
+    W = np.random.randn(n, n_v)
 
-    K_W = chebyshev_recurrence(mu_W, A, T_0=W, L=lambda x: W.T @ x, final_shape=(N_v, N_v))
-    K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(N_v, N_v))
+    K_W = chebyshev_recurrence(mu_W, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
+    K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
 
     # Trace computation
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
-        # Check if rank of if Hutchinson (k=1) for Tr(g^M(tI-A)) is almost zero
-        if np.trace(K_W[i]) / N_v < delta:
+        # Check if rank of if Hutchinson (k=1) for Tr(g^m(tI-A)) is almost zero
+        if np.trace(K_W[i]) / n_v < delta:
             phi_tilde[i] = 0
             continue
         else:
             if eigenproblem == "kernelunion":
-                Xi = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             elif eigenproblem == "pinv":
-                Xi = generalized_eigenproblem_pinv(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             elif eigenproblem == "dggev":
-                Xi = generalized_eigenproblem_dggev(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_dggev(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             elif eigenproblem == "lstsq":
-                Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             elif eigenproblem == "direct":
-                Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             elif eigenproblem == "cholesky":
-                Xi = generalized_eigenproblem_cholesky(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_cholesky(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             else:  # square_coefficients == "standard":
-                Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             phi_tilde[i] = np.sum(Xi) - len(Xi) * (1e-3 if eigenproblem == "cholesky" else 0)
 
     return phi_tilde
 
 
-def FastNyChebPP(A, t, M, sigma, N_v, N_v_tilde=None, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Robust and efficient spectrum sweeping with Delta-Gauss-Chebyshev method
     for estimating the spectral density.
@@ -477,15 +477,15 @@ def FastNyChebPP(A, t, M, sigma, N_v, N_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of Chebyshev the polynomial.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors in W.
-    N_v_tilde : int > 0
+    n_v_tilde : int > 0
         Number of random vectors in W_tilde.
     k : int > 0
         The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
@@ -528,73 +528,73 @@ def FastNyChebPP(A, t, M, sigma, N_v, N_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     # Convert evaluation point(s) to numpy array
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
 
     # Preprocess the number of random vectors
-    if N_v == 0:
-        return DGC(A, t, M, sigma, N_v_tilde, kernel, seed)
-    if N_v_tilde is None:  # Evenly distribute mat-vecs
-        N_v_tilde = N_v // 2
-        N_v = N_v // 2
-    elif N_v_tilde == 0:
-        return FastNyCheb(A, t, M, sigma, N_v, k, tau, delta, epsilon, kernel, square_coefficients, eigenproblem, seed)
+    if n_v == 0:
+        return DGC(A, t, m, sigma, n_v_tilde, kernel, seed)
+    if n_v_tilde is None:  # Evenly distribute mat-vecs
+        n_v_tilde = n_v // 2
+        n_v = n_v // 2
+    elif n_v_tilde == 0:
+        return FastNyCheb(A, t, m, sigma, n_v, k, tau, delta, epsilon, kernel, square_coefficients, eigenproblem, seed)
 
     # Chebyshev expansion
-    g = lambda x: kernel(x, N=N, sigma=sigma)
+    g = lambda x: kernel(x, n=n, sigma=sigma)
     
     if square_coefficients == "transformation":
-        mu = chebyshev_coefficients(t, M, function=g)
+        mu = chebyshev_coefficients(t, m, function=g)
         mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
         mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
         mu_C = mu if k < 3 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 1) // 2)
         mu_D = mu_C if k % 2 == 1 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 2) // 2)
     else:  # square_coefficients == "interpolation":
-        mu = chebyshev_coefficients(t, M, function=g)
-        mu_W = chebyshev_coefficients(t, k * M, function=lambda x: g(x) ** k)
-        mu_Z = chebyshev_coefficients(t, k * M, function=lambda x: g(x) ** (k + 1))
-        mu_C = mu if k < 3 else chebyshev_coefficients(t, k * M, function=lambda x: g(x) ** ((k + 1) // 2))
-        mu_D = mu_C if k % 2 == 1 else chebyshev_coefficients(t, k * M, function=lambda x: g(x) ** ((k + 2) // 2))
+        mu = chebyshev_coefficients(t, m, function=g)
+        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
+        mu_Z = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** (k + 1))
+        mu_C = mu if k < 3 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 1) // 2))
+        mu_D = mu_C if k % 2 == 1 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 2) // 2))
 
     # Initializations
-    W = np.random.randn(N, N_v)
-    W_tilde = np.random.randn(N, N_v_tilde)
+    W = np.random.randn(n, n_v)
+    W_tilde = np.random.randn(n, n_v_tilde)
 
-    K_W = chebyshev_recurrence(mu_W, A, T_0=W, L=lambda x: W.T @ x, final_shape=(N_v, N_v))
-    K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(N_v, N_v))
-    K_C = chebyshev_recurrence(mu_C, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(N_v_tilde, N_v))
-    K_D = K_C if k % 2 == 1 else chebyshev_recurrence(mu_D, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(N_v_tilde, N_v))
+    K_W = chebyshev_recurrence(mu_W, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
+    K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
+    K_C = chebyshev_recurrence(mu_C, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
+    K_D = K_C if k % 2 == 1 else chebyshev_recurrence(mu_D, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
     K_W_tilde = chebyshev_recurrence(mu, A, T_0=W_tilde, L=lambda x: np.trace(W_tilde.T @ x), final_shape=())
 
     phi_tilde = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
-        if np.trace(K_W[i]) / N_v < delta:  # Hutchinson for Tr(g^M(tI-A))
+        if np.trace(K_W[i]) / n_v < delta:  # Hutchinson for Tr(g^m(tI-A))
             continue
 
         if eigenproblem == "kernelunion":
-            xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)
+            xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
         elif eigenproblem == "direct":
-            xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)
+            xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
         else:  # square_coefficients == "standard":
-            xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], N=N, sigma=sigma, tau=tau, epsilon=epsilon)
+            xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
         T = np.trace(K_C[i] @ C_tilde @ C_tilde.conjugate().T @ K_D[i].T)
-        phi_tilde[i] = np.sum(xi_tilde) + (K_W_tilde[i] - T) / N_v_tilde
+        phi_tilde[i] = np.sum(xi_tilde) + (K_W_tilde[i] - T) / n_v_tilde
 
     return phi_tilde
 
 
-def hutchinson(A, N_v, seed=0):
+def hutchinson(A, n_v, seed=0):
     """
     Hutchinson trace estimator.
 
     Parameters
     ----------
-    A : np.ndarray (N, N)
+    A : np.ndarray (n, n)
         The matrix for which the trace will be computed.
-    N_v : int
+    n_v : int
         The number of random vectors to be used in total.
     seed : int or None
         The seed for the random number generator.
@@ -608,23 +608,23 @@ def hutchinson(A, N_v, seed=0):
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
-    W = 2.0 * (np.random.rand(N, N_v) > 0.5) - 1.0
+    W = 2.0 * (np.random.rand(n, n_v) > 0.5) - 1.0
 
-    t_A = np.trace(W.T @ A @ W) / N_v
+    t_A = np.trace(W.T @ A @ W) / n_v
     return t_A
 
 
-def hutchpp(A, N_v, sketch_fraction=2/3, seed=0):
+def hutchpp(A, n_v, sketch_fraction=2/3, seed=0):
     """
     Hutch++ trace estimator.
 
     Parameters
     ----------
-    A : np.ndarray (N, N)
+    A : np.ndarray (n, n)
         The matrix for which the trace will be computed.
-    N_v : int
+    n_v : int
         The number of random vectors to be used in total.
     sketch_fraction : float
         The fraction of random vectors which are used for sketching A.
@@ -646,13 +646,13 @@ def hutchpp(A, N_v, sketch_fraction=2/3, seed=0):
     np.random.seed(seed)
 
     # Determine size of matrix and amount of random mat-vec sketches
-    N = A.shape[0]
-    n_sketch = round(N_v * sketch_fraction / 2)
-    n_hutch  = N_v - 2 * n_sketch
+    n = A.shape[0]
+    n_sketch = round(n_v * sketch_fraction / 2)
+    n_hutch  = n_v - 2 * n_sketch
 
     # Generate sketching matrices
-    S = 2.0 * (np.random.rand(N, n_sketch) > 0.5) - 1.0
-    G = 2.0 * (np.random.rand(N, n_hutch) > 0.5) - 1.0
+    S = 2.0 * (np.random.rand(n, n_sketch) > 0.5) - 1.0
+    G = 2.0 * (np.random.rand(n, n_hutch) > 0.5) - 1.0
 
     # Generate orthonormal basis of sketch AS
     Q, _ = np.linalg.qr(A @ S)
@@ -663,15 +663,15 @@ def hutchpp(A, N_v, sketch_fraction=2/3, seed=0):
     return t_A
 
 
-def nahutchpp(A, N_v, c1=1/4, c2=1/2, seed=0):
+def nahutchpp(A, n_v, c1=1/4, c2=1/2, seed=0):
     """
     Non-adaptive Hutch++ trace estimator.
 
     Parameters
     ----------
-    A : np.ndarray (N, N)
+    A : np.ndarray (n, n)
         The matrix for which the trace will be computed.
-    N_v : int
+    n_v : int
         The number of random vectors to be used in total.
     c1 : float
         Fraction of random vectors used for sketching A's QR decomposition.
@@ -695,14 +695,14 @@ def nahutchpp(A, N_v, c1=1/4, c2=1/2, seed=0):
     np.random.seed(seed)
 
     # Determine size of matrix and amount of random mat-vec sketches
-    N = A.shape[0]
-    n_R_sketch = round(N_v * c1)
-    n_S_sketch = round(N_v * c2)
-    n_hutch = N_v - n_R_sketch - n_S_sketch
+    n = A.shape[0]
+    n_R_sketch = round(n_v * c1)
+    n_S_sketch = round(n_v * c2)
+    n_hutch = n_v - n_R_sketch - n_S_sketch
 
-    R = 2.0 * (np.random.rand(N, n_R_sketch) > 0.5) - 1.0
-    S = 2.0 * (np.random.rand(N, n_S_sketch) > 0.5) - 1.0
-    G = 2.0 * (np.random.rand(N, n_hutch) > 0.5) - 1.0
+    R = 2.0 * (np.random.rand(n, n_R_sketch) > 0.5) - 1.0
+    S = 2.0 * (np.random.rand(n, n_S_sketch) > 0.5) - 1.0
+    G = 2.0 * (np.random.rand(n, n_hutch) > 0.5) - 1.0
 
     Z = A @ R
     W = A @ S
@@ -712,7 +712,7 @@ def nahutchpp(A, N_v, c1=1/4, c2=1/2, seed=0):
     return trace
 
 
-def HDGC(A, t, M, sigma, N_v, estimator=hutchpp, seed=0):
+def HDGC(A, t, m, sigma, n_v, estimator=hutchpp, seed=0):
     """
     Hutchinson-type estimators for Delta-Gauss-Chebyshev method.
 
@@ -720,13 +720,13 @@ def HDGC(A, t, M, sigma, N_v, estimator=hutchpp, seed=0):
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
-    M : int > 0
+    m : int > 0
         Degree of the polynomial.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors in W.
     estimator : function
         The trace estimator.
@@ -739,20 +739,20 @@ def HDGC(A, t, M, sigma, N_v, estimator=hutchpp, seed=0):
         Approximations of the spectral density at the points t.
     """
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     # Polynomial expansion
-    g = lambda x: gaussian_kernel(x, N=N, sigma=sigma)
-    mu = chebyshev_coefficients(t, M, function=g)
+    g = lambda x: gaussian_kernel(x, n=n, sigma=sigma)
+    mu = chebyshev_coefficients(t, m, function=g)
 
     # Initializations
-    Z = np.zeros((M+1, N, N))
-    V_c = np.eye(N)
-    V_m = np.zeros((N, N))
-    V_p = np.zeros((N, N))
+    Z = np.zeros((m+1, n, n))
+    V_c = np.eye(n)
+    V_m = np.zeros((n, n))
+    V_p = np.zeros((n, n))
 
     # Chebyshev recursion
-    for l in range(M + 1):
+    for l in range(m + 1):
         Z[l] = V_c
         V_p = (1 if l == 0 else 2) * A @ V_c - V_m
         V_m = V_c.copy()
@@ -762,7 +762,7 @@ def HDGC(A, t, M, sigma, N_v, estimator=hutchpp, seed=0):
     g_M = np.tensordot(mu, Z, axes=([1], [0]))
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
-        phi_tilde[i] = estimator(g_M[i], N_v, seed=seed)
+        phi_tilde[i] = estimator(g_M[i], n_v, seed=seed)
     return phi_tilde
 
 
@@ -794,7 +794,7 @@ def Lanczos(A, x, k, reorth_tol=0.7):
     return a, b
 
 
-def SLQ(A, t, sigma, N_v, M=200, seed=0):
+def SLQ(A, t, sigma, n_v, m=200, seed=0):
     """
     Stochastic Lanczos Quadrature.
 
@@ -802,13 +802,13 @@ def SLQ(A, t, sigma, N_v, M=200, seed=0):
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors used in Monte-Carlo estimate.
-    M : int > 0
+    m : int > 0
         The number of Lanczos iterations.
     seed : int >= 0
         The seed for generating the random matrix W.
@@ -829,20 +829,20 @@ def SLQ(A, t, sigma, N_v, M=200, seed=0):
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     phi_tilde = np.zeros_like(t)
-    for _ in range(N_v):
-        x = np.random.randn(N)
-        a, b = Lanczos(A, x / np.linalg.norm(x), M)
-        theta, S = sp.linalg.eigh_tridiagonal(a[: M], b[: M - 1])
+    for _ in range(n_v):
+        x = np.random.randn(n)
+        a, b = Lanczos(A, x / np.linalg.norm(x), m)
+        theta, S = sp.linalg.eigh_tridiagonal(a[: m], b[: m - 1])
         t_minus_theta = np.subtract.outer(t, theta)
         phi_tilde += gaussian_kernel(t_minus_theta, sigma=sigma) @ S[0]**2
 
-    return phi_tilde / N_v
+    return phi_tilde / n_v
 
 
-def Haydock(A, t, sigma, N_v, M, seed=0, kernel=None):
+def Haydock(A, t, sigma, n_v, m, seed=0, kernel=None):
     """
     Haydock's method.
 
@@ -850,13 +850,13 @@ def Haydock(A, t, sigma, N_v, M, seed=0, kernel=None):
     ----------
     A : np.ndarray (n, n)
         Hermitian matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (N_t,)
+    t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     sigma : int or float > 0
         Smearing parameter.
-    N_v : int > 0
+    n_v : int > 0
         Number of random vectors used in Monte-Carlo estimate.
-    M : int > 0
+    m : int > 0
         The number of Lanczos iterations.
     seed : int >= 0
         The seed for generating the random matrix W.
@@ -878,16 +878,16 @@ def Haydock(A, t, sigma, N_v, M, seed=0, kernel=None):
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     phi_tilde = np.zeros(len(t))
-    for _ in range(N_v):
+    for _ in range(n_v):
         # Compute tridiagonal matrix from Lanczos for random vector
-        v = np.random.randn(N)
-        a, b = Lanczos(A, v, M)
+        v = np.random.randn(n)
+        a, b = Lanczos(A, v, m)
         phi_tilde += np.imag(continued_fraction((t + 1j*sigma), a, b))
 
-    phi_tilde *= - 1 / (N_v * np.pi)
+    phi_tilde *= - 1 / (n_v * np.pi)
     return phi_tilde
 
 
@@ -897,7 +897,7 @@ def _randomized_lowrank_decomposition(A, r, c=10, seed=0):
 
     Parameters
     ----------
-    A : np.ndarray of shape (N, N)
+    A : np.ndarray of shape (n, n)
         Hermitian matrix which will be approximated.
     r : int > 0
         Approximate rank of the matrix A.
@@ -908,7 +908,7 @@ def _randomized_lowrank_decomposition(A, r, c=10, seed=0):
 
     Returns
     -------
-    Z : np.ndarray of shape (N, r + c)
+    Z : np.ndarray of shape (n, r + c)
         Basis spanning the space of the low-rank approximation.
     B : np.ndarray of shape (r + c, r + c)
         Approximate decomposition of the matrix P in the basis Z.
@@ -923,27 +923,27 @@ def _randomized_lowrank_decomposition(A, r, c=10, seed=0):
     np.random.seed(seed)
 
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
     # Compute randomized low-rank approximation
-    W = np.random.randn(N, r + c)
+    W = np.random.randn(n, r + c)
     Z = A @ W
     B = np.linalg.pinv(W.T @ Z, hermitian=True)
 
     return Z, B
 
 
-def _randomized_trace_estimation(A, N_v, N_v_tilde):
+def _randomized_trace_estimation(A, n_v, n_v_tilde):
     """
     Robust and efficient method for estimating the trace of a low-rank matrix.
 
     Parameters
     ----------
-    A : np.ndarray of shape (N, N)
+    A : np.ndarray of shape (n, n)
         Hermitian matrix which will be approximated.
-    N_v : int > 0
+    n_v : int > 0
         Number of randomized vectors in random matrix.
-    N_v_tilde : int > 0
+    n_v_tilde : int > 0
         Number of randomized vectors in other random matrix.
 
     Returns
@@ -958,18 +958,18 @@ def _randomized_trace_estimation(A, N_v, N_v_tilde):
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
     # Determine size of matrix i.e. number of eigenvalues 
-    N = A.shape[0]
+    n = A.shape[0]
 
-    W = np.random.randn(N, N_v)
-    W_tilde = np.random.randn(N, N_v_tilde)
+    W = np.random.randn(n, n_v)
+    W_tilde = np.random.randn(n, n_v_tilde)
     K_W = W.T @ (A @ W)
     K_Z = W.T @ (np.linalg.matrix_power(A, 2) @ W)
     K_C = W_tilde.T @ (A @ W)
     K_W_tilde = W_tilde.T @ (A @ W_tilde)
 
-    xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z, K_W, N=N)
+    xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z, K_W, n=n)
 
     T = K_C @ C_tilde @ C_tilde.T @ K_C.T
-    trace = np.sum(xi_tilde) + (np.trace(K_W_tilde - T)) / N_v_tilde
+    trace = np.sum(xi_tilde) + (np.trace(K_W_tilde - T)) / n_v_tilde
 
     return trace
