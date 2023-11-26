@@ -28,7 +28,7 @@ Recursion formula (verified standard trigonometric formulae)
 Chebyshev expansion \cite[Chapter~3]{trefethen2019chebyshev},
 \gls{chebyshev-degree}
 \begin{equation}
-    g_{\sigma}^m(t\mtx{I} - \mtx{A}) = \frac{\mu_0(t)}{2} + \sum_{l=1}^m \mu_l(t) T_l(\mtx{A})
+    g_{\sigma}^m(t\mtx{I} - \mtx{A}) = \sum_{l=0}^m \mu_l(t) T_l(\mtx{A})
     \label{equ:2-chebyshev-chebyshev-expansion}
 \end{equation}
 
@@ -38,12 +38,12 @@ $\{s_i\}_{i=0}^m$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^m
 of this polynomial. For convenience, we may choose $s_i = \cos(2 \pi i/m), i=0,\dots,m$.
 In that case,
 \begin{equation}
-    g_{\sigma}^m(t - s_i) = \frac{\mu_0(t)}{2} + \sum_{l=1}^{m} \mu_l(t) \cos\left(\frac{2 \pi l i}{m}\right),
+    g_{\sigma}^m(t - s_i) = \sum_{l=0}^{m} \mu_l(t) \cos\left(\frac{2 \pi l i}{m}\right),
     \label{equ:2-chebyshev-chebyshev-nodes-evaluation}
 \end{equation}
 which coincides with the \glsfirst{DCT}\footnote{There exist multiple conventions for the DCT.
-The formulation which we use is often referred to as a type 1 DCT,
-and is efficiently implemented in the SciPy Python package:
+The one which we use is (up to scaling of the first and last coefficient)
+referred to as a type 1 DCT, and is efficiently implemented in the SciPy Python package:
 \url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.dct.html}} of the coefficients $\{\mu_l\}_{l=0}^m$.
 If we collect the coefficients $\{\mu_l(t)\}_{l=0}^{m}$ in a vector $\vct{\mu}(t) \in \mathbb{R}^{m+1}$ 
 and the function evaluations $\{g_{\sigma}^m(t - s_i)\}_{i=0}^{m}$ in another
@@ -169,7 +169,7 @@ $\vct{\psi} \in \mathbb{R}^N$, $\mathbb{E}[\vct{\psi}] = \vct{0}$, $\mathbb{E}[\
 
 Variance of Hutchinson \cite[Proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
 \begin{equation}
-    \operatorname{Var}(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) = 2 \sum_{i \neq j} \operatorname{Re}(b_{ij})^2
+    \Var(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) = 2 \sum_{i \neq j} \Real(b_{ij})^2
     \label{equ:2-chebyshev-DGC-hutchinson-variance}
 \end{equation}
 

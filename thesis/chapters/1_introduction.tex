@@ -82,13 +82,13 @@ Apparently, compute eigenvalues directly often expensive
 eigenvalue decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$,
 $\mtx{\Lambda}$ diagonal matrix with eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[Theorem~4.1.5]{horn1985matrix},
 matrix function $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
-with $f(\mtx{\Lambda}) = \operatorname{diag}(f(\lambda_1), \dots, f(\lambda_N))$ \cite[Definition~1.2]{higham2008functions}.
+with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_N))$ \cite[Definition~1.2]{higham2008functions}.
 Using cyclic property of trace and $\mtx{U}$ unitary
 \gls{identity-matrix}
 Absorbed \gls{matrix-size} in $g_{\sigma}$
 
 \begin{equation}
-    \phi_{\sigma}(t) = \operatorname{Tr}(g_{\sigma}(t\mtx{I} - \mtx{A})) 
+    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) 
     \label{equ:1-introduction-spectral-density-as-trace}
 \end{equation}
 

@@ -48,13 +48,13 @@ we consider $n$ cells together in each dimension in our computation.
 
 Different kernel
 \begin{equation}
-    g_{\sigma}(t) = \frac{1}{\pi} \frac{\sigma}{t^2 + \sigma^2} = -\frac{1}{\pi} \operatorname{Im}\left\{ \frac{1}{t + i\sigma} \right\}
+    g_{\sigma}(t) = \frac{1}{\pi} \frac{\sigma}{t^2 + \sigma^2} = -\frac{1}{\pi} \Imag\left\{ \frac{1}{t + i\sigma} \right\}
     \label{equ:5-experiments-cauchy-kernel}
 \end{equation}
 
 Conversion to trace estimation problem
 \begin{equation}
-    \phi_{\sigma}(t) = - \frac{1}{n \pi} \operatorname{Im} \left\{ \operatorname{Tr}\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
+    \phi_{\sigma}(t) = - \frac{1}{n \pi} \Imag \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
     \label{equ:5-experiments-haydock-trace}
 \end{equation}
 Use Hutchinson's to estimate trace

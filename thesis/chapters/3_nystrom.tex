@@ -13,7 +13,7 @@ Motivate low-rank approximation.
 Low-rank structure of matrix.
 Formula for $\varepsilon$-numerical rank \cite[Definition~1.1]{noga2013rank} of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
 \begin{equation}
-    r_{\varepsilon, \cdot}(\mtx{B}) = \min \{\operatorname{rank}(\mtx{C}): \mtx{C} \in \mathbb{R}^{n \times n}: \lVert \mtx{B} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}
+    r_{\varepsilon, \cdot}(\mtx{B}) = \min \{\rank(\mtx{C}): \mtx{C} \in \mathbb{R}^{n \times n}: \lVert \mtx{B} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}
     \label{equ:3-nystrom-SS-def-numerical-low-rank}
 \end{equation}
 
@@ -80,43 +80,24 @@ Sketching matrix $\mtx{\Omega} \in \mathbb{R}^{n \times n_v}$ [cite]
 Cyclic property of trace
 \begin{equation}
     \Tr(\widehat{\mtx{B}})
-        = \operatorname{Tr}\left((\mtx{B} \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{B} \mtx{\Omega})^{\top} \right)
-        = \operatorname{Tr}\left((\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \right)
-    \label{equ:3-nystrom-SS-nystrom-trace}
+        = \Tr\left((\mtx{B} \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{B} \mtx{\Omega})^{\top} \right)
+        = \Tr\left((\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \right)
+    \label{equ:3-nystrom-nystrom-trace}
 \end{equation}
 
 Consistency between the two matrices (maybe don't even mention spectrum sweeping)
-
-Efficient computation with Chebyshev recurrence
-\begin{equation}
-    \mtx{Z}(t) = g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega}
-    \label{equ:3-nystrom-SS-Z}
-\end{equation}
-
 \begin{equation}
     \widetilde{\phi}_{\sigma}^m(t)
-        = \operatorname{Tr}\left((\mtx{\Omega}^{\top} \mtx{Z}(t))^{\dagger} (\mtx{Z}(t)^{\top} \mtx{Z}(t))\right)
-    \label{equ:3-nystrom-SS-spectral-density}
-\end{equation}
-
-\begin{equation}
-    (Z(t)^{\top} Z(t)) C(t) = (\mtx{\Omega}^{\top} Z(t)) C(t) \Xi(t)
-    \label{equ:3-nystrom-SS-generalized-eigenproblem}
-\end{equation}
-
-Efficient implementation
-\begin{equation}
-    Y(t) = (g_{\sigma}^m(tI - A))^2 \mtx{\Omega}
-    \label{equ:3-nystrom-SS-Y}
-\end{equation}
-
-Analogous to \refequ{equ:2-chebyshev-chebyshev-expansion}
-\begin{equation}
-    (g_{\sigma}^m(tI - A))^2 = \frac{\nu_0(t)}{2} + \sum_{l=1}^{2m} \nu_l(t) T_l(A)
-    \label{equ:3-nystrom-ESS-chebyshev-expansion}
+        = \Tr\left((\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A})(t) \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} (g_{\sigma}^m(t\mtx{I} - \mtx{A})(t))^2 \mtx{\Omega})\right)
+    \label{equ:3-nystrom-spectral-density}
 \end{equation}
 
 \cite{lin2017randomized} suggests interpolation using a quadrature rule.
+Analogous to \refequ{equ:2-chebyshev-chebyshev-expansion}
+\begin{equation}
+    (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 = \sum_{l=0}^{2m} \nu_l(t) T_l(A)
+    \label{equ:3-nystrom-ESS-chebyshev-expansion}
+\end{equation}
 
 Discuss inconsistency issue. Need to do direct squaring to get consistent.
 
@@ -128,15 +109,15 @@ efficiently via a \gls{DCT} and inverse \gls{DCT}.
 
 Suppose we have computed the coefficients $\vct{\mu} \in \mathbb{R}^{m+1}$
 of a Chebyshev expansion \refequ{equ:2-chebyshev-chebyshev-expansion}.
-Then we may quickly compute the coefficients $\vct{mu}^{(k)} \in \mathbb{R}^{km+1}$
+Then we may quickly compute the coefficients $\vct{\nu} \in \mathbb{R}^{km+1}$
 of the same expansion raised to the power $k \geq 2$ by first zero-padding
-$\widehat{\vct{\mu}} = [\vct{\mu}^{\top}, \vct{0}_{(k-1)m}^{\top}]^{\top}$
+$\widehat{\vct{\mu}} = [\vct{\mu}^{\top}, \vct{0}_{(k-1)m}^{\top}]^{\top} \in \mathbb{R}^{km+1}$
 and subsequently compute
 \begin{equation}
-    \vct{\mu} = (m+1)^{k - 1} \operatorname{DCT}^{-1}\left\{ \operatorname{DCT}\left\{\widehat{\vct{\mu}}^{\odot k}\right\} \right\}
+    \vct{\nu} = (km + 1)^{k - 1} \DCT^{-1}\left\{ \DCT\left\{\widehat{\vct{\mu}}^{k}\right\} \right\}
     \label{equ:3-nystrom-chebyshev-square-coefficients}
 \end{equation}
-where $\phantom{x}^\odot$ denotes the elementwise power.
+where the exponentiation of a vector is understood elementwise.
 
 Explanation of interpolation issue \cite{lin2017randomized}
 \begin{figure}[ht]
@@ -203,7 +184,7 @@ Additional storage complexity: $\mathcal{O}(N n_v + n_v^2 n_t + m n_t)$
 %          \State $V_1 \gets V_2, V_2 \gets V_3$
 %        \EndFor
 %        \For {$i = 1, \dots, n_t$}
-%          \If {$\operatorname{Tr}(K_{\mtx{\Omega}^{\top}Z}(t_i)) \leq \delta$}
+%          \If {$\Tr(K_{\mtx{\Omega}^{\top}Z}(t_i)) \leq \delta$}
 %            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets 0$
 %          \Else
 %            \State Solve $ X(t_i) = (\mtx{\Omega}^{\top} Z(t_i)) X(t_i) S(t_i)$
@@ -233,7 +214,7 @@ Additional storage complexity: $\mathcal{O}(N n_v + n_v^2 n_t + m n_t)$
 %        \For {$i = 1, \dots, n_t$}
 %          \State $K_{Z^{\top}Z}(t_i) = Z(t_i)^{\top} Z(t_i)$
 %          \State $K_{\mtx{\Omega}^{\top}Z}(t_i) = \mtx{\Omega}^{\top} Z(t_i)$
-%          \If {$\operatorname{Tr}(K_{\mtx{\Omega}^{\top}Z}(t_i)) \leq \delta$}
+%          \If {$\Tr(K_{\mtx{\Omega}^{\top}Z}(t_i)) \leq \delta$}
 %            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets 0$
 %          \Else
 %            \State Solve $K_{Z^{\top}Z}(t_i) C(t_i) = K_{\mtx{\Omega}^{\top}Z}(t_i) C(t_i) \Xi(t_i)$
@@ -256,7 +237,12 @@ Computation of pseudo-inverse
 - Generalized eigenvalue problem
 
 - Eigenvalue filtering with tolerance adjustment
+\begin{equation}
+    (\mtx{\Omega}^{\top} (g_{\sigma}^m(t\mtx{I} - \mtx{A})(t))^2 \mtx{\Omega}) \mtx{C}(t) = (\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A})(t) \mtx{\Omega}) \mtx{C}(t) \mtx{\Xi}(t)
+    \label{equ:3-nystrom-generalized-eigenproblem}
+\end{equation}
 
+Maybe proof of this GEP?
 
 Short-circuit: Not a good idea to compute pseudoinverse if
 both $\mtx{K}_1$ and $\mtx{K}_2$ are zero (noise divided by noise)
@@ -279,26 +265,22 @@ If smaller than a threshold $\delta = 10^{-5}$
 \label{sec:3-nystrom-other-low-rank}
 
 Many other methods fit into this scheme. (RSVD, Nystrom-SI)
-
-\refequ{equ:3-nystrom-SS-nystrom-trace}
-
+Generalization of \refequ{equ:3-nystrom-nystrom-trace}
 \begin{equation}
     \Tr(\widehat{\mtx{B}}_k)
-        = \operatorname{Tr}\left((\mtx{\Omega}^{\top} \mtx{B}^k \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} \mtx{B}^{k+1} \mtx{\Omega}) \right)
+        = \Tr\left((\mtx{\Omega}^{\top} \mtx{B}^k \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} \mtx{B}^{k+1} \mtx{\Omega}) \right)
     \label{equ:3-nystrom-}
 \end{equation}
 
 $\widehat{\mtx{B}}_1$ Nystr\"om approximation discussed in \refsec{sec:3-nystrom-nystrom}.
 
 Randomized low-rank approximation \cite{halko2011finding, tropp2023randomized}
-
 \begin{equation}
     \widehat{\mtx{B}}_2 = (\mtx{B} \mtx{\Omega}) ((\mtx{B} \mtx{\Omega})^{\top} (\mtx{B} \mtx{\Omega}))^{\dagger} (\mtx{B} \mtx{\Omega})^{\top} \mtx{B}
     \label{equ:3-nystrom-RSVD}
 \end{equation}
 
 Nystr\"om with subspace iteration \cite{tropp2023randomized}
-
 \begin{equation}
     \widehat{\mtx{B}}_3 = (\mtx{B}^2 \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B}^3 \mtx{\Omega})^{\dagger} (\mtx{B}^2 \mtx{\Omega})^{\top}
     \label{equ:3-nystrom-nystrom-SI}
