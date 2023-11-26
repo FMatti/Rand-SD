@@ -65,7 +65,7 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
 
     # Do recurrence
     W = np.random.randn(n, n_v)
-    phi_tilde = chebyshev_recurrence(mu, A, T_0=W, L=lambda x: np.trace(W.T @ x) / n_v)
+    phi_tilde = chebyshev_recurrence(mu, A, T_0=W, L=lambda x: np.sum(W * x) / n_v)
 
     return phi_tilde
 
@@ -115,7 +115,7 @@ def KPM(A, t, m, n_v, seed=0, sigma=None):
 
     # Chebyshev recursion
     for l in range(m + 1):
-        mu[l] = np.trace(W.T @ V_c) / (n_v * n * np.pi)
+        mu[l] = np.sum(W * V_c) / (n_v * n * np.pi)
         V_p = (1 if l == 0 else 2) * A @ V_c - V_m
         V_m = V_c.copy()
         V_c = V_p.copy()
@@ -567,7 +567,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
     K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
     K_C = chebyshev_recurrence(mu_C, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
     K_D = K_C if k % 2 == 1 else chebyshev_recurrence(mu_D, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
-    K_W_tilde = chebyshev_recurrence(mu, A, T_0=W_tilde, L=lambda x: np.trace(W_tilde.T @ x), final_shape=())
+    K_W_tilde = chebyshev_recurrence(mu, A, T_0=W_tilde, L=lambda x: np.sum(W_tilde @ x), final_shape=())
 
     phi_tilde = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
