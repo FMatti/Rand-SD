@@ -28,7 +28,7 @@ Recursion formula (verified standard trigonometric formulae)
 Chebyshev expansion \cite[Chapter~3]{trefethen2019chebyshev},
 \gls{chebyshev-degree}
 \begin{equation}
-    g_{\sigma}^m(tI - A) = \frac{\mu_0(t)}{2} + \sum_{l=1}^m \mu_l(t) T_l(A)
+    g_{\sigma}^m(t\mtx{I} - \mtx{A}) = \frac{\mu_0(t)}{2} + \sum_{l=1}^m \mu_l(t) T_l(\mtx{A})
     \label{equ:2-chebyshev-chebyshev-expansion}
 \end{equation}
 
@@ -56,7 +56,7 @@ In short, computing the coefficients of the Chebyshev expansion \refequ{equ:2-ch
 of the function $g_{\sigma}$ amounts to evaluating this function at $m+1$ well
 chosen points and computing the inverse \gls{DCT} of these evaluations. 
 This procedure is usually inexpensive and can be done in $\mathcal{O}(m \log(m))$
-operations [cite fft algorithm].
+operations \cite{makhoul1980fct}.
 \textcolor{red}{Contrary to popular belief \cite[Algorithm~1]{lin2017randomized},
 the coefficients should not be computed using a quadrature rule for the integral
 expression of the coefficients \cite[Theorem~3.1]{trefethen2019chebyshev}, since
@@ -65,7 +65,7 @@ and slower than the \gls{DCT}.}
 
 \glsfirst{DGC}
 \begin{equation}
-    \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(tI - A))
+    \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A}))
     \label{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion}
 \end{equation}
 
@@ -73,7 +73,7 @@ Bernstein theorem \cite[Theorem~73]{meinardus1967approximation} \todo{Also prove
 
 Convergence corollary and new proof \cite[Theorem~2]{lin2017randomized}
 \begin{theorem}{Chebyshev interpolation error for Gaussian smoothing kernel}{chebyshev-error}
-    Let $A \in \mathbb{C}^{N \times N}$ be a Hermitian matrix with spectrum in
+    Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a Hermitian matrix with spectrum in
     $(-1, 1)$. For any $t \in \mathbb{R}$ it holds
     \begin{equation}
         \left|  \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right| \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
@@ -91,7 +91,7 @@ New proof since different result
         && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion})} \notag \\
         &= \left| \sum_{i=1}^N \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i)\right) \right|
         && \text{(property of matrix function)} \notag \\
-        &\leq N \max_{i = 1, \dots, N} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i) \right|
+        &\leq N \max_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i) \right|
         && \text{(pessimistic upper bound)} \notag \\
         &\leq N \max_{s \in (-1, 1)} \left| g_{\sigma}(t - s) - g_{\sigma}^m(t - s) \right|
         && \text{(extension of domain)} \notag \\
@@ -122,9 +122,9 @@ New proof since different result
 
     Writing $z = x + iy$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Real(z)}$)
     \begin{equation}
-        |g_{\sigma}(t - (x + iy))| %&= \frac{1}{N \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
-        = \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{- \frac{(t - x)^2 - y^2}{2 \sigma^2}}
-        \leq \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}
+        |g_{\sigma}(t - (x + iy))| %&= \frac{1}{n \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
+        = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{- \frac{(t - x)^2 - y^2}{2 \sigma^2}}
+        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}
     \end{equation}
 
     Expressing $\chi = 1 + \alpha \sigma$ for any $\alpha > 0$,
@@ -143,13 +143,13 @@ New proof since different result
     Consequently, for all $t \in \mathbb{R}$
     \begin{equation}
         \max_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)| 
-        \leq \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
     \end{equation}
 
     Plugging this estimate into \refequ{equ:2-chebyshev-proof-bernstein-general-expression}, we get
     \begin{equation}
         \left| \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right|
-        \leq N \frac{2}{(1 + \alpha\sigma)^m\alpha \sigma} \frac{1}{N \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+        \leq N \frac{2}{(1 + \alpha\sigma)^m\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
         = \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}
     \end{equation}
     with $C_1=\sqrt{\frac{2}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
@@ -160,7 +160,7 @@ New proof since different result
 \section{Stochastic trace estimation}
 \label{sec:2-chebyshev-stochastic-trace-estimation}
 
-Hutchinson \cite{hutchinson1990trace}, $\mtx{B} \in \mathbb{R}^{N \times N}$ Hermitian,
+Hutchinson \cite{hutchinson1990trace}, $\mtx{B} \in \mathbb{R}^{n \times n}$ Hermitian,
 $\vct{\psi} \in \mathbb{R}^N$, $\mathbb{E}[\vct{\psi}] = \vct{0}$, $\mathbb{E}[\vct{\psi}\vct{\psi}^{\top}] = \mtx{I}$ 
 \begin{equation}
     \mathbb{E}[\vct{\psi}^{\top} \mtx{B} \vct{\psi}] = \Tr(\mtx{B})
@@ -174,7 +174,7 @@ Variance of Hutchinson \cite[Proposition~1]{hutchinson1990trace} \textcolor{red}
 \end{equation}
 
 Taking a certain \glsfirst{num-random-vectors} to form the
-\glsfirst{sketching-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_v}] \in \mathbb{R}^{N \times n_v}$
+\glsfirst{sketching-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_v}] \in \mathbb{R}^{n \times n_v}$
 
 \begin{equation}
     H_{n_v}(\mtx{B}) = \frac{1}{n_v} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi})
@@ -197,24 +197,25 @@ to approximate the \glsfirst{smooth-spectral-density} as
 
 Efficient implementation thanks to recursion formula \refequ{equ:2-chebyshev-chebyshev-recursion}.
 
-Trace of product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{N \times M}$
+Trace of product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{n \times M}$
+$\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$
 \begin{equation}
-    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{N} \sum_{j=1}^{M} B_{ij} C_{ij}.
+    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{n} \sum_{j=1}^{M} B_{ij} C_{ij}.
     \label{equ:2-chebyshev-fast-trace}
 \end{equation}
 
 \begin{algo}{Delta-Gauss-Chebyshev method}{DGC}
-    Hermitian matrix $\mtx{A} \in \mathbb{R}^{N \times N}$, number of random vectors $n_v$,
+    Hermitian matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, number of random vectors $n_v$,
     evaluation points $\{t_i\}_{i=1}^{n_t}$
     \begin{algorithmic}[1]
         \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
-        \State Generate \glsfirst{sketching-matrix} $\in \mathbb{R}^{N \times n_v}$
-        \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{N \times n_v}, \mtx{\Psi}, \mtx{0}_{N \times n_v}]$
+        \State Generate \glsfirst{sketching-matrix} $\in \mathbb{R}^{n \times n_v}$
+        \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_v}, \mtx{\Psi}, \mtx{0}_{n \times n_v}]$
         \State Set ${\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
         \For {$l = 0, \dots, m$}
-          \State $z \gets \Tr(\mtx{\Psi}^{\top} \mtx{V}_2)$
+          \State $x \gets \Tr(\mtx{\Psi}^{\top} \mtx{V}_2)$
           \For {$i = 1, \dots, n_t$}
-            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets \widetilde{\phi}_{\sigma}^m(t_i) + \mu_l(t_i) z$
+            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets \widetilde{\phi}_{\sigma}^m(t_i) + \mu_l(t_i) x$
           \EndFor
           \State $\mtx{V}_3 \gets (2 - \delta_{l0}) \mtx{A} \mtx{V}_2 - \mtx{V}_1$ \Comment{Chebyshev recurrence \refequ{equ:2-chebyshev-chebyshev-recursion}}
           \State $\mtx{V}_1 \gets \mtx{V}_2, \mtx{V}_2 \gets \mtx{V}_3$

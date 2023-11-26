@@ -255,17 +255,55 @@
 \renewcommand*{\maketitle}{
     \begin{titlepage}
     \centering
-    {\scshape\LARGE\@institution\unskip\strut\par}
-    \vspace{1cm}
+    \vspace{2cm}
     {\scshape\Large\@project\unskip\strut\par}
     \vspace{2cm}
-    {\huge\bfseries\@title\unskip\strut\par}
-    \vspace{2cm}
+    {\Huge\bfseries\@title\unskip\strut\par}
+    \vspace{3cm}
+    { % EPFL Logo
+    \begin{center}
+      \begin{tikzpicture}
+        % "E"
+        \begin{scope}[shift={(0, 0)}]
+            \fill[red] (0, 0) to (0.9, 0) to (0.9, 0.23) to (0.27, 0.23) to (0.27, 0.51) to (0.0, 0.51);
+            \begin{scope}[shift={(0, 1.25)}, yscale=-1]
+                \fill[red] (0, 0) to (0.9, 0) to (0.9, 0.23) to (0.27, 0.23) to (0.27, 0.51) to (0.0, 0.51);
+            \end{scope}
+            \fill[red] (0.27, 0.51) rectangle (0.85, 0.74);
+        \end{scope}
+
+        % "P"
+        \begin{scope}[shift={(1.125, 0)}]
+            \fill[red] (0.01, 0) to (0.27, 0.0) to (0.27, 0.51) to (0.62, 0.51) arc (-90:90:0.37) to (0.01, 1.25);
+            \fill[white] (0.27, 0.74) to (0.62, 0.74) arc (-90:90:0.15) to (0.27, 1.04);
+        \end{scope}
+
+        % "F"
+        \begin{scope}[shift={(2.29, 0)}]
+            \fill[red] (0, 0) rectangle (0.27, 0.51);
+            \begin{scope}[shift={(0, 1.25)}, yscale=-1]
+                \fill[red] (0, 0) to (0.9, 0) to (0.9, 0.23) to (0.27, 0.23) to (0.27, 0.51) to (0.0, 0.51);
+            \end{scope}
+            \fill[red] (0.27, 0.51) rectangle (0.85, 0.74);
+        \end{scope}
+
+        % "L"
+        \begin{scope}[shift={(3.39, 0)}]
+            \fill[red] (0, 0) to (0.9, 0) to (0.9, 0.23) to (0.27, 0.23) to (0.27, 1.25) to (0.0, 1.25);
+        \end{scope}
+
+    \end{tikzpicture}
+  \end{center}
+    }
+    \vspace{3cm}
     {\Large\itshape\@author\unskip\strut\par}
     \vfill
     supervised by\par
-    {\@supervisor\unskip\strut\par}
-    \vspace{1cm}
+    \vspace{0.5cm}
+    {\large\@supervisor\unskip\strut\par}
+    \vspace{0.5cm}
+    from the\par
+    \vspace{0.5cm}
     {\large\@lab\unskip\strut\par}
     \vfill
     {\large \@date\par}

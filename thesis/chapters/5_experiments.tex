@@ -1,7 +1,10 @@
 \chapter{Numerical experiments}
 \label{chp:5-experiments}
 
-Different matrices (ModES3D, ...)
+Overview table of methods
+
+\section{Model problem from density functional theory}
+\label{sec:5-experiments-density-function}
 
 Matrix which results from second order finite difference discretization of
 \begin{equation}
@@ -19,10 +22,6 @@ center there is a Gaussian
 
 with $\alpha = 4$, $\beta = 2$ located in the center of the unit cell. For $n=2, 3, \dots$,
 we consider $n$ cells together in each dimension in our computation.
-
-[Plot in 2D]
-
-Different kernels (Haydock's method)
 
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.33\columnwidth}
@@ -43,3 +42,38 @@ Different kernels (Haydock's method)
     \caption{Two dimensional periodic Gaussian wells for different $n$.}
     \label{fig:5-experiments-periodic-gaussian-well}
 \end{figure}
+
+\section{Benchmark against Haydock's method}
+\label{sec:5-experiments-haydock-method}
+
+Different kernel
+\begin{equation}
+    g_{\sigma}(t) = \frac{1}{\pi} \frac{\sigma}{t^2 + \sigma^2} = -\frac{1}{\pi} \operatorname{Im}\left\{ \frac{1}{t + i\sigma} \right\}
+    \label{equ:5-experiments-cauchy-kernel}
+\end{equation}
+
+Conversion to trace estimation problem
+\begin{equation}
+    \phi_{\sigma}(t) = - \frac{1}{n \pi} \operatorname{Im} \left\{ \operatorname{Tr}\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
+    \label{equ:5-experiments-haydock-trace}
+\end{equation}
+Use Hutchinson's to estimate trace
+\begin{equation}
+    \frac{1}{n_v} \sum_{j=1}^{n_v} \left( \vct{\psi}^{(j)} \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}^{(j)}
+    \label{equ:5-experiments-haydock-hutchinson}
+\end{equation}
+where each summand can be efficiently evaluated for all $t$ from the Arnoldi decomposition of $\mtx{A}$ with starting vector $\vct{\psi}$
+\begin{align}
+    \vct{\psi}^{\top} ((t - i\sigma)I - A)^{-1} \vct{\psi} &\approx e_1^{\top} ((t - i\sigma)I - H_k)^{-1} e_1 \notag \\
+    &= \cfrac{1}{(t - i\sigma) - \alpha_1 - \cfrac{\beta_2^2}{(t - i\sigma) - \alpha_2 - \dots}}
+    \label{equ:5-experiments-haydock-recursion}
+\end{align}
+
+[Show accuracy comparison]
+
+[Show timing comparison]
+
+\section{Application to various matrices}
+\label{sec:5-experiments-various-matrices}
+
+[Same plot for multiple matrices]
