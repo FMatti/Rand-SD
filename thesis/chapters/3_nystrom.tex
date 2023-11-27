@@ -1,49 +1,70 @@
 \chapter{Randomized low-rank approximation}
 \label{chp:3-nystrom}
 
-Motivate low-rank approximation.
+We go back to \refequ{equ:1-introduction-spectral-density-as-trace}, and now
+directly analyze the structure of the matrix
+\begin{equation}
+    g_{\sigma}(t\mtx{I} - \mtx{A}).
+    \label{equ:3-nystrom-matrix-function}
+\end{equation}
+Intuitively, because the
+Gaussian \glsfirst{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
+decays rather quickly to zero, the eigenvalues of $\mtx{A}$ which lie far away
+from $t$ on the spectrum will nearly vanish under the matrix function \refequ{equ:1-introduction-spectral-density-as-trace}.
+What results is a matrix which is \emph{numerically low-rank}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{The numerical rank of a matrix}
 \label{sec:3-nystrom-numerical-rank}
 
-Low-rank structure of matrix.
-Formula for $\varepsilon$-numerical rank \cite[Definition~1.1]{noga2013rank} of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
+To account for the finite precision of floating point operations, we use the
+notion of the \gls{numerical-rank} \cite[Definition~1.1]{noga2013rank}
+of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$, which we define as
 \begin{equation}
-    r_{\varepsilon, \cdot}(\mtx{B}) = \min \{\rank(\mtx{C}): \mtx{C} \in \mathbb{R}^{n \times n}: \lVert \mtx{B} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}
-    \label{equ:3-nystrom-SS-def-numerical-low-rank}
+    r_{\varepsilon, \cdot}(\mtx{B}) = \min \{\rank(\mtx{C}): \mtx{C} \in \mathbb{R}^{n \times n}: \lVert \mtx{B} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}.
+    \label{equ:3-nystrom-def-numerical-rank}
 \end{equation}
+A matrix is then said to be numerically low-rank, if $r_{\varepsilon, \cdot}(\mtx{B}) \ll n$.\\ 
 
-For unitarily invariant norms \cite[Theorem~5]{mirsky1960truncation},
-Eigenvalues $\mu_1, \dots, \mu_n$ of symmetric matrix $\mtx{B}$
-For spectral norm,
+For unitarily invariant norms $\lVert \cdot \rVert _{\cdot}$ and 
+symmetric positive definite matrices $\mtx{B}$, we may use
+\cite[Theorem~5]{mirsky1960truncation} to express \gls{numerical-rank} in terms
+of the eigenvalues $\mu_1, \dots, \mu_n$ of $\mtx{B}$.
+In particular, for the spectral norm $\lVert \cdot \rVert _2$ we have
 \begin{equation}
-    r_{\varepsilon, 2}(\mtx{B}) = \min \{1 \leq r \leq n: \mu_{r+1} \leq \varepsilon \}
-    \label{equ:3-nystrom-SS-def-numerical-low-rank-spectral-norm}
+    r_{\varepsilon, 2}(\mtx{B}) = \min \{1 \leq r \leq n: \mu_{r+1} \leq \varepsilon \},
+    \label{equ:3-nystrom-numerical-rank-spectral-norm}
 \end{equation}
-
-For Frobenius norm
+while for the Frobenius norm $\lVert \cdot \rVert _F$ we obtain
 \begin{equation}
-    r_{\varepsilon, F}(\mtx{B}) = \min \{1 \leq r \leq n: \sqrt{\sum_{j=r+1}^n \mu_{j}^2} \leq \varepsilon \}
-    \label{equ:3-nystrom-SS-def-numerical-low-rank-frobenius-norm}
-\end{equation}
+    r_{\varepsilon, F}(\mtx{B}) = \min \{1 \leq r \leq n: \sum_{j=r+1}^n \mu_{j}^2 \leq \varepsilon^2 \}.
+    \label{equ:3-nystrom-numerical-rank-frobenius-norm}
+\end{equation}\\
 
-The eigenvalues of $g_{\sigma}(t\mtx{I} - \mtx{A})$ are
+The eigenvalues of $g_{\sigma}(t\mtx{I} - \mtx{A})$ are given by
 \begin{equation}
     \mu_i(t) = g_{\sigma}(t - \lambda_{(i)}) = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{-\frac{(t - \lambda_{(i)})^2}{2 \sigma^2}}
+    \label{equ:3-nystrom-kernel-function-eigenvalues}
 \end{equation}
-Hence, 
+where $\lambda_{(i)}$ denote the eigenvalues of $\mtx{A}$ sorted by increasing
+distance from $t$, i.e. such that $\mu_1(t) \geq \dots \geq \mu_n(t)$. Consequently,
+we may upper bound the numerical rank of \refequ{equ:3-nystrom-matrix-function} as
 \begin{equation}
-    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) = \#\{1\leq i\leq n: |t - \mu_i(t)| \leq C_{\varepsilon, \cdot}(\sigma)\}
+    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) \leq \#\{1\leq i\leq n: |t - \mu_i(t)| \leq C_{\varepsilon, \cdot}(\sigma)\}
+    \label{equ:3-nystrom-kernel-numerical-rank}
 \end{equation}
-with the distances
+where we define the distances
 \begin{align}
-    C_{\varepsilon, 2}(\sigma) = \sigma \sqrt{-2 \log(n \sqrt{2 \pi} \sigma \varepsilon)} \\
-    C_{\varepsilon, F}(\sigma) = \sigma \sqrt{-2 \log(\sqrt{2 \pi} \sigma \varepsilon)}
+    C_{\varepsilon, 2}(\sigma) = \sigma \sqrt{-2 \log(n \sqrt{2 \pi} \sigma \varepsilon)}, \label{equ:3-nystrom-kernel-numerical-rank-spectral-constant} \\
+    C_{\varepsilon, F}(\sigma) = \sigma \sqrt{-2 \log(\sqrt{2 \pi} \sigma \varepsilon)}. \label{equ:3-nystrom-kernel-numerical-rank-frobenius-constant} 
 \end{align}
-\reffig{fig:3-nystrom-numerical-rank-constant}
-
+For the spectral norm, \refequ{equ:3-nystrom-kernel-numerical-rank} even holds
+as an equality.
+The expression \refequ{equ:3-nystrom-kernel-numerical-rank} has a very
+visual interpretation: The \glsfirst{numerical-rank} of a matrix is at most
+equal to the number of eigenvalues which are closer to $t$ than $C_{\varepsilon, \cdot}(\sigma)$.
+This is also illustrated in \reffig{fig:3-nystrom-numerical-rank-constant}.\\
 \begin{figure}
     \centering
     \begin{tikzpicture}
@@ -62,21 +83,22 @@ with the distances
         \draw[darkblue, thick] (-2, 0.15) to (-2, -0.15) node[below] {$t - C_{\varepsilon, \cdot}(\sigma)$};
         \draw[darkblue, thick] (1.5, 0.15) to (1.5, -0.15) node[below] {$t + C_{\varepsilon, \cdot}(\sigma)$};
     \end{tikzpicture}
-    \caption{The numerical rank}
+    \caption{The numerical rank.}
     \label{fig:3-nystrom-numerical-rank-constant}
 \end{figure}
 
-If we assume the eigenvalues of the matrix $\mtx{A}$ in \refequ{equ:1-introduction-spectral-density-as-trace}
-to be evenly distributed in $[a, b]$, i.e. in any subinterval of fixed length in
+If we additionally assume the eigenvalues of the matrix $\mtx{A}$
+to be evenly distributed within $[a, b]$, i.e. in any subinterval of fixed length in
 $[a, b]$ we can expect to find roughly the same number of eigenvalues (see \reffig{fig:3-nystrom-evenly-distributed-spectrum}), then
-we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$.
+we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$ as
 \begin{equation}
-    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) = \frac{2 n}{b - a} C_{\varepsilon, \cdot}(\sigma)
+    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) \lessapprox \frac{2 n}{b - a} C_{\varepsilon, \cdot}(\sigma).
+    \label{equ:3-nystrom-kernel-numerical-rank-even-eigenvalues}
 \end{equation}
 
 \begin{figure}
     \centering
-    \begin{subfigure}[b]{0.45\columnwidth}
+    \begin{subfigure}[t]{0.45\columnwidth}
         \begin{tikzpicture}
             \draw[thick, ->] (-1, -1) to (5, -1)  node[above] {$t$};
             %\node[anchor=east] at (-1.5, -1) {unevenly distributed};
@@ -94,7 +116,7 @@ we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$.
         \end{tikzpicture}
         \caption{Unevenly distributed spectrum}
     \end{subfigure}
-    \begin{subfigure}[b]{0.45\columnwidth}
+    \begin{subfigure}[t]{0.45\columnwidth}
         \begin{tikzpicture}
             \draw[thick, ->] (-1, 0) to (5, 0)  node[above] {$t$};
             %\node[anchor=east] at (-1.5, 0) {evenly distributed};
@@ -114,6 +136,7 @@ we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$.
     \label{fig:3-nystrom-evenly-distributed-spectrum}
 \end{figure}
 
+To numerically confirm 
 
 \begin{figure}[ht]
     \centering
