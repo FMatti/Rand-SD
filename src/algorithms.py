@@ -28,7 +28,7 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -77,7 +77,7 @@ def KPM(A, t, m, n_v, seed=0, sigma=None):
     Parameters
     ----------
     A : np.ndarray of shape (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray of shape (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -133,7 +133,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -158,9 +158,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
     square_coefficients : str or None
         Method by which the coefficients of the squared Gaussian are computed.
          -> transformation = Compute coefficients with discrete cosine transform
-         -> summation = Explicitly square the interpolant
          -> interpolation = Interpolate the squared function
-         -> None = Use SS_DGC
     eigenproblem : str
         Resolution method of the generalized eigenvalue problem in SS methods.
          -> standard = As proposed in [2] (project out kern(K_W))
@@ -203,8 +201,6 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
         mu = chebyshev_coefficients(t, m, function=g)
         mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
         mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
-    else:  # square_coefficients == None:
-        return NyCheb(A, t, m, sigma, n_v, tau, epsilon, kernel, seed)
 
     # Chebyshev recurrence
     W = np.random.randn(n, n_v)
@@ -230,8 +226,6 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
                 Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             elif eigenproblem == "direct":
                 Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
-            elif eigenproblem == "cholesky":
-                Xi = generalized_eigenproblem_cholesky(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             else:  # square_coefficients == "standard":
                 Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
             phi_tilde[i] = np.sum(Xi) - len(Xi) * (1e-3 if eigenproblem == "cholesky" else 0)
@@ -247,7 +241,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -392,7 +386,7 @@ def Haydock(A, t, m, sigma, n_v, seed=0, kernel=None):
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -441,7 +435,7 @@ def SLQ(A, t, sigma, n_v, m=200, seed=0):
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     sigma : int or float > 0
@@ -484,12 +478,12 @@ def SLQ(A, t, sigma, n_v, m=200, seed=0):
 
 def _randomized_lowrank_decomposition(A, r, c=10, seed=0):
     """
-    Randomized low-rank decomposition of a Hermitian matrix. Format: A = ZBZ*
+    Randomized low-rank decomposition of a symmetric matrix. Format: A = ZBZ*
 
     Parameters
     ----------
     A : np.ndarray of shape (n, n)
-        Hermitian matrix which will be approximated.
+        Symmetric matrix which will be approximated.
     r : int > 0
         Approximate rank of the matrix A.
     c : int > 0
@@ -531,7 +525,7 @@ def _randomized_trace_estimation(A, n_v, n_v_tilde):
     Parameters
     ----------
     A : np.ndarray of shape (n, n)
-        Hermitian matrix which will be approximated.
+        Symmetric matrix which will be approximated.
     n_v : int > 0
         Number of randomized vectors in random matrix.
     n_v_tilde : int > 0
@@ -574,7 +568,7 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kerne
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -656,7 +650,7 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel,
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -735,7 +729,7 @@ def _GenNyCheb(A, t, m, sigma, n_v, c1=1/4, c2=1/2, nystrom_version="pinv", seed
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0
@@ -929,7 +923,7 @@ def _HDGC(A, t, m, sigma, n_v, estimator=_hutchpp, seed=0):
     Parameters
     ----------
     A : np.ndarray (n, n)
-        Hermitian matrix with eigenvalues between (-1, 1).
+        Symmetric matrix with eigenvalues between (-1, 1).
     t : np.ndarray (n_t,)
         A set of points at which the DOS is to be evaluated.
     m : int > 0

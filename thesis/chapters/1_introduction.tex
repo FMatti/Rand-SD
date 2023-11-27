@@ -1,19 +1,25 @@
 \chapter{Introduction}
 \label{chp:1-introduction}
 
-Define eigenvalues
-
+In many problems in physics, chemistry, and engineering, 
+the eigenvalues of certain matrices help understand the nature of a system:
+In electronic structure calculations they represent the allowed energy levels 
+electrons can occupy \cite{ducastelle1970charge, haydock1972electronic, lin2017randomized};
+in neural network optimization they are indicative of the optimization speed \cite{ghorbani2019investigation};
+and in \todo{find third example}.
+The eigenvalues of a matrix $\mtx{A}$ are all scalars $\lambda$ which, together
+with some vector $\vct{v}$, satisfy the equation
 \begin{equation}
-    \mtx{A} \vct{v} = \lambda \vct{v}
+    \mtx{A} \vct{v} = \lambda \vct{v}.
     \label{equ:1-introduction-eigenvalue}
 \end{equation}
-
-Often prohibitively expensive to compute, hence often alternatively
-
-Hermitian matrix ($\mtx{A}^{\top} = \mtx{A}$): real eigenvalues 
+Usually, the matrices at hand are real, i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$,
+and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$, such that their eigenvalues are
+real. This fact allows us to define the distribution of the eigenvalues of a
+matrix, called the spectral density.
 
 \begin{definition}{Spectral density of a matrix}{spectral-density}
-    Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a Hermitian matrix with eigenvalues $\lambda_i, i=1, \dots, N$.
+    Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix with eigenvalues $\lambda_i, i=1, \dots, n$.
     We define the \glsfirst{spectral-density} as
     \begin{equation}
         \phi(t) = \frac{1}{n} \sum_{i=1}^{n} \delta(t - \lambda_i),
@@ -23,38 +29,33 @@ Hermitian matrix ($\mtx{A}^{\top} = \mtx{A}$): real eigenvalues
     and the \gls{spectral-parameter} $\in \mathbb{R}$.
 \end{definition}
 
-Relevance in science:
+%Properties of spectral density (probability density, count eigenvalues, compute matrix functions ...)
 
-Generally useful when exact individual eigenvalues are of little interest, but
-more their relative locations.
-
-Electronic structure calculations \cite{ducastelle1970charge, haydock1972electronic, lin2017randomized}
-
-Hessian matrix in neural network optimization \cite{ghorbani2019investigation}
-
-More examples (Phonons, \dots)
+However, constructing the spectral density of a matrix amounts to knowing all
+the eigenvalues of the same matrix, which are often prohibitively expensive to
+compute. In many of the above mentioned applications, not the exact individual
+eigenvalues are of interest, but their approximate, relative locations to each
+other. Hence, it is enough to determine an approximation of \refequ{equ:1-introduction-def-spectral-density}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Properties of the spectral density}
 \label{sec:1-introduction-properties}
 
-Properties of spectral density (probability density, count eigenvalues, ...)
-
-No convergence in p-norms [cite],
-
-A priori any \gls{smoothing-kernel} [cite, kernel density estimation?]
-
-Gaussian kernel width $\sigma > 0$
+Since we cannot hope to measure the convergence of smooth functions to \gls{spectral-density},
+we first regularize \gls{spectral-density} with a suitable \glsfirst{smoothing-kernel} \cite{epanechnikov1969kernel}
+and define the \glsfirst{smooth-spectral-density} as the convolution
 \begin{equation}
-    g_{\sigma}(t) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{t^2}{2\sigma^2}}
-    \label{equ:1-introduction-def-gaussian-kernel}
-\end{equation}
-
-\gls{smooth-spectral-density}
-\begin{equation}
-    \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i)
+    \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i).
     \label{equ:1-introduction-def-smooth-spectral-density}
+\end{equation}
+The \gls{smoothing-parameter} $>0$ controls by how much \gls{spectral-density} is
+smoothened (see \reffig{fig:1-introduction-smoothened-spectral-density}).
+
+Often, \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing-parameter}:
+\begin{equation}
+    g_{\sigma}(s) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{s^2}{2\sigma^2}}.
+    \label{equ:1-introduction-def-gaussian-kernel}
 \end{equation}
 
 \begin{figure}[ht]
@@ -78,28 +79,28 @@ Gaussian kernel width $\sigma > 0$
     \label{fig:1-introduction-smoothened-spectral-density}
 \end{figure}
 
-Apparently, compute eigenvalues directly often expensive
-eigenvalue decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$,
-$\mtx{\Lambda}$ diagonal matrix with eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[Theorem~4.1.5]{horn1985matrix},
-matrix function $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
-with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_N))$ \cite[Definition~1.2]{higham2008functions}.
-Using cyclic property of trace and $\mtx{U}$ unitary
-\gls{identity-matrix}
-Absorbed \gls{matrix-size} in $g_{\sigma}$
-
+Because we only consider symmetric matrices, 
+we may represent $\mtx{A} \in \mathbb{R}^{n \times n}$ using its spectral
+decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$ where
+$\mtx{\Lambda} \in \mathbb{R}^{n \times n}$ is the diagonal matrix which carries
+the eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U} \in \mathbb{R}^{n \times n}$
+such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[Theorem~4.1.5]{horn1985matrix}.
+Thus, if we absorb the \gls{matrix-size} in \gls{smoothing-kernel},
+apply the definition an smooth function $f$ applied to a matrix $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
+with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[Definition~1.2]{higham2008functions},
+and use the invariance of the trace under orthonormal transforms, we may write
 \begin{equation}
-    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) 
+    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})).
     \label{equ:1-introduction-spectral-density-as-trace}
 \end{equation}
-
-Usually two problems
-
-\begin{enumerate}
-    \item For most kernel $g_{\sigma}(t\mtx{I} - \mtx{A})$ cannot be directly evaluated for large $A$
-    \item Computing trace of a matrix which we can only access through matvecs
-\end{enumerate}
-
-Hutch\pp
+We have just converted the problem of computing the eigenvalues of a matrix to 
+computing the trace of a function applied to the same matrix, for whom
+there exist many efficient algorithms \refsec{sec:1-introduction-related}.
+%All of these approaches, need to solve two problems:
+%\begin{enumerate}
+%    \item For most kernel, $g_{\sigma}(t\mtx{I} - \mtx{A})$ cannot be evaluated directly;
+%    \item Computing trace of a matrix which we can only access through matvecs
+%\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -120,16 +121,18 @@ Polynomial expansion: KPM \cite{weisse2006kpm} (maybe also Lanczos related), DGC
 \section{Main contributions}
 \label{sec:1-introduction-contributions}
 
-Couple of small cleaning touches to \cite{lin2017randomized}.
+Couple of small cleaning touches to \cite{lin2017randomized}.% Corrected proof / quadrature free
 
 \begin{itemize}
-    \item Corrected proof
     \item Consistent and fast interpolation
     \item Fix rank 0 issue
     \item Theoretical rank estimate
     \item Generalization to other approximations
     \item Theorem $\rfrac{1}{\epsilon}$
-    \item Implementation
+    \item Fast and rigorously documented implementations of all the algorithms
+          following the notation and conventions of this thesis, which can be used to
+          reproduce every plot, table, and much more\footnote{GitHub repository with
+          code available under \url{https://github.com/FMatti/Rand-SD}}.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,11 +140,18 @@ Couple of small cleaning touches to \cite{lin2017randomized}.
 \section{Structure of the thesis}
 \label{sec:1-introduction-structure}
 
-Chebyshev interpolation and randomized trace estimation \refchp{chp:2-chebyshev}
-Randomized low-rank approximation \refchp{chp:3-nystrom}
-Putting the two together for a powerful algorithm \refchp{chp:4-nystromchebyshev}
-Numerical experiments \refchp{chp:5-experiments}
-Conclusion \refchp{chp:6-conclusion}
+This paragraph finishes off the introductory \refchp{chp:1-introduction}.
+In \refchp{chp:2-chebyshev} we introduce the Chebyshev expansion, present an
+efficient method for computing it, and study its convergence. We also take a
+look at stochastic trace estimation to then construct a first algorithm.
+\Refchp{chp:3-nystrom} is dedicated to the use of randomized low-rank approximation
+for computing spectral densities, which gives rise to a second algorithm.
+Putting the ideas from the two previously discussed algorithms together,
+we end up with a fast and general algorithm for computing spectral densities
+of large matrices in \refchp{chp:4-nystromchebyshev}. In \refchp{chp:5-experiments},
+we study the accuracy and computational time of these algorithms on numerous
+numerical experiments and compare them to other methods found in literature.
+We conclude the thesis in \refchp{chp:6-conclusion}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -151,23 +161,25 @@ Conclusion \refchp{chp:6-conclusion}
 We follow the notation which appears in contemporary literature in this field:
 
 \begin{itemize}
-    \item We only work with objects over the real numbers $\mathbb{R}$.
-    \item Scalar variables are represented by lower case Greek or Latin letters ($x$, $\varepsilon$, \dots),
+    \item we only work with objects over the real numbers $\mathbb{R}$;
+    \item scalar variables are represented by lower case Greek or Latin letters ($x$, $\varepsilon$, \dots),
           vectors are additionally printed in bold ($\vct{v}$, $\vct{\mu}$, \dots),
-          and matrices are additionally capitalized ($\mtx{A}$, $\mtx{\Omega}$, \dots).
-    \item The identity matrix is $\mtx{I}$.
-    \item The transpose of a matrix $\mtx{A}$ is denoted with $\mtx{A}^{\top}$.
-          We only consider Hermitian matrices $\mtx{A}^{\top} = \mtx{A}$.
-    \item The eigenvalues of a square matrix $\mtx{A} \in \mathbb{n \times n}$
-          are denoted with $\lambda_1 \geq \dots \geq \lambda_n$.
-    \item Norms are denoted with $\lVert \rVert _{\cdot}$. The spectral norm is
+          and matrices are additionally capitalized ($\mtx{A}$, $\mtx{\Omega}$, \dots);
+    \item the $i$-th canonical unit vectors is $\vct{e}_i$ and the identity matrix $\mtx{I}$;
+    \item the transpose of a matrix $\mtx{A}$ is denoted with $\mtx{A}^{\top}$.
+          We only consider symmetric matrices $\mtx{A}^{\top} = \mtx{A}$;
+    \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{n \times n}$
+          are denoted with $\lambda_1 \geq \dots \geq \lambda_n$;
+    \item Norms are denoted with $\lVert \cdot \rVert _{\cdot}$. The spectral norm is
           $\lVert \mtx{A} \rVert _2 = \lambda_1$, the Frobenius norm
-          is $\lVert \mtx{A} \rVert _2 = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$.
-    \item The pseudoinverse of a matrix is $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo}.
-    \item The Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$.
-    \item Dirac's delta distribution goes as $\delta$ \cite[Chapter~15]{dirac1947quantum}.
-    \item We use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
+          is $\lVert \mtx{A} \rVert _F = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
+    \item the pseudoinverse of a matrix is $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo};
+    \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
+    \item Dirac's delta distribution goes as $\delta$ \cite[Chapter~15]{dirac1947quantum};
+    \item The cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
+    %\item Closed interval [], open interval ()?
+    \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
           on the complexity of a computation. For those more familiar with the
           Bachmann-Landau notation \cite[Section~3.2]{cormen2009algorithms},
-          allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$.
+          please allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$.
 \end{itemize}

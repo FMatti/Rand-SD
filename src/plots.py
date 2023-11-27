@@ -102,7 +102,7 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
             labels = methods.copy()
         else:
             labels = [labels]
-    
+
     for parameter in parameters:
         try:
             parameter["sigma"] /= (max_ev - min_ev) / 2
@@ -126,7 +126,6 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
                     parameter[correlated_parameter] /= (max_ev - min_ev) / 2
             if variable_parameter == "sigma":
                 param /= (max_ev - min_ev) / 2
-                #parameter["m"] = int(120 / param)
             try:
                 kernel = parameter["kernel"]
             except:

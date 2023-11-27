@@ -1,39 +1,50 @@
 \chapter{Interpolation and trace estimation}
 \label{chp:2-chebyshev}
 
-Often matrix function hard to evaluate.
-
-Disadvantage of Lanczos algorithm.
+%Applying a non-polynomial function to a matrix is often quite difficult.
+%Disadvantage of Lanczos algorithm?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Chebyshev interpolation}
 \label{sec:2-chebyshev-interpolation}
 
-Definition of \glsfirst{chebyshev-polynomial} \cite[Chapter~3]{trefethen2019chebyshev}
+Matrix polynomials are comparatively easier to evaluate than most other
+matrix functions. For that reason, the approach of first approximating
+a function with a polynomial and subsequently evaluating said polynomial at a
+matrix can be significantly more efficient.
+The Chebyshev interpolation framework is suitable for this due to its stability
+and recurrence relation \refequ{equ:2-chebyshev-chebyshev-recursion} which can
+be exploited for efficiently evaluating Chebyshev matrix polynomials.\\
+
+At the foundation of Chebyshev interpolation lie the \glspl{chebyshev-polynomial}.
+They are defined as \cite[Chapter~3]{trefethen2019chebyshev}
 \begin{equation}
-    T_l: [-1, 1] \to \mathbb{R},~T_l(x) = \cos(l \arccos(x))
+    T_l: [-1, 1] \to [-1, 1],~T_l(x) = \cos(l \arccos(x)).
     \label{equ:2-chebyshev-chebyshev-definition}
 \end{equation}
-Recursion formula (verified standard trigonometric formulae)
+They satisfy the recurrence relation
 \begin{equation}
     \begin{cases}
-        T_0(x) = 1, T_1(x) = x \\ T_{l+1}(x) = 2x T_l(x) - T_{l-1}(x), l \geq 2
+        T_0(x) = 1, T_1(x) = x \\ T_{l+1}(x) = 2x T_l(x) - T_{l-1}(x), l \geq 2,
     \end{cases}
     \label{equ:2-chebyshev-chebyshev-recursion}
 \end{equation}
+which can be shown using the definition \refequ{equ:2-chebyshev-chebyshev-definition}
+and a standard trigonometric identity.\\
 
-[Plot of Chebyshev polynomials?]
-
-Chebyshev expansion \cite[Chapter~3]{trefethen2019chebyshev},
-\gls{chebyshev-degree}
+The Chebyshev expansion of the matrix function appearing in \refequ{equ:1-introduction-spectral-density-as-trace}
+with \gls{chebyshev-degree} is then \cite[Chapter~3]{trefethen2019chebyshev},
 \begin{equation}
     g_{\sigma}^m(t\mtx{I} - \mtx{A}) = \sum_{l=0}^m \mu_l(t) T_l(\mtx{A})
     \label{equ:2-chebyshev-chebyshev-expansion}
 \end{equation}
-
-Polynomials of degree $m$ are uniquely defined by $m+1$ distinct evaluations [cite Fundamental theorem of algebra?].
-Hence, if we know the values $g_{\sigma}^m(t - \cdot)$ at the $m+1$ distinct points 
+The corresponding coefficients $\{\mu_l(t)\}_{l=0}^m$ could be computed using the
+orthogonality of the Chebyshev polynomials, and some authors suggest computing
+them using a quadrature rule \cite[Algorithm~1]{lin2017randomized}. However, we
+have found a significantly simpler and faster approach: Note that polynomials of
+degree $m$ are uniquely defined by $m+1$ distinct evaluations \cite{gauss1799demonstratio}.
+Hence, if we know the values $g_{\sigma}^m(t - \cdot)$ at $m+1$ distinct points 
 $\{s_i\}_{i=0}^m$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^m$
 of this polynomial. For convenience, we may choose $s_i = \cos(2 \pi i/m), i=0,\dots,m$.
 In that case,
@@ -54,48 +65,49 @@ vector $\vct{g}(t)$, we find that
 \end{equation}
 In short, computing the coefficients of the Chebyshev expansion \refequ{equ:2-chebyshev-chebyshev-expansion}
 of the function $g_{\sigma}$ amounts to evaluating this function at $m+1$ well
-chosen points and computing the inverse \gls{DCT} of these evaluations. 
+chosen points and computing the inverse \gls{DCT}.
 This procedure is usually inexpensive and can be done in $\mathcal{O}(m \log(m))$
-operations \cite{makhoul1980fct}.
-\textcolor{red}{Contrary to popular belief \cite[Algorithm~1]{lin2017randomized},
-the coefficients should not be computed using a quadrature rule for the integral
-expression of the coefficients \cite[Theorem~3.1]{trefethen2019chebyshev}, since
-in general this is not guaranteed to be exact and is furthermore more complicated
-and slower than the \gls{DCT}.}
+operations \cite{makhoul1980fct}.\\
+%\textcolor{red}{Contrary to popular belief \cite[Algorithm~1]{lin2017randomized},
+%the coefficients should not be computed using a quadrature rule for the integral
+%expression of the coefficients \cite[Theorem~3.1]{trefethen2019chebyshev}, since
+%in general this is not guaranteed to be exact and is furthermore more complicated
+%and slower than the \gls{DCT}.}
 
-\glsfirst{DGC}
+Plugging the expansion \refequ{equ:2-chebyshev-chebyshev-expansion} into 
+\refequ{equ:1-introduction-spectral-density-as-trace} gives us the expanded
+spectral density
 \begin{equation}
-    \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A}))
-    \label{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion}
+    \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
+    \label{equ:2-chebyshev-spectral-density-as-trace-expansion}
 \end{equation}
-
-Bernstein theorem \cite[Theorem~73]{meinardus1967approximation} \todo{Also prove this for Lorentzian}
-
-Convergence corollary and new proof \cite[Theorem~2]{lin2017randomized}
+The convergence of the expansion to the actual spectral density is exponential, 
+which is claimed by the following theorem:
 \begin{theorem}{Chebyshev interpolation error for Gaussian smoothing kernel}{chebyshev-error}
-    Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a Hermitian matrix with spectrum in
-    $(-1, 1)$. For any $t \in \mathbb{R}$ it holds
+    Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix whose spectrum
+    is contained in $(-1, 1)$. For any $t \in \mathbb{R}$ it holds
     \begin{equation}
         \left|  \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right| \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
         \label{equ:2-chebyshev-interpolation-error}
     \end{equation}
     with constants $C_1, C_2 > 0$ independent of $\sigma$, $m$, and $t$.
 \end{theorem}
-
-New proof since different result
+This result is a consequence of Bernstein's theorem \cite[Theorem~73]{meinardus1967approximation}.
+A proof can be found in \cite[Theorem~2]{lin2017randomized}. However, since our
+result slightly deviates from the aforementioned proof, we include it hereafter.
 \begin{proof}
     Using basic properties of matrix functions, we obtain
     \begin{align}
         \left| \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right|
-        &= \left| \Tr(g_{\sigma}(tI - A)) - \Tr(g_{\sigma}^m(tI - A)) \right|
+        &= \left| \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) - \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A})) \right|
         && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion})} \notag \\
-        &= \left| \sum_{i=1}^N \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i)\right) \right|
+        &= \left| \sum_{i=1}^n \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i)\right) \right|
         && \text{(property of matrix function)} \notag \\
-        &\leq N \max_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i) \right|
+        &\leq n \max_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i) \right|
         && \text{(pessimistic upper bound)} \notag \\
-        &\leq N \max_{s \in (-1, 1)} \left| g_{\sigma}(t - s) - g_{\sigma}^m(t - s) \right|
+        &\leq n \max_{s \in (-1, 1)} \left| g_{\sigma}(t - s) - g_{\sigma}^m(t - s) \right|
         && \text{(extension of domain)} \notag \\
-        &\leq N \frac{2}{\chi^m(\chi - 1)} \max_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
+        &\leq n \frac{2}{\chi^m(\chi - 1)} \max_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
         && \text{(Bernstein \cite[Theorem~73]{meinardus1967approximation})}
         \label{equ:2-chebyshev-proof-bernstein-general-expression}
     \end{align}
@@ -124,7 +136,7 @@ New proof since different result
     \begin{equation}
         |g_{\sigma}(t - (x + iy))| %&= \frac{1}{n \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
         = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{- \frac{(t - x)^2 - y^2}{2 \sigma^2}}
-        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}
+        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}.
     \end{equation}
 
     Expressing $\chi = 1 + \alpha \sigma$ for any $\alpha > 0$,
@@ -135,24 +147,24 @@ New proof since different result
     Furthermore, because $z$ is
     contained in $\mathcal{E}_{\chi}$ we know that the absolute value of its
     imaginary part is upper bound by the imaginary half axis $b$, which we can
-    express in terms of $\chi$ to get [cite or proof]
+    express in terms of $\chi$ to get \todo{[cite or proof]}
     \begin{equation}
-        |y| \leq b = \frac{\chi - \chi^{-1}}{2} \leq \alpha\sigma
+        |y| \leq b = \frac{\chi - \chi^{-1}}{2} \leq \alpha\sigma.
     \end{equation}
 
     Consequently, for all $t \in \mathbb{R}$
     \begin{equation}
         \max_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)| 
-        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}.
     \end{equation}
 
     Plugging this estimate into \refequ{equ:2-chebyshev-proof-bernstein-general-expression}, we get
     \begin{equation}
         \left| \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right|
-        \leq N \frac{2}{(1 + \alpha\sigma)^m\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
-        = \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}
+        \leq n \frac{2}{(1 + \alpha\sigma)^m\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+        = \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m},
     \end{equation}
-    with $C_1=\sqrt{\frac{2}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
+    where $C_1=\sqrt{\frac{2}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -160,24 +172,43 @@ New proof since different result
 \section{Stochastic trace estimation}
 \label{sec:2-chebyshev-stochastic-trace-estimation}
 
-Hutchinson \cite{hutchinson1990trace}, $\mtx{B} \in \mathbb{R}^{n \times n}$ Hermitian,
-$\vct{\psi} \in \mathbb{R}^N$, $\mathbb{E}[\vct{\psi}] = \vct{0}$, $\mathbb{E}[\vct{\psi}\vct{\psi}^{\top}] = \mtx{I}$ 
+Assembling the expanded matrix function involved in \refequ{equ:2-chebyshev-spectral-density-as-trace-expansion}
+explicitly in order to compute its trace can incur significant computational cost.
+To avoid this cost, we may resort to stochastically estimating the trace through
+matrix-vector products. The quadratic form $\vct{\psi}^{\top} \mtx{B} \vct{\psi}$
+for a symmetric matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ and a standard Gaussian
+random vector $\vct{\psi} \in \mathbb{R}^n$ %, $\mathbb{E}[\vct{\psi}] = \vct{0}$, $\mathbb{E}[\vct{\psi}\vct{\psi}^{\top}] = \mtx{I}$ 
+is an unbiased estimate of the trace:
 \begin{equation}
-    \mathbb{E}[\vct{\psi}^{\top} \mtx{B} \vct{\psi}] = \Tr(\mtx{B})
+    \mathbb{E}[\vct{\psi}^{\top} \mtx{B} \vct{\psi}]
+        = \mathbb{E}\left[\sum_{i=1}^n\sum_{j=1}^n \psi_i B_{ij} \psi_j\right]
+        = \sum_{i=1}^n\sum_{j=1}^n B_{ij} \mathbb{E}[\psi_i\psi_j]
+        = \sum_{i=1}^n B_{ii}
+        = \Tr(\mtx{B}).
     \label{equ:2-chebyshev-DGC-hutchinson}
 \end{equation}
 
-Variance of Hutchinson \cite[Proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
-\begin{equation}
-    \Var(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) = 2 \sum_{i \neq j} \Real(b_{ij})^2
+\todo{Take time dependent Hutchinson result from preprint}
+%Variance of Hutchinson \cite[Proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
+\begin{align}
+    \MSE(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) &= \Var(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) + (\mathbb{E}[\vct{\psi}^{\top} \mtx{B} \vct{\psi}] - \Tr(\mtx{B}))^2 && \text{(mean squared error)} \notag \\
+        &= \Var(\vct{\psi}^{\top} \mtx{U} \mtx{\Lambda} \mtx{U}^{\ast} \vct{\psi}) && \text{(spectral decomposition of $\mtx{B}$)} \notag \\
+        &= \Var(\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}}) && \text{(Gaussian orthogonal invariance)} \notag \\
+        &= \mathbb{E}[(\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}})^2] - \mathbb{E}[\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}}]^2 && \text{(definition of variance)} \notag \\
+        &= \mathbb{E}[(\sum_{i=1}^{n} \widetilde{\psi}_i^2 \lambda_i)^2] - \Tr(\mtx{B})^2 && \text{($\mtx{\Lambda}$ is diagonal and \refequ{equ:2-chebyshev-DGC-hutchinson})} \notag \\
+        &= \sum_{i=1}^{n} \lambda_i \sum_{j=1}^{n} \lambda_j \mathbb{E}[\widetilde{\psi}_i^2 \widetilde{\psi}_j^2] - \Tr(\mtx{B})^2 && \text{(linearity of expectation value)} \notag \\
+        &= \sum_{i=1}^{n} \lambda_i \sum_{j=1}^{n} \lambda_j + 2 \sum_{i=1}^{n} \lambda_i^2 - \Tr(\mtx{B})^2 && \text{($\mathbb{E}[\widetilde{\psi}_i^2]=1$ and $\mathbb{E}[\widetilde{\psi}_i^4]=3$)} \notag \\
+        &= \Tr(\mtx{B})^2 + 2 \lVert \mtx{B} \rVert _F^2 - \Tr(\mtx{B})^2 && \text{(definition of Frobenius norm)} \notag \\
+        &= 2 \lVert \mtx{B} \rVert _F^2.
     \label{equ:2-chebyshev-DGC-hutchinson-variance}
-\end{equation}
+\end{align}
 
-Taking a certain \glsfirst{num-random-vectors} to form the
+If we now take a certain \glsfirst{num-random-vectors} to form the
 \glsfirst{sketching-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_v}] \in \mathbb{R}^{n \times n_v}$
+The Hutchinson's trace estimator can then be written as \cite{hutchinson1990trace}
 
 \begin{equation}
-    H_{n_v}(\mtx{B}) = \frac{1}{n_v} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi})
+    H_{n_v}(\mtx{B}) = \frac{1}{n_v} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi}).
     \label{equ:2-chebyshev-DGC-hutchionson-estimator}
 \end{equation}
 
@@ -186,26 +217,21 @@ Taking a certain \glsfirst{num-random-vectors} to form the
 \section{The Delta-Gauss-Chebyshev method}
 \label{sec:2-chebyshev-delta-gauss-chebyshev}
 
-The \glsfirst{DGC} method \cite[Algorithm~2]{lin2017randomized} puts together the 
+Finally, putting together the 
 Chebyshev expansion discussed in \refsec{sec:2-chebyshev-interpolation} and 
-the stochastic trace estimation in \refsec{sec:2-chebyshev-stochastic-trace-estimation}
-to approximate the \glsfirst{smooth-spectral-density} as
+the stochastic trace estimation from \refsec{sec:2-chebyshev-stochastic-trace-estimation},
+we end up with the \glsfirst{DGC} method \cite[Algorithm~2]{lin2017randomized}
+which approximates the \glsfirst{smooth-spectral-density} as
 \begin{equation}
-    \widetilde{\phi}_{\sigma}^m(t) = H_{n_v}(g_{\sigma}^m(t\mtx{I} - \mtx{A}))
+    \widetilde{\phi}_{\sigma}^m(t) = H_{n_v}(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
     \label{equ:2-chebyshev-DGC-final-estimator}
 \end{equation}
-
-Efficient implementation thanks to recursion formula \refequ{equ:2-chebyshev-chebyshev-recursion}.
-
-Trace of product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{n \times M}$
-$\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$
-\begin{equation}
-    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{n} \sum_{j=1}^{M} B_{ij} C_{ij}.
-    \label{equ:2-chebyshev-fast-trace}
-\end{equation}
+An efficient implementation is realizable thanks to recurrence relation for the
+Chebyshev polynomials \refequ{equ:2-chebyshev-chebyshev-recursion}. The pseudocode
+for this method can be found in \refalg{alg:DGC}.
 
 \begin{algo}{Delta-Gauss-Chebyshev method}{DGC}
-    Hermitian matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, number of random vectors $n_v$,
+    Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, number of random vectors $n_v$,
     evaluation points $\{t_i\}_{i=1}^{n_t}$
     \begin{algorithmic}[1]
         \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
@@ -223,11 +249,16 @@ $\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$
     \end{algorithmic}
 \end{algo}
 
-Cost of matvec $c$, usually $\mathcal{O}(c(N)) = N^2$ for dense and
-$\mathcal{O}(c(N)) = N$ for sparse matrices
+One additional speed-up can be achieved by smartly computing the trace of the 
+product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{N \times M}$ in
+$\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$ time, due to the relation
+\begin{equation}
+    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{N} \sum_{j=1}^{M} B_{ij} C_{ij}.
+    \label{equ:2-chebyshev-fast-trace}
+\end{equation}
 
-Computational complexity: $\mathcal{O}(m \log(m) n_t + m c(N) n_v)$
-
-Additional storage complexity: $\mathcal{O}(m n_t + N n_v)$
-
-[Summary box, formula, complexity, \dots]
+Denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
+with $c(n)$, e.g. $\mathcal{O}(c(n)) = n^2$ for dense and
+$\mathcal{O}(c(n)) = n$ for sparse matrices, we determine the computational
+complexity of the \gls{DGC} to be $\mathcal{O}(m \log(m) n_t + m c(n) n_v)$,
+with $\mathcal{O}(m n_t + n n_v)$ required additional storage.

@@ -1,4 +1,25 @@
 \chapter*{Summary}
 \label{chp:0-summary}
 
-\todo{Write summary}
+We study a family of methods used to approximately compute the spectral density
+of a large symmetric matrices which can only be accessed through matrix-vector
+products. These methods are based on the polynomial expansion of a smoothing
+kernel in combination with either a randomized trace estimation, randomized
+low-rank approximation, or both simultaneously.\\
+
+Initially, we give an introduction and overview of procedures which are used
+to compute the spectral density of matrices. Then, we proceed to showing how
+some matrix functions can efficiently be computed based on
+their Chebyshev expansion -- the interpolation scheme of choice for our
+methods. A first algorithm is proposed based on the Hutchinson's stochastic
+trace estimator. Subsequently, the usage of a Nystr\"om low-rank approximation is
+motivated and a second algorithm based on it is presented. Finally, a hybrid
+method based on a combination of the two previously mentioned techniques is
+discussed.\\
+
+The techniques employed in these methods are motivated and introduced in a
+rigorous manner. We present multiple implementation strategies for improved
+computational speed, accuracy, and stability, and give a theoretical analysis
+of each method. In various experiments the analysis of our algorithms is
+numerically confirmed and their effectiveness is compared to other
+conventionally used methods.

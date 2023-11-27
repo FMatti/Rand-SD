@@ -15,20 +15,20 @@ Small Frobenius norm
 \todo{Is this necessary? Maybe rename section title}
 
 \begin{algo}{Nystr\"om-Chebyshev++ method}{nystrom-chebyshev-pp}
-    Hermitian matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, number of random vectors $n_v, \widetilde{n}_v$,
+    symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, number of random vectors $n_v, \widetilde{n}_v$,
     evaluation points $\{t_i\}_{i=1}^{n_t}$
     \begin{algorithmic}[1]
         \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
         \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refequ{equ:3-nystrom-chebyshev-square-coefficients}
-        \State Generate sketching matrices $\mtx{\Omega} \in \mathbb{R}^{n \times n_v}, \mtx{\Psi} \in \mathbb{R}^{n \times \widetilde{n}_v}$ % TODO add \Omega to glossary (and Psi is only random matrix)
-        \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_v}, \mtx{\Omega}, \mtx{0}_{n \times n_v}]$
+        \State Generate sketching matrices $\mtx{\mtx{\Omega}} \in \mathbb{R}^{n \times n_v}, \mtx{\Psi} \in \mathbb{R}^{n \times \widetilde{n}_v}$ % TODO add \mtx{\Omega} to glossary (and Psi is only random matrix)
+        \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_v}, \mtx{\mtx{\Omega}}, \mtx{0}_{n \times n_v}]$
         \State Initialize $[\mtx{W}_1, \mtx{W}_2, \mtx{W}_3] \gets [\mtx{0}_{n \times \widetilde{n}_v}, \mtx{\Psi}, \mtx{0}_{n \times \widetilde{n}_v}]$
         \State Initialize $[\mtx{K}_1(t_i), \mtx{K}_2(t_i)] \gets [\mtx{0}_{n_v \times n_v}, \mtx{0}_{n_v \times n_v}]$ for all $t_i$
         \State Initialize $[l_1(t_i), \mtx{L}_2(t_i)] \gets [0, \mtx{0}_{n_v \times \widetilde{n}_v}]$ for all $t_i$
         \State Set ${\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
         \For {$l = 0, \dots, m$}
-          \State $\mtx{X} \gets \mtx{\Omega}^{\top} \mtx{V}_2$
-          \State $\mtx{Y} \gets \mtx{\Omega}^{\top} \mtx{W}_2$
+          \State $\mtx{X} \gets \mtx{\mtx{\Omega}}^{\top} \mtx{V}_2$
+          \State $\mtx{Y} \gets \mtx{\mtx{\Omega}}^{\top} \mtx{W}_2$
           \State $z \gets \Tr(\mtx{\Psi}^{\top} \mtx{W}_2$)
           \For {$i = 1, \dots, n_t$}
             \If {$l \leq m$}
@@ -50,10 +50,12 @@ Small Frobenius norm
 \end{algo}
 
 \todo{in terms of $\widetilde{n}_v$}
-Computational complexity: $\mathcal{O}(m \log(m) n_t + m n_v^2 N + m n_t n_v^2 +  m c(N) n_v + n_t n_v^3)$
-Additional storage complexity: $\mathcal{O}(N n_v + n_v^2 n_t + m n_t)$
+Computational complexity: $\mathcal{O}(m \log(m) n_t + m n_v^2 n + m n_t n_v^2 +  m c(n) n_v + n_t n_v^3)$
+Additional storage complexity: $\mathcal{O}(n n_v + n_v^2 n_t + m n_t)$
 
 Reuse eigenvectors from generalized eigenvalues to compute last term.
+
+Quite easily extendible for higher order approximations \refequ{equ:3-nystrom-trace-generalization}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -67,32 +69,32 @@ For numerical low-rank case, guarantee for Nystr\"om-Chebyshev \cite[Theorem~9]{
 [Cite preprint]
 
 \begin{lemma}{Hutchinson}{4-nystromchebyshev-hutchinson}
-    Let $B(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in $t \in [a, b]$, $\delta \in (0, e^{-1})$, $l \in \mathbb{n}$. Let $\Hutch_{l}(B(t))$ be the l-query Hutchinson estimator with standard Gaussian random vectors. For fixed constant $C_1$, with probability $\geq 1 - \delta$
+    Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in $t \in [a, b]$, $\delta \in (0, e^{-1})$, $l \in \mathbb{n}$. Let $\Hutch_{l}(\mtx{B}(t))$ be the l-query Hutchinson estimator with standard Gaussian random vectors. For fixed constant $C_1$, with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \left| \Hutch_{l}(B(t))  - \Tr(B(t)) \right| \mathrm{d}t \leq C_1 \sqrt{\frac{\log(2/\delta)}{l}} \int_{a}^{b} \lVert B(t) \rVert_F \mathrm{d}t.
+        \int_{a}^{b} \left| \Hutch_{l}(\mtx{B}(t))  - \Tr(\mtx{B}(t)) \right| \mathrm{d}t \leq C_1 \sqrt{\frac{\log(2/\delta)}{l}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert_F \mathrm{d}t.
     \end{equation}
-    So, if $l = \mathcal{O}\left( \frac{\log(2/\delta)}{\epsilon^2} \right)$ then, with probability $\geq 1 - \delta$, $\int |H_l(B(t)) - \Tr(B(t))| \mathrm{d}t \leq \epsilon \int \lVert B(t) \rVert_F \mathrm{d}t$.
+    So, if $l = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$, $\int |H_l(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int \lVert \mtx{B}(t) \rVert_F \mathrm{d}t$.
 \end{lemma}
 
 \begin{theorem}{Trace correction}{4-nystromchebyshev-trace-correction}
-    Suppose $B(t) \in \mathbb{R}^{n \times n}$ is symmetric positive definite and continuous in $t \in [a, b]$. Let $\hat{B}(t)$ and $\{\Delta_k(t)\}_{k \geq 1}$ be any symmetric positive definite and continuous matrices in $t \in [a, b]$ such that:
+    Suppose $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric positive definite and continuous in $t \in [a, b]$. Let $\hat{\mtx{B}}(t)$ and $\{\mtx{\Delta}_k(t)\}_{k \geq 1}$ be any symmetric positive definite and continuous matrices in $t \in [a, b]$ such that:
     \begin{equation}
-        \Tr(B(t)) = \Tr(\hat{B}(t)) + \Tr(\Delta_k(t)) \quad \text{and} \quad
-        \int_{a}^{b} \lVert \Delta_k(t) \rVert _F \mathrm{d}t \leq C_2\frac{1}{\sqrt{k}} \int_{a}^{b} \Tr(B(t)) \mathrm{d}t.
+        \Tr(\mtx{B}(t)) = \Tr(\hat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}_k(t)) \quad \text{and} \quad
+        \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t \leq C_2\frac{1}{\sqrt{k}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
-    For a fixed constant $C$ and with probability $\geq 1 - \delta$, $Z(t) = \Tr(\hat{B}(t)) + \Hutch_l(\Delta_k(t))$ satisfies:
+    For a fixed constant $C$ and with probability $\geq 1 - \delta$, $Z(t) = \Tr(\hat{\mtx{B}}(t)) + \Hutch_l(\mtx{\Delta}_k(t))$ satisfies:
     \begin{equation}
-        \int_{a}^{b} |Z(t) - \Tr(\Delta_k(t))| \mathrm{d}t \leq C \sqrt{\frac{\log(2/\delta)}{kl}} \int_{a}^{b} \Tr(B(t)) \mathrm{d}t
+        \int_{a}^{b} |Z(t) - \Tr(\mtx{\Delta}_k(t))| \mathrm{d}t \leq C \sqrt{\frac{\log(2/\delta)}{kl}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t
     \end{equation}
-    In particular, if $k=l=\mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\epsilon} \right)$, $Z(t)$ is a $(1 \pm \epsilon)$ error approximation to $\Tr(B(t))$.
+    In particular, if $k=l=\mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} \right)$, $Z(t)$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
 \end{theorem}
 
 \begin{proof}
     \begin{align*}
-        \int_{a}^{b} |Z(t) - \Tr(B(t))| \mathrm{d}t
-        &= \int_{a}^{b} |\Hutch_l(\Delta_k(t)) - \Tr(\Delta_k(t))| \mathrm{d}t && \text{(by definition of $Z(t)$)} \\
-        &= C_1 \sqrt{\frac{\log(2/\delta)}{l}} \int_{a}^{b} \lVert \Delta_k(t) \rVert _F \mathrm{d}t && \text{(using \refthm{lem:4-nystromchebyshev-hutchinson})} \\
-        &= C_1 C_2 \sqrt{\frac{\log(2/\delta)}{kl}} \int_{a}^{b} \Tr(B(t)) \mathrm{d}t && \text{(assumption on $\Delta_k(t)$)} \\
+        \int_{a}^{b} |Z(t) - \Tr(\mtx{B}(t))| \mathrm{d}t
+        &= \int_{a}^{b} |\Hutch_l(\mtx{\Delta}_k(t)) - \Tr(\mtx{\Delta}_k(t))| \mathrm{d}t && \text{(by definition of $Z(t)$)} \\
+        &= C_1 \sqrt{\frac{\log(2/\delta)}{l}} \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t && \text{(using \refthm{lem:4-nystromchebyshev-hutchinson})} \\
+        &= C_1 C_2 \sqrt{\frac{\log(2/\delta)}{kl}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}_k(t)$)} \\
     \end{align*}
     Taking $C=C_1 C_2$, we get the desired result with probability $\geq 1 - \delta$.
 \end{proof}
@@ -100,28 +102,59 @@ For numerical low-rank case, guarantee for Nystr\"om-Chebyshev \cite[Theorem~9]{
 [Cite preprint]
 
 \begin{lemma}{Parameter-dependent Nystr\"om approximation}{4-nystromchebyshev-parameter-nystrom}
-    Let $B(t) \in \mathbb{R}^{n \times n}$ symmetric positive definite and continuous in $t \in [a, b]$. Then the parameter-dependent Nystr\"om approximation
+    Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric positive definite and continuous in $t \in [a, b]$. Then the parameter-dependent Nystr\"om approximation
     \begin{equation}
-        \hat{B}(t) = (B(t) \Omega) (\Omega^{\top} B(t) \Omega)^{\dagger} (B(t) \Omega)^{\top}
+        \hat{\mtx{B}}(t) = (\mtx{B}(t) \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B}(t) \mtx{\Omega})^{\dagger} (\mtx{B}(t) \mtx{\Omega})^{\top}
     \end{equation}
-    with $\Omega \in \mathbb{R}^{n \times k}$ a standard Gaussian matrix, $k \geq 8 \log(1/\delta)$, and constant $C_2$, satisfies with probability $\geq 1 - \delta$
+    with $\mtx{\Omega} \in \mathbb{R}^{n \times k}$ a standard Gaussian matrix, $k \geq 8 \log(1/\delta)$, and constant $C_2$, satisfies with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert B(t) - \hat{B}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{k}} \int_{a}^{b} \Tr(B(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{B}(t) - \hat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{k}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
 \end{lemma}
 
 \begin{theorem}{Final}{4-nystromchebyshev-final}
-    The parameter-dependent Nystr\"om++ computed with $N_{\Omega} = N_{\Psi} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\epsilon} + \log(1/\delta) \right)$ for any symmetric positive definite matrix $B(t)$ which continuously depends on $t \in [a, b]$ satisfies, with probability $1 - \delta$: $(1 - \epsilon) \int \Tr(B(t)) \mathrm{d}t \leq \int \Tr^{n++}(B(t)) \mathrm{d}t \leq  (1 + \epsilon) \int \Tr(B(t)) \mathrm{d}t$.
+    The parameter-dependent Nystr\"om++ computed with $N_{\mtx{\Omega}} = N_{\Psi} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$ for any symmetric positive definite matrix $\mtx{B}(t)$ which continuously depends on $t \in [a, b]$ satisfies, with probability $1 - \delta$: $(1 - \varepsilon) \int \Tr(\mtx{B}(t)) \mathrm{d}t \leq \int \Tr^{n++}(\mtx{B}(t)) \mathrm{d}t \leq  (1 + \varepsilon) \int \Tr(\mtx{B}(t)) \mathrm{d}t$.
 \end{theorem}
 
 \begin{proof}
-    According to \refthm{thm:4-nystromchebyshev-trace-correction} it is enough to verify that the Nystr\"om approximation $\hat{B}(t)$ of $B(t)$ satisfies
+    According to \refthm{thm:4-nystromchebyshev-trace-correction} it is enough to verify that the Nystr\"om approximation $\hat{\mtx{B}}(t)$ of $\mtx{B}(t)$ satisfies
     \begin{equation}
-        \Tr(B(t)) = \Tr(\hat{B}(t) + B(t) - \hat{B}(t)) = \Tr(\hat{B}(t)) + \Tr(\Delta(t))
+        \Tr(\mtx{B}(t)) = \Tr(\hat{\mtx{B}}(t) + \mtx{B}(t) - \hat{\mtx{B}}(t)) = \Tr(\hat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}(t))
     \end{equation}
     for all $t \in [a, b]$ and with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert \Delta_k(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert B(t) - \hat{B}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{k}} \int_{a}^{b} \Tr(B(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert \mtx{B}(t) - \hat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{k}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
-    The latter follows from \reflem{lem:4-nystromchebyshev-parameter-nystrom}. Finally, the choices of $N_{\Psi}$ and $N_{\Omega}$ follow from \refthm{thm:4-nystromchebyshev-trace-correction} and \reflem{lem:4-nystromchebyshev-parameter-nystrom}.
+    The latter follows from \reflem{lem:4-nystromchebyshev-parameter-nystrom}. Finally, the choices of $N_{\Psi}$ and $N_{\mtx{\Omega}}$ follow from \refthm{thm:4-nystromchebyshev-trace-correction} and \reflem{lem:4-nystromchebyshev-parameter-nystrom}.
 \end{proof}
+
+\refthm{thm:4-nystromchebyshev-trace-correction} allows us to almost immediately
+also conclude $1/\varepsilon$ result for the higher order approximations
+\refequ{equ:3-nystrom-trace-generalization}.
+
+For RSVD ($k=2$), we use \cite[Theorem~9.1]{halko2011finding}
+\begin{equation}
+    \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \leq \lVert \mtx{\Lambda}_2 \rVert _F + \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F.
+\end{equation}
+Result from parameter-dependent Nyström++ \todo{[cite preprint]}
+\begin{equation}
+    %\mathbb{E}^k\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
+    \mathbb{E}^{k/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{k} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{k}}
+\end{equation}
+where $k$ hence
+\begin{equation}
+    \mathbb{E}^{k/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
+    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{k}}.
+\end{equation}
+By Markov's and Minkowski's inequalities we have for $k \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
+\begin{equation}
+    \int \lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int \frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{k}} \mathrm{d}t
+\end{equation}
+
+For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[Lemma~5.2]{tropp2023randomized}
+to directly conclude from the RSVD case.
+
+Have result for all $k \geq 1$, but issue with implementation, since we do not
+have access to column sketch (whose QR-factorization is crucial for stability).
+
+\todo{Put together all errors (Nyström, Chebyshev, Hutchinson)}

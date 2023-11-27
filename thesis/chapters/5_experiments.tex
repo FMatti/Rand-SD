@@ -43,6 +43,13 @@ we consider $n$ cells together in each dimension in our computation.
     \label{fig:5-experiments-periodic-gaussian-well}
 \end{figure}
 
+% Reproduce Lin Lin plots
+[DGC, NyCheb, NyChebPP for changing n\_v and m]
+
+[Matvec mixture of NyChebPP]
+
+[Timing comparison]
+
 \section{Benchmark against Haydock's method}
 \label{sec:5-experiments-haydock-method}
 
@@ -64,14 +71,14 @@ Use Hutchinson's to estimate trace
 \end{equation}
 where each summand can be efficiently evaluated for all $t$ from the Arnoldi decomposition of $\mtx{A}$ with starting vector $\vct{\psi}$
 \begin{align}
-    \vct{\psi}^{\top} ((t - i\sigma)I - A)^{-1} \vct{\psi} &\approx e_1^{\top} ((t - i\sigma)I - H_k)^{-1} e_1 \notag \\
+    \vct{\psi}^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi} &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I} - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
     &= \cfrac{1}{(t - i\sigma) - \alpha_1 - \cfrac{\beta_2^2}{(t - i\sigma) - \alpha_2 - \dots}}
     \label{equ:5-experiments-haydock-recursion}
 \end{align}
 
-[Show accuracy comparison]
+[Haydock, NyCheb, NyChebPP for changing n\_v and m]
 
-[Show timing comparison]
+[Timing comparison]
 
 \section{Application to various matrices}
 \label{sec:5-experiments-various-matrices}
