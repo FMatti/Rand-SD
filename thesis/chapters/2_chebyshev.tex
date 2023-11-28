@@ -100,7 +100,7 @@ result slightly deviates from the aforementioned proof, we include it hereafter.
     \begin{align}
         \left| \phi_{\sigma}(t) - \phi_{\sigma}^m(t) \right|
         &= \left| \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) - \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A})) \right|
-        && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-DGC-spectral-density-chebyshev-expansion})} \notag \\
+        && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-chebyshev-expansion})} \notag \\
         &= \left| \sum_{i=1}^n \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i)\right) \right|
         && \text{(property of matrix function)} \notag \\
         &\leq n \max_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^m(t - \lambda_i) \right|
@@ -192,7 +192,7 @@ is an unbiased estimate of the trace:
 %Variance of Hutchinson \cite[Proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
 \begin{align}
     \MSE(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) &= \Var(\vct{\psi}^{\top} \mtx{B} \vct{\psi}) + (\mathbb{E}[\vct{\psi}^{\top} \mtx{B} \vct{\psi}] - \Tr(\mtx{B}))^2 && \text{(mean squared error)} \notag \\
-        &= \Var(\vct{\psi}^{\top} \mtx{U} \mtx{\Lambda} \mtx{U}^{\ast} \vct{\psi}) && \text{(spectral decomposition of $\mtx{B}$)} \notag \\
+        &= \Var(\vct{\psi}^{\top} \mtx{U} \mtx{\Lambda} \mtx{U}^{\top} \vct{\psi}) && \text{(spectral decomposition of $\mtx{B}$)} \notag \\
         &= \Var(\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}}) && \text{(Gaussian orthogonal invariance)} \notag \\
         &= \mathbb{E}[(\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}})^2] - \mathbb{E}[\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}}]^2 && \text{(definition of variance)} \notag \\
         &= \mathbb{E}[(\sum_{i=1}^{n} \widetilde{\psi}_i^2 \lambda_i)^2] - \Tr(\mtx{B})^2 && \text{($\mtx{\Lambda}$ is diagonal and \refequ{equ:2-chebyshev-DGC-hutchinson})} \notag \\
@@ -260,5 +260,5 @@ $\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$ time, due to the relation
 Denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
 with $c(n)$, e.g. $\mathcal{O}(c(n)) = n^2$ for dense and
 $\mathcal{O}(c(n)) = n$ for sparse matrices, we determine the computational
-complexity of the \gls{DGC} to be $\mathcal{O}(m \log(m) n_t + m c(n) n_v)$,
+complexity of the \gls{DGC} method to be $\mathcal{O}(m \log(m) n_t + m c(n) n_v)$,
 with $\mathcal{O}(m n_t + n n_v)$ required additional storage.

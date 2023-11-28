@@ -124,7 +124,7 @@ Polynomial expansion: KPM \cite{weisse2006kpm} (maybe also Lanczos related), DGC
 Couple of small cleaning touches to \cite{lin2017randomized}.% Corrected proof / quadrature free
 
 \begin{itemize}
-    \item Consistent and fast interpolation
+    \item Consistent and fast interpolation % (allows fast implementation of SS)
     \item Fix rank 0 issue
     \item Theoretical rank estimate
     \item Generalization to other approximations
@@ -168,8 +168,10 @@ We follow the notation which appears in contemporary literature in this field:
     \item the $i$-th canonical unit vectors is $\vct{e}_i$ and the identity matrix $\mtx{I}$;
     \item the transpose of a matrix $\mtx{A}$ is denoted with $\mtx{A}^{\top}$.
           We only consider symmetric matrices $\mtx{A}^{\top} = \mtx{A}$;
+          % Spectral decomposition
     \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{n \times n}$
           are denoted with $\lambda_1 \geq \dots \geq \lambda_n$;
+    %\item Trace
     \item Norms are denoted with $\lVert \cdot \rVert _{\cdot}$. The spectral norm is
           $\lVert \mtx{A} \rVert _2 = \lambda_1$, the Frobenius norm
           is $\lVert \mtx{A} \rVert _F = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
@@ -177,9 +179,11 @@ We follow the notation which appears in contemporary literature in this field:
     \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
     \item Dirac's delta distribution goes as $\delta$ \cite[Chapter~15]{dirac1947quantum};
     \item The cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
+    %\item Imaginary and real part
     %\item Closed interval [], open interval ()?
     \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
           on the complexity of a computation. For those more familiar with the
           Bachmann-Landau notation \cite[Section~3.2]{cormen2009algorithms},
           please allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$.
+    %\item c(n) denotes complexity of matvec
 \end{itemize}
