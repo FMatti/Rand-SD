@@ -1,21 +1,21 @@
 \chapter{Introduction}
 \label{chp:1-introduction}
 
-In many problems in physics, chemistry, and engineering, 
+In many problems in engineering, physics, chemistry, and computer science, 
 the eigenvalues of certain matrices help understand the nature of a system:
 In electronic structure calculations they represent the allowed energy levels 
 electrons can occupy \cite{ducastelle1970charge, haydock1972electronic, lin2017randomized};
-in neural network optimization they are indicative of the optimization speed \cite{ghorbani2019investigation};
-and in \todo{find third example}.
+in neural network optimization they are indicative of the optimization speed \cite{ghorbani2019investigation,chen2021slq,adepu2021hessian};
+and in graph processing they can uncover hidden graph motifs \cite{kruzick2018graph,huang2021kernels,patane2022filter}.
 The eigenvalues of a matrix $\mtx{A}$ are all scalars $\lambda$ which, together
-with some vector $\vct{v}$, satisfy the equation
+with some vectors $\vct{v}$, satisfy the equation
 \begin{equation}
     \mtx{A} \vct{v} = \lambda \vct{v}.
     \label{equ:1-introduction-eigenvalue}
 \end{equation}
-Usually, the matrices at hand are real, i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$,
+In most applications, the matrices are real, i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$,
 and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$, such that their eigenvalues are
-real. This fact allows us to define the distribution of the eigenvalues of a
+all real. This allows us to define the distribution of the eigenvalues of a
 matrix, called the spectral density.
 
 \begin{definition}{Spectral density of a matrix}{spectral-density}
@@ -29,24 +29,36 @@ matrix, called the spectral density.
     and the \gls{spectral-parameter} $\in \mathbb{R}$.
 \end{definition}
 
-%Properties of spectral density (probability density, count eigenvalues, compute matrix functions ...)
+\gls{spectral-density} is a probability density \cite{klenke2013probability}
+of the cumulative empirical spectral measure \cite{chen2021slq}.
+The spectral density of a matrix allows us to count the number of
+eigenvalues which lie within an interval $[a, b]$
+\begin{equation}
+    \nu_{[a, b]} = n \int_{a}^{b} \phi(t) \mathrm{d}t,
+    \label{equ:1-introduction-eigenvalue-counting}
+\end{equation}
+or to compute the trace of a matrix function \cite{lin2017randomized}
+\begin{equation}
+    \Tr(f(\mtx{A})) = \sum_{i=1}^n f(\lambda_i) = n \int_{a}^{b} f(t) \phi(t) \mathrm{d}t.
+    \label{equ:1-introduction-matrix-trace}
+\end{equation}\\
 
 However, constructing the spectral density of a matrix amounts to knowing all
 the eigenvalues of the same matrix, which are often prohibitively expensive to
 compute. In many of the above mentioned applications, not the exact individual
 eigenvalues are of interest, but their approximate, relative locations to each
-other. Hence, it is enough to determine an approximation of \refequ{equ:1-introduction-def-spectral-density}.
+other. Hence, it is sufficient to determine an approximation of \refequ{equ:1-introduction-def-spectral-density}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Properties of the spectral density}
+\section{Smoothened spectral density}
 \label{sec:1-introduction-properties}
 
-Since we cannot hope to measure the convergence of smooth functions to \gls{spectral-density},
-we first regularize \gls{spectral-density} with a suitable \glsfirst{smoothing-kernel} \cite{epanechnikov1969kernel}
-and define the \glsfirst{smooth-spectral-density} as the convolution
+Since we cannot hope to measure the convergence of any smooth function to \gls{spectral-density},
+we first regularize \gls{spectral-density} with a suitable \gls{smoothing-kernel} \cite{epanechnikov1969kernel}
+and define the \gls{smooth-spectral-density} as the convolution
 \begin{equation}
-    \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i).
+    \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \int_{-\infty}^{\infty} \phi(s) g(t - s) \mathrm{d}s = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i).
     \label{equ:1-introduction-def-smooth-spectral-density}
 \end{equation}
 The \gls{smoothing-parameter} $>0$ controls by how much \gls{spectral-density} is
@@ -54,7 +66,7 @@ smoothened (see \reffig{fig:1-introduction-smoothened-spectral-density}).
 
 Often, \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing-parameter}:
 \begin{equation}
-    g_{\sigma}(s) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{s^2}{2\sigma^2}}.
+    g_{\sigma}(t) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{t^2}{2\sigma^2}}.
     \label{equ:1-introduction-def-gaussian-kernel}
 \end{equation}
 
@@ -86,50 +98,64 @@ $\mtx{\Lambda} \in \mathbb{R}^{n \times n}$ is the diagonal matrix which carries
 the eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U} \in \mathbb{R}^{n \times n}$
 such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[Theorem~4.1.5]{horn1985matrix}.
 Thus, if we absorb the \gls{matrix-size} in \gls{smoothing-kernel},
-apply the definition an smooth function $f$ applied to a matrix $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
+apply the definition of a smooth function $f$ applied to a matrix $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
 with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[Definition~1.2]{higham2008functions},
-and use the invariance of the trace under orthonormal transforms, we may write
+and use the invariance of the trace under orthonormal transformations, we may write
 \begin{equation}
     \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})).
     \label{equ:1-introduction-spectral-density-as-trace}
 \end{equation}
 We have just converted the problem of computing the eigenvalues of a matrix to 
-computing the trace of a function applied to the same matrix, for whom
-there exist many efficient algorithms \refsec{sec:1-introduction-related}.
-%All of these approaches, need to solve two problems:
-%\begin{enumerate}
-%    \item For most kernel, $g_{\sigma}(t\mtx{I} - \mtx{A})$ cannot be evaluated directly;
-%    \item Computing trace of a matrix which we can only access through matvecs
-%\end{enumerate}
+computing the trace of a function applied to the same matrix, for which
+there exist many efficient algorithms.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Related work}
 \label{sec:1-introduction-related}
 
-Spectral density \cite{lin2017randomized}
+Multiple approaches have been taken for approximating the \glsfirst{spectral-density}
+of large symmetric matrices.
+They can be grouped into two families of methods:
 
-Overview of different methods 
+\begin{enumerate}
+    \item Lanczos-based methods
+    first partially tridiagonalize a matrix and subsequently either extract Ritz values
+    \cite{lin2016review, chen2021slq} or directly exploit properties of the
+    \glsfirst{smoothing-kernel} \cite{haydock1972electronic, lin2016review}
+    to approximate \gls{spectral-density};
+    \item and interpolation-based methods which either expand
+    \gls{spectral-density} \cite{weisse2006kpm} or \gls{smoothing-kernel}
+    \cite{lin2016review,lin2017randomized} in a polynomial and subsequently
+    use trace estimation to approximate \gls{spectral-density}.
+\end{enumerate}
 
-Lanczos based: Haydock \cite{lin2016review}, SLQ \cite{chen2021slq}
-Polynomial expansion: KPM \cite{weisse2006kpm} (maybe also Lanczos related), DGC \cite{lin2017randomized}, DGL \cite{lin2016review}
+It turns out that these two families intersect, and many of these methods
+can be shown to be equivalent to each other \cite{chen2023kpm}.\\
 
-[Visualize history in a tree, time vs. methods]
+Our work bases on the methods presented in \cite{lin2017randomized}.
+
+\todo{[Visualize history in a tree, time vs. methods, equivalence of methods]}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Main contributions}
 \label{sec:1-introduction-contributions}
 
-Couple of small cleaning touches to \cite{lin2017randomized}.% Corrected proof / quadrature free
+Besides a couple of small clarifications and improvements to the algorithms 
+from \cite{lin2017randomized}, we see our main contributions to be the following:% Corrected proof / quadrature free
 
 \begin{itemize}
-    \item Consistent and fast interpolation % (allows fast implementation of SS)
-    \item Fix rank 0 issue
-    \item Theoretical rank estimate
-    \item Generalization to other approximations
-    \item Theorem $\rfrac{1}{\epsilon}$
-    \item Fast and rigorously documented implementations of all the algorithms
+    \item The development of a consistent \gls{DCT}-based interpolation scheme which allows us
+          to speed up \cite[Algorithm~5]{lin2017randomized} by orders of magnitude
+          at no loss of accuracy;
+    \item The derivation of an a priori guarantee for the number of matrix-vector
+          products needed to get an accurate approximation of the spectral
+          density under certain assumptions on the matrix;
+    \item A simple generalization of the presented methods to other
+          commonly used randomized low-rank approximation schemes;
+    \item \todo{How to formulate this: The $1/\epsilon$-result for the paramter-dependent Nystr\"om++ approximation}
+    \item A fast and rigorously documented implementation of all the algorithms
           following the notation and conventions of this thesis, which can be used to
           reproduce every plot, table, and much more\footnote{GitHub repository with
           code available under \url{https://github.com/FMatti/Rand-SD}}.
@@ -171,13 +197,14 @@ We follow the notation which appears in contemporary literature in this field:
           % Spectral decomposition
     \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{n \times n}$
           are denoted with $\lambda_1 \geq \dots \geq \lambda_n$;
-    %\item Trace
+    %\item Trace definition
+    %\item Convolution?
     \item Norms are denoted with $\lVert \cdot \rVert _{\cdot}$. The spectral norm is
           $\lVert \mtx{A} \rVert _2 = \lambda_1$, the Frobenius norm
           is $\lVert \mtx{A} \rVert _F = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
     \item the pseudoinverse of a matrix is $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo};
     \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
-    \item Dirac's delta distribution goes as $\delta$ \cite[Chapter~15]{dirac1947quantum};
+    \item Dirac's delta distribution goes as $\delta$ \cite[Chapter~15]{dirac1947quantum}; % give integral property
     \item The cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
     %\item Imaginary and real part
     %\item Closed interval [], open interval ()?

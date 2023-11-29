@@ -138,14 +138,14 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
     return dos_errors
 
 
-def plot_spectral_density_errors(spectral_density_errors, parameters, variable_parameter, variable_parameter_values, error_metric_name="Error", ignored_parameters=[], ax=None, colors=None):
+def plot_spectral_density_errors(spectral_density_errors, parameters, variable_parameter, variable_parameter_values, error_metric_name="Error", ignored_parameters=[], ax=None, colors=None, markers=None, linestyles=None):
     title = ""
     if isinstance(parameters, list):
         parameters = parameters[0]
     for key, value in parameters.items():
         if key == variable_parameter or key in ignored_parameters:
             continue
-        title += "${}".format(key) if len(key) < 4 else"$\{}".format(key)
+        title += "${}".format(key) if len(key) < 4 else"$\\{}".format(key)
         title += " = {}$, ".format(value)
     title = title[:-2]
     if ax is None:
@@ -159,9 +159,13 @@ def plot_spectral_density_errors(spectral_density_errors, parameters, variable_p
 
     if colors is None:
         colors = [matplotlib.colormaps["magma"](i / len(spectral_density_errors)) for i in range(len(spectral_density_errors))]
+    if markers is None:
+        markers = len(spectral_density_errors) * ["."]
+    if linestyles is None:
+        linestyles = len(spectral_density_errors) * ["-"]
 
     for i, (label, spectral_density_error) in enumerate(spectral_density_errors.items()):
-        ax.plot(variable_parameter_values, spectral_density_error, linewidth=1, color=colors[i], label=label, marker=".")
+        ax.plot(variable_parameter_values, spectral_density_error, linewidth=1, color=colors[i], label=label, marker=markers[i], linestyle=linestyles[i])
     ax.legend()
     return ax
 

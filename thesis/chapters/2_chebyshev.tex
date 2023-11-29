@@ -81,6 +81,9 @@ spectral density
     \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
     \label{equ:2-chebyshev-spectral-density-as-trace-expansion}
 \end{equation}
+
+\todo{Explain spectral transformation for $\mtx{A}$ not in $[-1, 1]$}
+
 The convergence of the expansion to the actual spectral density is exponential, 
 which is claimed by the following theorem:
 \begin{theorem}{Chebyshev interpolation error for Gaussian smoothing kernel}{chebyshev-error}
@@ -206,10 +209,13 @@ is an unbiased estimate of the trace:
 If we now take a certain \glsfirst{num-random-vectors} to form the
 \glsfirst{sketching-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_v}] \in \mathbb{R}^{n \times n_v}$
 The Hutchinson's trace estimator can then be written as \cite{hutchinson1990trace}
-
 \begin{equation}
-    H_{n_v}(\mtx{B}) = \frac{1}{n_v} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi}).
+    \Hutch_{n_v}(\mtx{B}) = \frac{1}{n_v} \sum_{j=1}^{n_v} \vct{\psi}_j^{\top} \mtx{B} \vct{\psi}_j = \frac{1}{n_v} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi}).
     \label{equ:2-chebyshev-DGC-hutchionson-estimator}
+\end{equation}
+It is not hard to see that the mean squared error
+\begin{equation}
+    \MSE(\Hutch_{n_v}(\mtx{B})) = \frac{2}{\sqrt{n_v}} \lVert \mtx{B} \rVert _F^2 \leq \frac{2}{\sqrt{n_v}}
 \end{equation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

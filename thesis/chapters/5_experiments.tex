@@ -1,10 +1,12 @@
 \chapter{Numerical experiments}
 \label{chp:5-experiments}
 
-Overview table of methods
+\todo{[Overview table of methods]}
 
 \section{Model problem from density functional theory}
 \label{sec:5-experiments-density-function}
+
+\todo{Convert to written form}
 
 Matrix which results from second order finite difference discretization of
 \begin{equation}
@@ -17,7 +19,7 @@ with mesh size $h=0.6$ \cite{lin2017randomized}.
 Potential is periodic repetition of length $L=6$ unit cell in whose
 center there is a Gaussian
 \begin{equation}
-    V_1(\vct{x}) = \alpha \exp(-\frac{\lVert \vct{x} \rVert_2^2}{ 2 \beta^2 })
+    V_1(\vct{x}) = \alpha \exp(-\frac{\lVert \vct{x} \rVert _2^2}{ 2 \beta^2 })
 \end{equation}
 
 with $\alpha = 4$, $\beta = 2$ located in the center of the unit cell. For $n=2, 3, \dots$,
@@ -43,12 +45,64 @@ we consider $n$ cells together in each dimension in our computation.
     \label{fig:5-experiments-periodic-gaussian-well}
 \end{figure}
 
-% Reproduce Lin Lin plots
-[DGC, NyCheb, NyChebPP for changing n\_v and m]
+How error is computed
 
-[Matvec mixture of NyChebPP]
+Exact computation of eigenvalues for baseline.
 
-[Timing comparison]
+\clearpage
+\begin{figure}[ht]
+    \begin{subfigure}[b]{0.45\columnwidth}
+        \input{plots/electronic_structure_convergence_nv_m800.pgf}
+        \caption{$m=800$}
+        \label{fig:5-experiments-electronic-structure-convergence-nv-m800}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\columnwidth}
+        \input{plots/electronic_structure_convergence_nv_m2400.pgf}
+        \caption{$m=2400$}
+        \label{fig:5-experiments-electronic-structure-convergence-nv-m2400}
+    \end{subfigure}
+    \caption{Behavior with $n_v$ for $\sigma=0.05$}
+    \label{fig:5-experiments-electronic-structure-convergence-nv}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.45\columnwidth}
+        \input{plots/electronic_structure_convergence_m_nv40.pgf}
+        \caption{$n_v=40$}
+        \label{fig:5-experiments-electronic-structure-convergence-m-nv40}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\columnwidth}
+        \input{plots/electronic_structure_convergence_m_nv160.pgf}
+        \caption{$n_v=160$}
+        \label{fig:5-experiments-electronic-structure-convergence-m-nv160}
+    \end{subfigure}
+    \caption{Behavior with $m$ for $\sigma=0.05$}
+    \label{fig:5-experiments-electronic-structure-convergence-m}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \input{plots/electronic_structure_matvec_mixture.pgf}
+    \caption{Allocation of mat-vecs to low-rank and trace approximation.}
+    \label{fig:5-experiments-electronic-structure-matvec-mixture}
+\end{figure}
+
+\begin{table}[h]
+    \caption{Runtime comparison}
+    \label{tab:5-experiments-electronic-structure-runtime}
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        Parmameters & $m=800,n_v=40$ & $m=2400,n_v=40$ & $m=800,n_v=160$ & $m=2400,n_v=160$ \\
+        \midrule
+        \gls{DGC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+        \gls{NC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+        \gls{NCPP} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{Benchmark against Haydock's method}
 \label{sec:5-experiments-haydock-method}
@@ -76,11 +130,55 @@ where each summand can be efficiently evaluated for all $t$ from the Arnoldi dec
     \label{equ:5-experiments-haydock-recursion}
 \end{align}
 
-[Haydock, NyCheb, NyChebPP for changing n\_v and m]
+\clearpage
+\begin{figure}[ht]
+    \begin{subfigure}[b]{0.45\columnwidth}
+        \input{plots/haydock_convergence_nv_m800.pgf}
+        \caption{$m=800$}
+        \label{fig:5-experiments-haydock-convergence-nv-m800}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\columnwidth}
+        \input{plots/haydock_convergence_nv_m2400.pgf}
+        \caption{$m=2400$}
+        \label{fig:5-experiments-haydock-convergence-nv-m2400}
+    \end{subfigure}
+    \caption{Behavior with $n_v$ for $\sigma=0.05$}
+    \label{fig:5-experiments-haydock-convergence-nv}
+\end{figure}
 
-[Timing comparison]
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.45\columnwidth}
+        \input{plots/haydock_convergence_m_nv40.pgf}
+        \caption{$n_v=40$}
+        \label{fig:5-experiments-haydock-convergence-m-nv40}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\columnwidth}
+        \input{plots/haydock_convergence_m_nv160.pgf}
+        \caption{$n_v=160$}
+        \label{fig:5-experiments-haydock-convergence-m-nv160}
+    \end{subfigure}
+    \caption{Behavior with $m$ for $\sigma=0.05$}
+    \label{fig:5-experiments-haydock-convergence-m}
+\end{figure}
+
+\begin{table}[h]
+    \caption{Runtime comparison}
+    \label{tab:5-experiments-haydock-runtime}
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        Parmameters & $m=800,n_v=40$ & $m=2400,n_v=40$ & $m=800,n_v=160$ & $m=2400,n_v=160$ \\
+        \midrule
+        Haydock & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+        \gls{NC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+        \gls{NCPP} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{Application to various matrices}
 \label{sec:5-experiments-various-matrices}
 
-[Same plot for multiple matrices]
+\todo{[Same plots for multiple matrices]}

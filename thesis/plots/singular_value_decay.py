@@ -9,7 +9,7 @@ from src.matrices import ModES3D
 from src.kernel import gaussian_kernel
 
 import matplotlib
-colors = matplotlib.colormaps["Blues"]
+colors = matplotlib.colormaps["magma_r"]
 
 A = ModES3D()
 min_ev = sp.sparse.linalg.eigsh(A, k=1, which="SA", return_eigenvectors=False)[0]
@@ -21,7 +21,7 @@ eigenvalues = np.sort(np.linalg.eigvalsh(A.toarray()))
 def g_sigma_eigenvalues(A, t, sigma):
     A_eigenvalues = np.linalg.eigvalsh(A.toarray())
     t_minus_A_eigenvalues = np.subtract.outer(t, A_eigenvalues)
-    eigenvalues = gaussian_kernel(t_minus_A_eigenvalues, N=A.shape[0], sigma=sigma)
+    eigenvalues = gaussian_kernel(t_minus_A_eigenvalues, n=A.shape[0], sigma=sigma)
     return np.sort(eigenvalues, axis=1)[:, ::-1]
 
 sigma = 0.05

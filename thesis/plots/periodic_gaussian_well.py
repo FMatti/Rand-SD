@@ -18,5 +18,5 @@ for n in ns:
     #ax.set_ylim(-11, 80)
     grid_points = regular_grid(a=0, b=n*L, N=N, dim=2)
     grid_values = periodic_gaussian_well(grid_points, L=L, n=n, var=beta**2, scaling_factor=alpha)
-    plt.contourf(grid_points[:, 0].reshape(N, N), grid_points[:, 1].reshape(N, N), grid_values.reshape(N, N), cmap="Blues")
+    plt.contourf(grid_points[:, 0].reshape(N, N), grid_points[:, 1].reshape(N, N), grid_values.reshape(N, N), cmap="magma_r")
     plt.savefig("thesis/plots/periodic_gaussian_well_{:d}.pgf".format(n), bbox_inches="tight")

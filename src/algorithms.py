@@ -332,7 +332,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
     K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
     K_C = chebyshev_recurrence(mu_C, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
     K_D = K_C if k % 2 == 1 else chebyshev_recurrence(mu_D, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
-    K_W_tilde = chebyshev_recurrence(mu, A, T_0=W_tilde, L=lambda x: np.sum(W_tilde @ x), final_shape=())
+    K_W_tilde = chebyshev_recurrence(mu, A, T_0=W_tilde, L=lambda x: np.sum(W_tilde * x), final_shape=())
 
     phi_tilde = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
