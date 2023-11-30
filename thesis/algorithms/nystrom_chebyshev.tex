@@ -1,0 +1,22 @@
+\begin{algorithmic}[1]
+    \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
+    \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refequ{equ:3-nystrom-chebyshev-potentiate-coefficients}
+    \State Generate \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_v}$ % TODO add \Omega to glossary (and Psi is only random matrix)
+    \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_v}, \mtx{\Omega}, \mtx{0}_{n \times n_v}]$
+    \State Initialize $[\mtx{K}_1(t_i), \mtx{K}_2(t_i)] \gets [\mtx{0}_{n_v \times n_v}, \mtx{0}_{n_v \times n_v}]$ for all $t_i$
+    \State Set ${\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
+    \For {$l = 0, \dots, m$}
+      \State $\mtx{X} \gets \mtx{\Omega}^{\top} \mtx{V}_2$
+      \For {$i = 1, \dots, n_t$}
+        \If {$l \leq 2m$}
+            \State $\mtx{K}_1(t_i) \gets \mtx{K}_1(t_i) + \mu_l(t_i) \mtx{X}$
+        \EndIf
+        \State $\mtx{K}_2(t_i) \gets \mtx{K}_2(t_i) + \nu_l(t_i) \mtx{X}$
+      \EndFor
+      \State $\mtx{V}_3 \gets (2 - \delta_{l0}) \mtx{A} \mtx{V}_2 - \mtx{V}_1$ \Comment{Chebyshev recurrence \refequ{equ:2-chebyshev-chebyshev-recursion}}
+      \State $\mtx{V}_1 \gets \mtx{V}_2, \mtx{V}_2 \gets \mtx{V}_3$
+    \EndFor
+    \For {$i = 1, \dots, n_t$}
+      \State Compute $\widetilde{\phi}_{\sigma}^m(t_i) \gets \Tr\left( \mtx{K}_1(t_i)^{\dagger}\mtx{K}_2(t_i) \right)$
+    \EndFor
+\end{algorithmic}

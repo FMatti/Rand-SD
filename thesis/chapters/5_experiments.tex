@@ -6,25 +6,22 @@
 \section{Model problem from density functional theory}
 \label{sec:5-experiments-density-function}
 
-\todo{Convert to written form}
-
-Matrix which results from second order finite difference discretization of
+For our first example, we consider the matrix which results from the second order
+finite difference discretization of the differential operator
 \begin{equation}
-    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V_n(\vct{x}) u(\vct{x})
+    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V_n(\vct{x}) u(\vct{x}).
     \label{equ:5-experiments-electronic-hamiltonian}
 \end{equation}
-
-with mesh size $h=0.6$ \cite{lin2017randomized}.
-
-Potential is periodic repetition of length $L=6$ unit cell in whose
-center there is a Gaussian
+We consider a cell of side-length $L=6$ which we discretize using a uniform
+mesh of size $h=0.6$. We place a Gaussian
 \begin{equation}
-    V_1(\vct{x}) = \alpha \exp(-\frac{\lVert \vct{x} \rVert _2^2}{ 2 \beta^2 })
+    \alpha \exp(-\frac{\lVert \vct{x} \rVert _2^2}{ 2 \beta^2 })
+    \label{equ:5-experiments-gaussian-cell}
 \end{equation}
-
-with $\alpha = 4$, $\beta = 2$ located in the center of the unit cell. For $n=2, 3, \dots$,
-we consider $n$ cells together in each dimension in our computation.
-
+with $\alpha = 4$, $\beta = 2$ in the center of this cell, and in every
+spatial direction periodically repeat this procedure. This gives us the potential
+$V_1$. $V_n$ is then formed by extending our domain to $n$ such cells in each
+dimension (see \reffig{fig:5-experiments-periodic-gaussian-well}). 
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.33\columnwidth}
         \input{plots/periodic_gaussian_well_1.pgf}
@@ -45,9 +42,14 @@ we consider $n$ cells together in each dimension in our computation.
     \label{fig:5-experiments-periodic-gaussian-well}
 \end{figure}
 
-How error is computed
-
-Exact computation of eigenvalues for baseline.
+For a Gaussian \gls{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
+with $\sigma=0.05$ we compute the $L^1$ relative error
+\begin{equation}
+    \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^m(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^n |\phi_{\sigma}(t_i)|}
+    \label{equ:5-experiments-L1-error}
+\end{equation}
+from the spectral density which we compute using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}.
+We use $n_t=100$ evenly spaced evaluation points.
 
 \clearpage
 \begin{figure}[ht]
@@ -88,7 +90,7 @@ Exact computation of eigenvalues for baseline.
     \label{fig:5-experiments-electronic-structure-matvec-mixture}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[ht]
     \caption{Runtime comparison}
     \label{tab:5-experiments-electronic-structure-runtime}
     \centering
@@ -162,21 +164,34 @@ where each summand can be efficiently evaluated for all $t$ from the Arnoldi dec
     \label{fig:5-experiments-haydock-convergence-m}
 \end{figure}
 
-\begin{table}[h]
+%\begin{table}[ht]
+%    \caption{Runtime comparison}
+%    \label{tab:5-experiments-haydock-runtime}
+%    \centering
+%    \renewcommand{\arraystretch}{1.2}
+%    \begin{tabular}{@{}lcccc@{}}
+%        \toprule
+%        Parmameters & $m=800,n_v=40$ & $m=2400,n_v=40$ & $m=800,n_v=160$ & $m=2400,n_v=160$ \\
+%        \midrule
+%        Haydock & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+%        \gls{NC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+%        \gls{NCPP} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
+%        \bottomrule
+%    \end{tabular}
+%\end{table}
+
+\begin{table}[ht]
     \caption{Runtime comparison}
-    \label{tab:5-experiments-haydock-runtime}
-    \centering
-    \renewcommand{\arraystretch}{1.2}
-    \begin{tabular}{@{}lcccc@{}}
-        \toprule
-        Parmameters & $m=800,n_v=40$ & $m=2400,n_v=40$ & $m=800,n_v=160$ & $m=2400,n_v=160$ \\
-        \midrule
-        Haydock & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-        \gls{NC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-        \gls{NCPP} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-        \bottomrule
-    \end{tabular}
+    \label{tab:5-experiments-timing-DGC}
+    \input{tables/timing_DGC.tex}
 \end{table}
+
+\begin{table}[ht]
+    \caption{Runtime comparison}
+    \label{tab:5-experiments-timing-haydock}
+   \input{tables/timing_haydock.tex}
+\end{table}
+
 
 \section{Application to various matrices}
 \label{sec:5-experiments-various-matrices}

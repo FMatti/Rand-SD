@@ -1,6 +1,9 @@
 \chapter{Interpolation and trace estimation}
 \label{chp:2-chebyshev}
 
+\todo{Why trace estimation / interpolation}
+
+\todo{\gls{num-evaluation-points}}
 %Applying a non-polynomial function to a matrix is often quite difficult.
 %Disadvantage of Lanczos algorithm?
 
@@ -122,15 +125,7 @@ result slightly deviates from the aforementioned proof, we include it hereafter.
 
     \begin{figure}[ht]
         \centering
-        \begin{tikzpicture}
-            \draw[thick, darkblue, fill=lightblue] (0, 0) ellipse (2.5 and 1.5);
-            \draw[->] (0, -2) to (0, 2) node[above] {$\Imag(z)$};
-            \draw[->] (-3, 0) to (3, 0) node[right] {$\Real(z)$};
-            \fill[darkblue] (-1.5, 0) circle (0.05) node[below] {$-1$};
-            \fill[darkblue] (1.5, 0) circle (0.05) node[below] {$+1$};
-            \draw[<->, darkblue] (0.1, 0.15) to  node[midway, right] {$b$} (0.1, 1.4);
-            \draw[<->, darkblue] (0.15, 0.1) to  node[midway, above] {$a$} (2.4, 0.1);
-        \end{tikzpicture}
+        \input{figures/bernstein_ellipse.tex}
         \caption{The Bernstein ellipse $\mathcal{E}_{\chi}$ with half axes $a$ and$b$ visualized in $\mathbb{C}$.}
         \label{fig:2-chebyshev-proof-bernstein-ellipse}
     \end{figure}
@@ -207,7 +202,7 @@ is an unbiased estimate of the trace:
 \end{align}
 
 If we now take a certain \glsfirst{num-random-vectors} to form the
-\glsfirst{sketching-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_v}] \in \mathbb{R}^{n \times n_v}$
+\glsfirst{random-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_v}] \in \mathbb{R}^{n \times n_v}$
 The Hutchinson's trace estimator can then be written as \cite{hutchinson1990trace}
 \begin{equation}
     \Hutch_{n_v}(\mtx{B}) = \frac{1}{n_v} \sum_{j=1}^{n_v} \vct{\psi}_j^{\top} \mtx{B} \vct{\psi}_j = \frac{1}{n_v} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi}).
@@ -239,20 +234,7 @@ for this method can be found in \refalg{alg:DGC}.
 \begin{algo}{Delta-Gauss-Chebyshev method}{DGC}
     Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, number of random vectors $n_v$,
     evaluation points $\{t_i\}_{i=1}^{n_t}$
-    \begin{algorithmic}[1]
-        \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
-        \State Generate \glsfirst{sketching-matrix} $\in \mathbb{R}^{n \times n_v}$
-        \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_v}, \mtx{\Psi}, \mtx{0}_{n \times n_v}]$
-        \State Set ${\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
-        \For {$l = 0, \dots, m$}
-          \State $x \gets \Tr(\mtx{\Psi}^{\top} \mtx{V}_2)$
-          \For {$i = 1, \dots, n_t$}
-            \State $\widetilde{\phi}_{\sigma}^m(t_i) \gets \widetilde{\phi}_{\sigma}^m(t_i) + \mu_l(t_i) x$
-          \EndFor
-          \State $\mtx{V}_3 \gets (2 - \delta_{l0}) \mtx{A} \mtx{V}_2 - \mtx{V}_1$ \Comment{Chebyshev recurrence \refequ{equ:2-chebyshev-chebyshev-recursion}}
-          \State $\mtx{V}_1 \gets \mtx{V}_2, \mtx{V}_2 \gets \mtx{V}_3$
-        \EndFor
-    \end{algorithmic}
+    \input{algorithms/delta_gauss_chebyshev.tex}
 \end{algo}
 
 One additional speed-up can be achieved by smartly computing the trace of the 

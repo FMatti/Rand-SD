@@ -18,6 +18,8 @@ What results is a matrix which is \emph{numerically low-rank}.
 \section{The numerical rank of a matrix}
 \label{sec:3-nystrom-numerical-rank}
 
+\todo{write proposition}
+
 To account for the finite precision of floating point operations, we use the
 notion of the \gls{numerical-rank} \cite[Definition~1.1]{noga2013rank}
 of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$, which we define as
@@ -67,22 +69,7 @@ equal to the number of eigenvalues which are closer to $t$ than $C_{\varepsilon,
 This is also illustrated in \reffig{fig:3-nystrom-numerical-rank-constant}.\\
 \begin{figure}
     \centering
-    \begin{tikzpicture}
-        \fill[lightblue] (-2, -0.15) rectangle (1.5, 0.15);
-        \draw[thick, ->] (-5, 0) to (5, 0);
-        \fill[darkblue] (-4, 0) circle (0.075) node[above] {$\lambda_1$};
-        \fill[darkblue] (-3, 0) circle (0.075) node[above] {$\lambda_2$};
-        \fill[darkblue] (-2.4, 0) circle (0.075) node[above] {$\lambda_3$};
-        \fill[darkblue] (-1, 0) circle (0.075) node[above] {$\lambda_4$};
-        \fill[darkblue] (0.3, 0) circle (0.075) node[above] {$\lambda_5$};
-        \fill[darkblue] (1, 0) circle (0.075) node[above] {$\lambda_6$};
-        \fill[darkblue] (2.8, 0) circle (0.075) node[above] {$\lambda_7$};
-        \fill[darkblue] (3.6, 0) circle (0.075) node[above] {$\lambda_8$};
-        \fill[darkblue] (4, 0) circle (0.075) node[above] {$\lambda_9$};
-        \draw[darkblue, ultra thick] (-0.155, 0.15) to (-0.155, -0.15) node[below] {$t$};
-        \draw[darkblue, thick] (-2, 0.15) to (-2, -0.15) node[below] {$t - C_{\varepsilon, \cdot}(\sigma)$};
-        \draw[darkblue, thick] (1.5, 0.15) to (1.5, -0.15) node[below] {$t + C_{\varepsilon, \cdot}(\sigma)$};
-    \end{tikzpicture}
+    \input{figures/numerical_rank.tex}
     \caption{The numerical rank.}
     \label{fig:3-nystrom-numerical-rank-constant}
 \end{figure}
@@ -99,37 +86,11 @@ we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$ as
 \begin{figure}
     \centering
     \begin{subfigure}[t]{0.45\columnwidth}
-        \begin{tikzpicture}
-            \draw[thick, ->] (-1, -1) to (5, -1)  node[above] {$t$};
-            %\node[anchor=east] at (-1.5, -1) {unevenly distributed};
-            \fill[darkblue] (-0.5, -1) circle (0.075);
-            \fill[darkblue] (-0.1, -1) circle (0.075);
-            \fill[darkblue] (0.9, -1) circle (0.075);
-            \fill[darkblue] (2.15, -1) circle (0.075);
-            \fill[darkblue] (2.3, -1) circle (0.075);
-            \fill[darkblue] (2.5, -1) circle (0.075);
-            \fill[darkblue] (2.8, -1) circle (0.075);
-            \fill[darkblue] (3.6, -1) circle (0.075);
-            \fill[darkblue] (4, -1) circle (0.075);
-            \draw[<-] (2.5, -1.1) to (2.5, -1.4) node[below] {higher rank};
-            \draw[<-] (0.2, -1.1) to (0.2, -1.4) node[below] {lower rank};
-        \end{tikzpicture}
+        \input{figures/uneven_spectrum.tex}
         \caption{Unevenly distributed spectrum}
     \end{subfigure}
     \begin{subfigure}[t]{0.45\columnwidth}
-        \begin{tikzpicture}
-            \draw[thick, ->] (-1, 0) to (5, 0)  node[above] {$t$};
-            %\node[anchor=east] at (-1.5, 0) {evenly distributed};
-            \fill[darkblue] (-0.6, 0) circle (0.075);
-            \fill[darkblue] (0, 0) circle (0.075);
-            \fill[darkblue] (0.55, 0) circle (0.075);
-            \fill[darkblue] (1.2, 0) circle (0.075);
-            \fill[darkblue] (1.9, 0) circle (0.075);
-            \fill[darkblue] (2.45, 0) circle (0.075);
-            \fill[darkblue] (3, 0) circle (0.075);
-            \fill[darkblue] (3.6, 0) circle (0.075);
-            \fill[darkblue] (4.2, 0) circle (0.075);
-        \end{tikzpicture}
+        \input{figures/even_spectrum.tex}
         \caption{Evenly distributed spectrum}
     \end{subfigure}      
     \caption{Examples of an evenly and unevenly distributed spectrum.}
@@ -141,10 +102,7 @@ of the eigenvalues for one of our example matrices which we use in the numerical
 experiments (\refsec{sec:5-experiments-density-function}).
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}
-        \node at (0, 0) {\input{plots/singular_value_decay.pgf}};
-        \node at (2.9, 2.4) {\input{plots/singular_value_decay_colormap.pgf}};
-    \end{tikzpicture}
+    \input{figures/singular_value_decay.tex}
     \caption{Singular value decay. \todo{add spectrum to show why not lowrank}}
     \label{fig:3-nystrom-singular-value-decay}
 \end{figure}
@@ -157,7 +115,7 @@ experiments (\refsec{sec:5-experiments-density-function}).
 Sketching is a widely used technique for capturing the column space of a matrix
 \cite{halko2011finding,woodruff2014sketching,lin2017randomized,tropp2017sketching,tropp2023randomized}.
 Multiplying a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ with a standard Gaussian
-random matrix $\mtx{\Omega} \in \mathbb{R}^{n \times n_v}$ with $n_v \ll n$, will
+\gls{sketching-matrix} $ \in \mathbb{R}^{n \times n_v}$ with $n_v \ll n$, will
 result in a significantly smaller matrix $\mtx{B}\mtx{\Omega}$ whose
 columns roughly span the same range as the columns of $\mtx{B}$.
 Closely following \cite[Section~2.1]{tropp2023randomized}, we illustrate the
@@ -259,28 +217,7 @@ can be found in \refalg{alg:nystrom-chebyshev}.
 \begin{algo}{Nystr\"om-Chebyshev method}{nystrom-chebyshev}
     Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, \glsfirst{chebyshev-degree}, \glsfirst{num-random-vectors},
     evaluation points $\{t_i\}_{i=1}^{n_t}$
-    \begin{algorithmic}[1]
-        \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
-        \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refequ{equ:3-nystrom-chebyshev-potentiate-coefficients}
-        \State Generate sketching matrix $\mtx{\Omega} \in \mathbb{R}^{n \times n_v}$ % TODO add \Omega to glossary (and Psi is only random matrix)
-        \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_v}, \mtx{\Omega}, \mtx{0}_{n \times n_v}]$
-        \State Initialize $[\mtx{K}_1(t_i), \mtx{K}_2(t_i)] \gets [\mtx{0}_{n_v \times n_v}, \mtx{0}_{n_v \times n_v}]$ for all $t_i$
-        \State Set ${\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
-        \For {$l = 0, \dots, m$}
-          \State $\mtx{X} \gets \mtx{\Omega}^{\top} \mtx{V}_2$
-          \For {$i = 1, \dots, n_t$}
-            \If {$l \leq 2m$}
-                \State $\mtx{K}_1(t_i) \gets \mtx{K}_1(t_i) + \mu_l(t_i) \mtx{X}$
-            \EndIf
-            \State $\mtx{K}_2(t_i) \gets \mtx{K}_2(t_i) + \nu_l(t_i) \mtx{X}$
-          \EndFor
-          \State $\mtx{V}_3 \gets (2 - \delta_{l0}) \mtx{A} \mtx{V}_2 - \mtx{V}_1$ \Comment{Chebyshev recurrence \refequ{equ:2-chebyshev-chebyshev-recursion}}
-          \State $\mtx{V}_1 \gets \mtx{V}_2, \mtx{V}_2 \gets \mtx{V}_3$
-        \EndFor
-        \For {$i = 1, \dots, n_t$}
-          \State Compute $\widetilde{\phi}_{\sigma}^m(t_i) \gets \Tr\left( \mtx{K}_1(t_i)^{\dagger}\mtx{K}_2(t_i) \right)$
-        \EndFor
-    \end{algorithmic}
+    \input{algorithms/nystrom_chebyshev.tex}
 \end{algo}
 
 Again denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
