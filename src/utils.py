@@ -10,6 +10,7 @@ import tarfile
 import os
 import tempfile
 import shutil
+import timeit
 
 import numpy as np
 import scipy as sp
@@ -264,3 +265,41 @@ def verify_parameters(n, sigma, m, n_v, n_v_tilde=None, epsilon=1e-16):
         print("Degree of Chebyshev polynomial too low.")
     if n_v < N_v_min:
         print("Number of random vectors for low-rank approximation too low.")
+
+
+def generate_tex_tabular(values, filepath, headline=None, row_labels=None, errors=None, fmt=r"{:.2f}"):
+    f = open(filepath, "w")
+
+    num_rows = values.shape[0]
+    num_cols = values.shape[1]
+
+    f.write(r"\centering" + "\n")
+    f.write(r"\renewcommand{\arraystretch}{1.2}" + "\n")
+    f.write(r"\begin{tabular}{@{}" + ("l" if row_labels else "") + num_cols*"c" + r"@{}}" + "\n")
+    f.write(r"\toprule" + "\n")
+    if headline:
+        f.write(r" & ".join(headline) + r"\\" + "\n")
+        f.write(r"\midrule" + "\n")
+
+    for i in range(num_rows):
+        if row_labels:
+            f.write(row_labels[i] + r" & ")
+        for j in range(num_cols):
+            f.write(fmt.format(values[i, j]))
+            if errors is not None:
+                f.write(r" $\pm$ " + fmt.format(errors[i, j]))
+            if j < num_rows:
+                f.write(r" & ")
+        f.write(r" \\" + "\n")
+
+    f.write(r"\bottomrule" + "\n")
+    f.write(r"\end{tabular}" + "\n")
+
+    f.close()
+
+
+def time_method(method, parameters, num_times=1000, num_repeats=10):
+    times = timeit.repeat(lambda: method(**parameters), repeat=num_repeats, number=num_times)
+    mean = np.mean(times)
+    error = np.std(times)
+    return mean, error
