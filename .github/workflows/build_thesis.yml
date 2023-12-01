@@ -1,0 +1,34 @@
+
+name: Build thesis
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DIR: ./thesis_full
+      FILE: thesis
+
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v3
+
+      - name: Install TeXlive
+        run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science texlive-fonts-extra cm-super
+
+      - name: Build thesis
+        working-directory: ${{ env.DIR }}
+        run: pdflatex ${{ env.FILE }}; bibtex ${{ env.FILE }}; makeglossaries ${{ env.FILE }}; pdflatex ${{ env.FILE }}; pdflatex ${{ env.FILE }};
+
+      - name: Move output PDF
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+
+      - name: Upload output PDF as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.FILE }}.pdf
+          path: ./github_artifacts
