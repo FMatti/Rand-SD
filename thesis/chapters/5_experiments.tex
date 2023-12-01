@@ -3,6 +3,8 @@
 
 \todo{[Overview table of methods]}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Model problem from density functional theory}
 \label{sec:5-experiments-density-function}
 
@@ -90,21 +92,7 @@ We use $n_t=100$ evenly spaced evaluation points.
     \label{fig:5-experiments-electronic-structure-matvec-mixture}
 \end{figure}
 
-\begin{table}[ht]
-    \caption{Runtime comparison}
-    \label{tab:5-experiments-electronic-structure-runtime}
-    \centering
-    \renewcommand{\arraystretch}{1.2}
-    \begin{tabular}{@{}lcccc@{}}
-        \toprule
-        Parmameters & $m=800,n_v=40$ & $m=2400,n_v=40$ & $m=800,n_v=160$ & $m=2400,n_v=160$ \\
-        \midrule
-        \gls{DGC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-        \gls{NC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-        \gls{NCPP} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Benchmark against Haydock's method}
 \label{sec:5-experiments-haydock-method}
@@ -192,8 +180,11 @@ where each summand can be efficiently evaluated for all $t$ from the Arnoldi dec
    \input{tables/timing_haydock.tex}
 \end{table}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Application to various matrices}
 \label{sec:5-experiments-various-matrices}
 
 \todo{[Same plots for multiple matrices]}
+
+\todo{Maybe comparison with SLQ, KPM, ...}

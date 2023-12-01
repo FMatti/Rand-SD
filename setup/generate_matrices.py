@@ -18,7 +18,7 @@ matrix_urls = [
 print("\nDownloading matrices")
 for i, matrix_url in enumerate(matrix_urls):
     download_matrix(matrix_url, save_path=matrix_dir)
-    print(u"\u2713 Downloaded matrix ({}/{})".format(i+  1, len(matrix_urls)))
+    print(u"\u2713 Downloaded matrix ({}/{})".format(i + 1, len(matrix_urls)))
 
 ns = [1, 2, 3, 4]
 

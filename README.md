@@ -16,7 +16,7 @@ Randomized estimation of spectral densities.
 We concern ourselves with the approximation of the smoothened spectral density 
 
 $$
-\phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i) = \operatorname{Tr}(g_{\sigma}(t\boldsymbol{I} - \boldsymbol{A}))
+\phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i) = \mathrm{Tr}(g_{\sigma}(t\boldsymbol{I} - \boldsymbol{A}))
 $$
 
 of a large symmeric matrix $\boldsymbol{A} \in \mathbb{R}^{n \times n}$.
@@ -24,6 +24,7 @@ of a large symmeric matrix $\boldsymbol{A} \in \mathbb{R}^{n \times n}$.
 ### Chebyshev expansion
 
 In all methods, we first compute the Chebyshev expansion
+
 $$
 g_{\sigma}(t\boldsymbol{I} - \boldsymbol{A}) \approx g_{\sigma}^m(t\boldsymbol{I} - \boldsymbol{A}) = \sum_{l=0}^{m} \mu_l(t) T_l(\boldsymbol{A}).
 $$
@@ -31,20 +32,24 @@ $$
 ### Delta-Gauss-Chebyshev
 
 We directly estimate the trace using the Hutchinson's with a standard Gaussian random matrix $\boldsymbol{\Psi} \in \mathbb{R}^{n \times \tilde{n}_v}$ to obtain
+
 $$
-\phi_{\sigma}(t) \approx \frac{1}{\tilde{n}_v} \sum_{l=0}^{m} \mu_l(t) \operatorname{Tr}(\boldsymbol{\Psi}^{\top} T_l(\boldsymbol{A}) \boldsymbol{\Psi}).
+\phi_{\sigma}(t) \approx \frac{1}{\tilde n_v} \sum_{l=0}^{m} \mu_l(t) \mathrm{Tr}(\boldsymbol{\Psi}^{\top} T_l(\boldsymbol{A}) \boldsymbol{\Psi}).
 $$
 
 ### Nyström-Chebyshev
 
 We compute the Nyström approximation with a standard Gaussian sketching matrix $\boldsymbol{\Omega} \in \mathbb{R}^{n \times n_v}$
+
 $$
-g_{\sigma}(t\boldsymbol{I}- \boldsymbol{A}) \approx \widehat{g}_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A}) =
+g_{\sigma}(t\boldsymbol{I}- \boldsymbol{A}) \approx \widehat g_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A}) =
 (g_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A}) \boldsymbol{\Omega})(\boldsymbol{\Omega}^{\top} g_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A}) \boldsymbol{\Omega})(g_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A}) \boldsymbol{\Omega})^{\top}
 $$
+
 and compute its trace
+
 $$
-\phi_{\sigma}(t) \approx \operatorname{Tr}(\widehat{g}_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A})).
+\phi_{\sigma}(t) \approx \mathrm{Tr}(\widehat{g}_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A})).
 $$
 
 ### Nyström-Chebyshev++
@@ -52,7 +57,7 @@ $$
 We compute the Nyström approximation and apply the Hutchinson's to the residual of the approximation to get the trace 
 
 $$
-\phi_{\sigma}(t) \approx \operatorname{Tr}(\widehat{g}_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A})) + \frac{1}{\tilde{n}_v} \operatorname{Tr}(\boldsymbol{\Psi}^{\top} (g_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A}) - \widehat{g}_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A})) \boldsymbol{\Psi}).
+\phi_{\sigma}(t) \approx \mathrm{Tr}(\widehat g_{\sigma}^m(t\boldsymbol{I} - \boldsymbol{A})) + \frac{1}{\tilde n_v} \mathrm{Tr}(\boldsymbol{\Psi}^{\top} (g_{\sigma}^m(t\boldsymbol{I}- \boldsymbol{A}) - \widehat g_{\sigma}^m(t\boldsymbol{I} - \boldsymbol{A})) \boldsymbol{\Psi}).
 $$
 
 ## Quick start

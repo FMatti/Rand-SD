@@ -6,21 +6,24 @@ the eigenvalues of certain matrices help understand the nature of a system:
 In electronic structure calculations they represent the allowed energy levels 
 electrons can occupy \cite{ducastelle1970charge, haydock1972electronic, lin2017randomized};
 in neural network optimization they are indicative of the optimization speed \cite{ghorbani2019investigation,chen2021slq,adepu2021hessian};
-and in graph processing they can uncover hidden graph motifs \cite{kruzick2018graph,huang2021kernels,patane2022filter}.
+and in graph processing they can uncover hidden graph motifs \cite{kruzick2018graph,huang2021kernels,patane2022filter}.\\
+\todo{relevance for fundamental linear algebraic tasks: computing matrix functions (Fan et al., 2019)
+and eigensolvers (Polizzi, 2009; Li et al., 2019, FEAST)}
+
 The eigenvalues of a matrix $\mtx{A}$ are all scalars $\lambda$ which, together
-with some vectors $\vct{v}$, satisfy the equation
+with some non-zero vectors $\vct{v}$, satisfy the equation
 \begin{equation}
     \mtx{A} \vct{v} = \lambda \vct{v}.
     \label{equ:1-introduction-eigenvalue}
 \end{equation}
 In most applications, the matrices are real, i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$,
-and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$, such that their eigenvalues are
-all real. This allows us to define the distribution of the eigenvalues of a
-matrix, called the spectral density.
+and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$, such that their eigenvalues 
+$\lambda_1, \dots, \lambda_n$ are all real. This allows us to define its
+spectral density.
 
 \begin{definition}{Spectral density of a matrix}{spectral-density}
-    Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix with eigenvalues $\lambda_i, i=1, \dots, n$.
-    We define the \glsfirst{spectral-density} as
+    Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix with \glspl{eigenvalue}
+    $\in \mathbb{R}, i=1, \dots, n$. We define the \gls{spectral-density} as
     \begin{equation}
         \phi(t) = \frac{1}{n} \sum_{i=1}^{n} \delta(t - \lambda_i),
         \label{equ:1-introduction-def-spectral-density}
@@ -29,10 +32,11 @@ matrix, called the spectral density.
     and the \gls{spectral-parameter} $\in \mathbb{R}$.
 \end{definition}
 
-\gls{spectral-density} is a probability density \cite{klenke2013probability}
-of the cumulative empirical spectral measure \cite{chen2021slq}.
-The spectral density of a matrix allows us to count the number of
-eigenvalues which lie within an interval $[a, b]$
+\gls{spectral-density} is the probability density \cite{klenke2013probability}
+of the cumulative empirical spectral measure \cite{chen2021slq}. Knowing \gls{spectral-density}
+of a matrix would in theory allow us to reconstruct its eigenvalues.
+Furthermore, the spectral density of a matrix can for example be used to count
+the number of eigenvalues which lie within an interval $[a, b]$
 \begin{equation}
     \nu_{[a, b]} = n \int_{a}^{b} \phi(t) \mathrm{d}t,
     \label{equ:1-introduction-eigenvalue-counting}
@@ -47,7 +51,8 @@ However, constructing the spectral density of a matrix amounts to knowing all
 the eigenvalues of the same matrix, which are often prohibitively expensive to
 compute. In many of the above mentioned applications, not the exact individual
 eigenvalues are of interest, but their approximate, relative locations to each
-other. Hence, it is sufficient to determine an approximation of \refequ{equ:1-introduction-def-spectral-density}.
+other. Hence, it is sufficient to consider approximations of \refequ{equ:1-introduction-def-spectral-density}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -55,20 +60,16 @@ other. Hence, it is sufficient to determine an approximation of \refequ{equ:1-in
 \label{sec:1-introduction-properties}
 
 Since we cannot hope to measure the convergence of any smooth function to \gls{spectral-density},
-we first regularize \gls{spectral-density} with a suitable \gls{smoothing-kernel} \cite{epanechnikov1969kernel}
+we first regularize \gls{spectral-density} with a suitable \gls{smoothing-kernel}
 and define the \gls{smooth-spectral-density} as the convolution
 \begin{equation}
-    \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \int_{-\infty}^{\infty} \phi(s) g(t - s) \mathrm{d}s = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i).
+    \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(t - s) \mathrm{d}s = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i).
     \label{equ:1-introduction-def-smooth-spectral-density}
 \end{equation}
 The \gls{smoothing-parameter} $>0$ controls by how much \gls{spectral-density} is
-smoothened (see \reffig{fig:1-introduction-smoothened-spectral-density}).
-
-Often, \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing-parameter}:
-\begin{equation}
-    g_{\sigma}(t) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{t^2}{2\sigma^2}}.
-    \label{equ:1-introduction-def-gaussian-kernel}
-\end{equation}
+smoothened (see \reffig{fig:1-introduction-smoothened-spectral-density}). Typically,
+small \gls{smoothing-parameter} allow for easier approximations of \gls{smooth-spectral-density}
+but at the cost of losing many of the finer characteristics of the spectrum.
 
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.33\columnwidth}
@@ -91,6 +92,16 @@ Often, \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing
     \label{fig:1-introduction-smoothened-spectral-density}
 \end{figure}
 
+In many applications \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing-parameter}
+\begin{equation}
+    g_{\sigma}(t) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{t^2}{2\sigma^2}},
+    \label{equ:1-introduction-def-gaussian-kernel}
+\end{equation}
+but there are many other choices possible for \gls{smoothing-kernel}. Ideally,
+\gls{smoothing-kernel} should be symmetric, non-negative, and tend towards the
+Dirac delta function in the limit of \gls{smoothing-parameter} $\to 0$. Another
+commonly used kernel will be discussed in \refsec{sec:5-experiments-haydock-method}.\\
+
 Because we only consider symmetric matrices, 
 we may represent $\mtx{A} \in \mathbb{R}^{n \times n}$ using its spectral
 decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$ where
@@ -102,12 +113,12 @@ apply the definition of a smooth function $f$ applied to a matrix $f(\mtx{A}) = 
 with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[Definition~1.2]{higham2008functions},
 and use the invariance of the trace under orthonormal transformations, we may write
 \begin{equation}
-    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})).
+    \phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})).
     \label{equ:1-introduction-spectral-density-as-trace}
 \end{equation}
-We have just converted the problem of computing the eigenvalues of a matrix to 
-computing the trace of a function applied to the same matrix, for which
-there exist many efficient algorithms.
+In this way, we have just converted the problem of computing the eigenvalues of
+a matrix to computing the trace of a function applied to the same matrix,
+for which -- we will see -- exist many efficient algorithms.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -115,8 +126,7 @@ there exist many efficient algorithms.
 \label{sec:1-introduction-related}
 
 Multiple approaches have been taken for approximating the \glsfirst{spectral-density}
-of large symmetric matrices.
-They can be grouped into two families of methods:
+of large symmetric matrices. They can be grouped into two families of methods:
 
 \begin{enumerate}
     \item Lanczos-based methods
@@ -138,6 +148,16 @@ can be shown to be equivalent to each other \cite{chen2023kpm}.\\
 Our work bases on the methods presented in \cite{lin2017randomized}.
 
 \todo{[Visualize history in a tree, time vs. methods, equivalence of methods]}
+
+\todo{[Silver/Röder [36] and Wang [41] mid 1990s]}
+\todo{[Silver/Röder [36] and Wang [41] mid 1990s]}
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/literature_overview.tex}
+    \caption{Overview of methods for approximating the spectral density.}
+    \label{fig:1-introduction-literature-overview}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -180,39 +200,3 @@ of large matrices in \refchp{chp:4-nystromchebyshev}. In \refchp{chp:5-experimen
 we study the accuracy and computational time of these algorithms on numerous
 numerical experiments and compare them to other methods found in literature.
 We conclude the thesis in \refchp{chp:6-conclusion}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Notation}
-\label{sec:1-introduction-notation}
-
-We follow the notation which appears in contemporary literature in this field:
-
-\begin{itemize}
-    \item we only work with objects over the real numbers $\mathbb{R}$;
-    \item scalar variables are represented by lower case Greek or Latin letters ($x$, $\varepsilon$, \dots),
-          vectors are additionally printed in bold ($\vct{v}$, $\vct{\mu}$, \dots),
-          and matrices are additionally capitalized ($\mtx{A}$, $\mtx{\Omega}$, \dots);
-    \item the $i$-th canonical unit vectors is $\vct{e}_i$ and the identity matrix $\mtx{I}$;
-    \item the transpose of a matrix $\mtx{A}$ is denoted with $\mtx{A}^{\top}$.
-          We only consider symmetric matrices $\mtx{A}^{\top} = \mtx{A}$;
-          % Spectral decomposition
-    \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{n \times n}$
-          are denoted with $\lambda_1 \geq \dots \geq \lambda_n$;
-    %\item Trace definition
-    %\item Convolution?
-    \item Norms are denoted with $\lVert \cdot \rVert _{\cdot}$. The spectral norm is
-          $\lVert \mtx{A} \rVert _2 = \lambda_1$, the Frobenius norm
-          is $\lVert \mtx{A} \rVert _F = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
-    \item the pseudoinverse of a matrix is $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo};
-    \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
-    \item Dirac's delta distribution goes as $\delta$ \cite[Chapter~15]{dirac1947quantum}; % give integral property
-    \item The cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
-    %\item Imaginary and real part
-    %\item Closed interval [], open interval ()?
-    \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
-          on the complexity of a computation. For those more familiar with the
-          Bachmann-Landau notation \cite[Section~3.2]{cormen2009algorithms},
-          please allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$.
-    %\item c(n) denotes complexity of matvec
-\end{itemize}

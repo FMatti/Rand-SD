@@ -1,0 +1,139 @@
+\begin{tikzpicture}
+
+    % Lanczos based
+    \draw[rounded corners, line width=2, color=darkblue] (-0.5, 2.25) rectangle (14, 6);
+    \node[fill=white] at (6.75, 6.1) {\bfseries \textcolor{darkblue}{Lanczos based}};
+
+    % Haydock
+    \begin{scope}[shift={(0, 5)}]
+        \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
+        \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Haydock method}};
+        \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
+        
+        \node[anchor=west] at (0.0, -0.35) {Origin};
+        \node[anchor=west] at (2.2, -0.35) {\cite{haydock1972electronic} Haydock (1972)};
+        
+        \node[anchor=west] at (0.0, -0.85) {Smoothing};
+        \node[anchor=west] at (2.2, -0.85) {Lorentzian};
+        
+        \node[anchor=west] at (0.0, -1.35) {Expansion};
+        \node[anchor=west] at (2.2, -1.35) {None};
+        
+        \node[anchor=west] at (0.0, -1.85) {Trace};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        
+        \draw (2.15, -0.15) to (2.15, -2.05);
+    \end{scope}
+
+    % SQL
+    \begin{scope}[shift={(7, 5)}]
+        \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
+        \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Stochastic Lanczos quadrature}};
+        \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
+        
+        \node[anchor=west] at (0.0, -0.35) {Origin};
+        \node[anchor=west] at (2.2, -0.35) {\cite{lin2017randomized} Lin et. al. (2016)};
+        
+        \node[anchor=west] at (0.0, -0.85) {Smoothing};
+        \node[anchor=west] at (2.2, -0.85) {None};
+        
+        \node[anchor=west] at (0.0, -1.35) {Expansion};
+        \node[anchor=west] at (2.2, -1.35) {None};
+        
+        \node[anchor=west] at (0.0, -1.85) {Trace};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        
+        \draw (2.15, -0.15) to (2.15, -2.05);
+    \end{scope}
+
+    % Expansion based
+    \draw[rounded corners, line width=2, color=darkblue] (-0.5, 1.55) rectangle (14, -8.75);
+    \node[fill=white] at (6.75, 1.55) {\bfseries \textcolor{darkblue}{Expansion based}};
+    
+    % KPM
+    \begin{scope}[shift={(3.5, 0.5)}]
+        \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
+        \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Kernel polynomial method}};
+        \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
+        
+        \node[anchor=west] at (0.0, -0.35) {Origin};
+        \node[anchor=west] at (2.2, -0.35) {\cite{silver1994kpm} Silver/Röder (1994)};
+        
+        \node[anchor=west] at (0.0, -0.85) {Smoothing};
+        \node[anchor=west] at (2.2, -0.85) {None};
+        
+        \node[anchor=west] at (0.0, -1.35) {Expansion};
+        \node[anchor=west] at (2.2, -1.35) {Chebyshev};
+        
+        \node[anchor=west] at (0.0, -1.85) {Trace};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        
+        \draw (2.15, -0.15) to (2.15, -2.05);
+    \end{scope}
+
+    % DGL
+    \begin{scope}[shift={(0, -2.8)}]
+        \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
+        \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Delta-Gauss-Legendre}};
+        \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
+        
+        \node[anchor=west] at (0.0, -0.35) {Origin};
+        \node[anchor=west] at (2.2, -0.35) {\cite{lin2016review} Lin et. al. (2016)};
+        
+        \node[anchor=west] at (0.0, -0.85) {Smoothing};
+        \node[anchor=west] at (2.2, -0.85) {Gaussian};
+        
+        \node[anchor=west] at (0.0, -1.35) {Expansion};
+        \node[anchor=west] at (2.2, -1.35) {Legendre};
+        
+        \node[anchor=west] at (0.0, -1.85) {Trace};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        
+        \draw (2.15, -0.15) to (2.15, -2.05);
+    \end{scope}
+
+    % DGC
+    \begin{scope}[shift={(7, -2.8)}]
+        \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
+        \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Delta-Gauss-Chebyshev}};
+        \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
+        
+        \node[anchor=west] at (0.0, -0.35) {Origin};
+        \node[anchor=west] at (2.2, -0.35) {\cite{lin2017randomized} Lin (2017)};
+        
+        \node[anchor=west] at (0.0, -0.85) {Smoothing};
+        \node[anchor=west] at (2.2, -0.85) {Gaussian};
+        
+        \node[anchor=west] at (0.0, -1.35) {Expansion};
+        \node[anchor=west] at (2.2, -1.35) {Chebyshev};
+        
+        \node[anchor=west] at (0.0, -1.85) {Trace};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        
+        \draw (2.15, -0.15) to (2.15, -2.05);
+    \end{scope}
+
+    % SS
+    \begin{scope}[shift={(7, -6)}]
+        \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
+        \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Spectrum sweeping}};
+        \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
+        
+        \node[anchor=west] at (0.0, -0.35) {Origin};
+        \node[anchor=west] at (2.2, -0.35) {\cite{lin2017randomized} Lin (2017)};
+        
+        \node[anchor=west] at (0.0, -0.85) {Smoothing};
+        \node[anchor=west] at (2.2, -0.85) {Gaussian};
+        
+        \node[anchor=west] at (0.0, -1.35) {Expansion};
+        \node[anchor=west] at (2.2, -1.35) {Chebyshev};
+        
+        \node[anchor=west] at (0.0, -1.85) {Trace};
+        \node[anchor=west] at (2.2, -1.85) {Nystr\"om++};
+        
+        \draw (2.15, -0.15) to (2.15, -2.05);
+    \end{scope}
+
+    %\node[anchor=west] at (0.0, -0.9) {$g_{\sigma}(t - s) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(t-s)^2}{2 \sigma^2}} \approx \sum_{l=0}^m \mu_l(t) T_l(s)$}; 
+    %\node[anchor=west] at (0.0, -1.75) {$\phi_{\sigma}(t) = \Tr()$}; 
+\end{tikzpicture}

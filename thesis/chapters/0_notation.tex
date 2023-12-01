@@ -1,0 +1,43 @@
+\chapter*{Notation}
+\label{chp:0-notation}
+
+We try to follow the notation which is used in contemporary literature in this field:
+
+\begin{itemize}
+    \item we only work with objects over the real numbers $\mathbb{R}$;
+    \item scalar are represented by lower case Greek or Latin letters ($x$, $\varepsilon$, \dots),
+          vectors are additionally printed in bold ($\vct{v}$, $\vct{\mu}$, \dots),
+          and matrices are additionally capitalized ($\mtx{A}$, $\mtx{\Omega}$, \dots);
+    \item the components of a vector $\vct{v} \in \mathbb{R}^{n}$ are $v_i \in \mathbb{R}, i = 1, \dots, n$,
+          and the elements of a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ are $a_{ij} \in \mathbb{R}, i, j = 1, \dots, n$;
+    \item the $i$-th canonical unit vectors is $\vct{e}_i = (0, \dots, 1, \dots, 0)^{\top}$
+          are zero everywhere except in the $i$-th component and the identity matrix
+          $\mtx{I} = \diag(1, \dots, 1)$ which carries ones on its diagonal and 
+          zeros everywhere else;
+    \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$
+          are denoted with $\lambda_1 \geq \dots \geq \lambda_n$;
+    \item the trace of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ is
+          the sum of its diagonal elements $\Tr(\mtx{A}) = \sum_{i=1}^n a_{ii}$
+          but also the sum of its eigenvalues $\Tr(\mtx{A}) = \sum_{i=1}^n \lambda_i$;
+    \item the transpose of a matrix $\mtx{A}$ is denoted with $\mtx{A}^{\top}$.
+          We only consider symmetric matrices $\mtx{A}^{\top} = \mtx{A}$, which
+          allow a spectral decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$
+          with $\mtx{\Lambda} = \diag(\lambda_1, \dots, \lambda_n) \in \mathbb{R}^{n \times n}$ and 
+          $\mtx{U} \in \mathbb{R}^{n \times n}$ such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$;
+    \item Norms are denoted with $\lVert \cdot \rVert _{\cdot}$. The spectral norm is
+          $\lVert \mtx{A} \rVert _2 = \lambda_1$, the Frobenius norm
+          is $\lVert \mtx{A} \rVert _F = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
+    \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo};
+    \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
+    \item Dirac's delta distribution is written $\delta$ \cite[Chapter~15]{dirac1947quantum}
+          and the Kronecker delta $\delta_{ij}$;
+    \item the cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
+    \item the real part of a complex number $z$ is $\Re(z)$ while its imaginary part is $\Im(z)$;
+    \item closed interval are written as $[a, b] \subset \mathbb{R}$ and open
+          intervals as $(a, b) \subset \mathbb{R}$;
+    \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
+          on the complexity of a computation. For those more familiar with the
+          Bachmann-Landau notation \cite[Section~3.2]{cormen2009algorithms},
+          please allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$;
+    \item and finally, $c(n)$ denotes the computational complexity of a matrix-vector product.
+\end{itemize}
