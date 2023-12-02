@@ -1,59 +1,75 @@
 \chapter{Numerical experiments}
 \label{chp:5-experiments}
 
-\todo{[Overview table of methods]}
+In the previous chapters we have introduced multiple methods for approximating the
+spectral density of a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$. Now,
+our goal is to compare these methods with each other and with other related methods
+in terms of their accuracy and speed. In order to do so, we apply these algorithms
+in multiple scenarios. We consider a specific example from density functional theory
+\cite{lin2017randomized} for two different \gls{smoothing-kernel}, and
+subsequently test the methods on various other matrices.\\
+
+The accuracy is measured in terms of the discrete relative $L^1$ error of the approximated
+spectral density $\tilde{\phi}_{\sigma}^m$ from the spectral density $\phi_{\sigma}$
+which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}.
+\begin{equation}
+    \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^m(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^{n_t} |\phi_{\sigma}(t_i)|}.
+    \label{equ:5-experiments-L1-error}
+\end{equation}
+We use $n_t=100$ evenly spaced evaluation points covering the whole spectrum of
+$\mtx{A}$. The choice of this metric can be justified by the fact that this
+error is the midpoint quadrature rule applied to \todo{refer to choice of metric} \cite[Chapter~9.2.1]{quarteroni2007numerical}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Model problem from density functional theory}
 \label{sec:5-experiments-density-function}
 
-For our first example, we consider the matrix which results from the second order
+For our first example, we assemble the matrix which arises from the second order
 finite difference discretization of the differential operator
 \begin{equation}
-    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V_n(\vct{x}) u(\vct{x}).
+    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V(\vct{x}) u(\vct{x})
     \label{equ:5-experiments-electronic-hamiltonian}
 \end{equation}
-We consider a cell of side-length $L=6$ which we discretize using a uniform
-mesh of size $h=0.6$. We place a Gaussian
+for a uniform mesh of size $h=0.6$. The potential $V$ results from a
+lattice whose primitive cell is of side-length $L=6$ and in whose center the
+charge
 \begin{equation}
     \alpha \exp(-\frac{\lVert \vct{x} \rVert _2^2}{ 2 \beta^2 })
     \label{equ:5-experiments-gaussian-cell}
 \end{equation}
-with $\alpha = 4$, $\beta = 2$ in the center of this cell, and in every
-spatial direction periodically repeat this procedure. This gives us the potential
-$V_1$. $V_n$ is then formed by extending our domain to $n$ such cells in each
-dimension (see \reffig{fig:5-experiments-periodic-gaussian-well}). 
+with $\alpha = 4$, $\beta = 2$ is located. The computational domain is chosen
+to span $c$ primitive cells in every spatial dimension, hence, yielding
+discretization matrices which are growing in size with $c$. In our experiments
+we consider the three-dimensional case, but for visualization purposes, we
+illustrate the potential in \reffig{fig:5-experiments-periodic-gaussian-well}
+in two dimensions.\\
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.33\columnwidth}
         \input{plots/periodic_gaussian_well_1.pgf}
-        \caption{$n=1$}
+        \caption{$c=1$}
         \label{fig:5-experiments-periodic-gaussian-well-1}
     \end{subfigure}
     \begin{subfigure}[b]{0.33\columnwidth}
         \input{plots/periodic_gaussian_well_2.pgf}
-        \caption{$n=2$}
+        \caption{$c=2$}
         \label{fig:5-experiments-periodic-gaussian-well-2}
     \end{subfigure}
     \begin{subfigure}[b]{0.33\columnwidth}
         \input{plots/periodic_gaussian_well_5.pgf}
-        \caption{$n=5$}
+        \caption{$c=5$}
         \label{fig:5-experiments-periodic-gaussian-well-5}
     \end{subfigure}
-    \caption{Two dimensional periodic Gaussian wells for different $n$.}
+    \caption{Two dimensional periodic potential $V$ for different sizes $c$ of the computational domain.}
     \label{fig:5-experiments-periodic-gaussian-well}
 \end{figure}
 
-For a Gaussian \gls{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
-with $\sigma=0.05$ we compute the $L^1$ relative error
-\begin{equation}
-    \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^m(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^n |\phi_{\sigma}(t_i)|}
-    \label{equ:5-experiments-L1-error}
-\end{equation}
-from the spectral density which we compute using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}.
-We use $n_t=100$ evenly spaced evaluation points.
+For Gaussian \gls{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
+with \gls{smoothing-parameter} $=0.05$ we plot for two choices of \gls{chebyshev-degree}
+the convergence of the error with \gls{num-random-vectors} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}
+and equally for two choices of \gls{num-random-vectors} the convergence of the
+error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}.
 
-\clearpage
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.45\columnwidth}
         \input{plots/electronic_structure_convergence_nv_m800.pgf}
@@ -85,6 +101,28 @@ We use $n_t=100$ evenly spaced evaluation points.
     \label{fig:5-experiments-electronic-structure-convergence-m}
 \end{figure}
 
+In \reftab{tab:5-experiments-timing-DGC} we list the wall time each method
+takes to compute an approximate \gls{spectral-density} at $n_t=100$ points
+for different values of \gls{num-random-vectors} and \gls{chebyshev-degree}.
+
+\begin{table}[ht]
+    \caption{Runtime comparison}
+    \label{tab:5-experiments-timing-DGC}
+    \input{tables/timing_DGC.tex}
+\end{table}
+
+Back in \refchp{chp:3-nystrom} we already saw that for small values of \gls{smoothing-parameter}
+the Nystr\"om approximation will only need a small \gls{sketching-matrix} in order
+to achieve an accurate approximation. On the other hand, for large choices of
+\gls{smoothing-parameter} the low-rank approximation will by itself not suffice.
+The interplay between the two parts which make up the \gls{NCPP},
+on one hand the low-rank approximation and on the other hand the
+trace estimation on the residual, is illustrated well in
+\reffig{fig:5-experiments-electronic-structure-matvec-mixture}.
+For various values of \gls{smoothing-parameter} and a simultaneously changing
+\gls{chebyshev-degree} $=120 / \sigma$ to keep an approximately equal interpolation
+accuracy, the behavior of the error for fixed $n_v + \widetilde{n}_v = 80$ is plotted.
+
 \begin{figure}[ht]
     \centering
     \input{plots/electronic_structure_matvec_mixture.pgf}
@@ -97,30 +135,41 @@ We use $n_t=100$ evenly spaced evaluation points.
 \section{Benchmark against Haydock's method}
 \label{sec:5-experiments-haydock-method}
 
-Different kernel
+Haydock's method \cite{haydock1972electronic,lin2016review} is a specialized technique for approximating \gls{smooth-spectral-density}
+in the case where a Lorentzian smoothing kernel
 \begin{equation}
     g_{\sigma}(t) = \frac{1}{\pi} \frac{\sigma}{t^2 + \sigma^2} = -\frac{1}{\pi} \Imag\left\{ \frac{1}{t + i\sigma} \right\}
     \label{equ:5-experiments-cauchy-kernel}
 \end{equation}
+is used.
+%Estimating \gls{smooth-spectral-density} then becomes the
+%trace estimation problem
+%\begin{equation}
+%    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) = - \frac{1}{n \pi} \Imag \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
+%    \label{equ:5-experiments-haydock-trace}
+%\end{equation}
+%Similarly to the \gls{DGC} method (see \refsec{sec:2-chebyshev-delta-gauss-chebyshev}),
+%the Hutchinson's trace estimator with standard Gaussian random vectors
+%$\vct{\psi} \in \mathbb{R}^n$ is used to
+%approximate the trace
+%\begin{equation}
+%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_v} \sum_{j=1}^{n_v} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j.
+%    \label{equ:5-experiments-haydock-hutchinson}
+%\end{equation}
+%It turns out that each summand in \refequ{5-experiments-haydock-hutchinson} can
+%be efficiently evaluated for multiple $t$ by running Lanczos
+%on $\mtx{A}$ with starting vector $\vct{\psi}_j$
+%\begin{equation}
+%    \vct{\psi}_j^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j% &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I} - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
+%    \approx \cfrac{1}{(t - i\sigma) - \alpha_1 - \cfrac{\beta_2^2}{(t - i\sigma) - \alpha_2 - \dots}}
+%    \label{equ:5-experiments-haydock-recursion}
+%\end{equation}
 
-Conversion to trace estimation problem
-\begin{equation}
-    \phi_{\sigma}(t) = - \frac{1}{n \pi} \Imag \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
-    \label{equ:5-experiments-haydock-trace}
-\end{equation}
-Use Hutchinson's to estimate trace
-\begin{equation}
-    \frac{1}{n_v} \sum_{j=1}^{n_v} \left( \vct{\psi}^{(j)} \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}^{(j)}
-    \label{equ:5-experiments-haydock-hutchinson}
-\end{equation}
-where each summand can be efficiently evaluated for all $t$ from the Arnoldi decomposition of $\mtx{A}$ with starting vector $\vct{\psi}$
-\begin{align}
-    \vct{\psi}^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi} &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I} - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
-    &= \cfrac{1}{(t - i\sigma) - \alpha_1 - \cfrac{\beta_2^2}{(t - i\sigma) - \alpha_2 - \dots}}
-    \label{equ:5-experiments-haydock-recursion}
-\end{align}
+We repeat the exact same experiments from \refsec{sec:5-experiments-density-function},
+plot the results in \reffig{fig:5-experiments-haydock-convergence-nv} and
+\reffig{fig:5-experiments-haydock-convergence-m}, and compare the wall time
+between the methods in \reftab{tab:5-experiments-timing-haydock}.
 
-\clearpage
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.45\columnwidth}
         \input{plots/haydock_convergence_nv_m800.pgf}
@@ -151,28 +200,6 @@ where each summand can be efficiently evaluated for all $t$ from the Arnoldi dec
     \caption{Behavior with $m$ for $\sigma=0.05$}
     \label{fig:5-experiments-haydock-convergence-m}
 \end{figure}
-
-%\begin{table}[ht]
-%    \caption{Runtime comparison}
-%    \label{tab:5-experiments-haydock-runtime}
-%    \centering
-%    \renewcommand{\arraystretch}{1.2}
-%    \begin{tabular}{@{}lcccc@{}}
-%        \toprule
-%        Parmameters & $m=800,n_v=40$ & $m=2400,n_v=40$ & $m=800,n_v=160$ & $m=2400,n_v=160$ \\
-%        \midrule
-%        Haydock & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-%        \gls{NC} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-%        \gls{NCPP} & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-%        \bottomrule
-%    \end{tabular}
-%\end{table}
-
-\begin{table}[ht]
-    \caption{Runtime comparison}
-    \label{tab:5-experiments-timing-DGC}
-    \input{tables/timing_DGC.tex}
-\end{table}
 
 \begin{table}[ht]
     \caption{Runtime comparison}

@@ -36,13 +36,33 @@ They satisfy the recurrence relation
 which can be shown using the definition \refequ{equ:2-chebyshev-chebyshev-definition}
 and a standard trigonometric identity.\\
 
+\todo{Discuss Chebyshev interpolation in general}
+
 The Chebyshev expansion of the matrix function appearing in \refequ{equ:1-introduction-spectral-density-as-trace}
 with \gls{chebyshev-degree} is then \cite[Chapter~3]{trefethen2019chebyshev},
 \begin{equation}
-    g_{\sigma}^m(t\mtx{I} - \mtx{A}) = \sum_{l=0}^m \mu_l(t) T_l(\mtx{A})
+    g_{\sigma}^m(t\mtx{I} - \mtx{A}) = \sum_{l=0}^m \mu_l(t) T_l(\mtx{A}).
     \label{equ:2-chebyshev-chebyshev-expansion}
 \end{equation}
-The corresponding coefficients $\{\mu_l(t)\}_{l=0}^m$ could be computed using the
+This, however, is only well-defined for matrices whose spectra are fully
+contained in $[-1, 1]$. For matrices whose spectra we know (or can estimate) to
+be within $[a, b]$, we may define a \gls{spectral-transformation} as follows
+\begin{equation}
+    \tau(t) = \frac{2t - a - b}{b - a},
+    \label{equ:2-chebyshev-spectral-transformation}
+\end{equation}
+and subsequently expand $\bar{g}_{\bar{\sigma}}^m = g_{\sigma}^m \circ \tau^{-1}$ 
+from which we can retrieve $g_{\sigma}^m = \bar{g}_{\bar{\sigma}}^m \circ \tau$.
+Note that under this transformation also the \gls{smoothing-parameter} needs to be
+adjusted to
+\begin{equation}
+    \bar{\sigma} = |\tau'| \sigma = \frac{2\sigma}{b - a}
+    \label{equ:2-chebyshev-sigma-transformation}
+\end{equation}
+before the approximation in order to get a consistent result.\\
+
+The coefficients $\{\mu_l(t)\}_{l=0}^m$ in \refequ{equ:2-chebyshev-chebyshev-expansion}
+could be computed using the
 orthogonality of the Chebyshev polynomials, and some authors suggest computing
 them using a quadrature rule \cite[Algorithm~1]{lin2017randomized}. However, we
 have found a significantly simpler and faster approach: Note that polynomials of
@@ -84,8 +104,6 @@ spectral density
     \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
     \label{equ:2-chebyshev-spectral-density-as-trace-expansion}
 \end{equation}
-
-\todo{Explain spectral transformation for $\mtx{A}$ not in $[-1, 1]$}
 
 The convergence of the expansion to the actual spectral density is exponential, 
 which is claimed by the following theorem:
@@ -232,8 +250,6 @@ Chebyshev polynomials \refequ{equ:2-chebyshev-chebyshev-recursion}. The pseudoco
 for this method can be found in \refalg{alg:DGC}.
 
 \begin{algo}{Delta-Gauss-Chebyshev method}{DGC}
-    Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, number of random vectors $n_v$,
-    evaluation points $\{t_i\}_{i=1}^{n_t}$
     \input{algorithms/delta_gauss_chebyshev.tex}
 \end{algo}
 
@@ -248,5 +264,5 @@ $\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$ time, due to the relation
 Denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
 with $c(n)$, e.g. $\mathcal{O}(c(n)) = n^2$ for dense and
 $\mathcal{O}(c(n)) = n$ for sparse matrices, we determine the computational
-complexity of the \gls{DGC} method to be $\mathcal{O}(m \log(m) n_t + m c(n) n_v)$,
+complexity of the \gls{DGC} method to be $\mathcal{O}(m \log(m) n_t + m n_v c(n))$,
 with $\mathcal{O}(m n_t + n n_v)$ required additional storage.

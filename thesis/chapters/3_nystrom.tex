@@ -18,7 +18,7 @@ What results is a matrix which is \emph{numerically low-rank}.
 \section{The numerical rank of a matrix}
 \label{sec:3-nystrom-numerical-rank}
 
-\todo{write proposition}
+\todo{Summarize result of this paragraph in a proposition}
 
 To account for the finite precision of floating point operations, we use the
 notion of the \gls{numerical-rank} \cite[Definition~1.1]{noga2013rank}
@@ -120,6 +120,7 @@ result in a significantly smaller matrix $\mtx{B}\mtx{\Omega}$ whose
 columns roughly span the same range as the columns of $\mtx{B}$.
 Closely following \cite[Section~2.1]{tropp2023randomized}, we illustrate the
 reason why this approach works hereafter.\\
+
 Suppose $\mtx{B}$ is symmetric and has a spectral decomposition
 \begin{equation}
     \mtx{B}
@@ -215,8 +216,6 @@ often orders of magnitude faster.\\
 We call the corresponding algorithm the \glsfirst{NC} method, whose pseudocode
 can be found in \refalg{alg:nystrom-chebyshev}.
 \begin{algo}{Nystr\"om-Chebyshev method}{nystrom-chebyshev}
-    Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, \glsfirst{chebyshev-degree}, \glsfirst{num-random-vectors},
-    evaluation points $\{t_i\}_{i=1}^{n_t}$
     \input{algorithms/nystrom_chebyshev.tex}
 \end{algo}
 

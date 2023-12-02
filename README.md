@@ -70,7 +70,8 @@ To reproduce our results, you will need
 - a recent version of [Python](https://www.python.org/downloads) to run the experiments;
 - and (optionally) a [LaTeX](https://www.latex-project.org/get/#tex-distributions) distribution to build the thesis.
 
-**Note** The commands `git` and `python`have to be discoverable by your terminal. If you want to build the thesis, additionally `pdflatex`, `bibtex`, and `makeglossaries` need to work. To verify this, use `[command] --version`.
+> [!NOTE]
+> The commands `git` and `python`have to be discoverable by your terminal. If you want to build the thesis, additionally `pdflatex`, `bibtex`, and `makeglossaries` need to work. To verify this, use `[command] --version`.
 
 ### Setup
 
@@ -90,8 +91,8 @@ Reproduce the whole project with the following command
 ```[shell]
 python -m setup.py -a
 ```
-**Note**
-Reproducing the whole project might take a few hours!
+> [!NOTE]
+> Reproducing the whole project might take a few hours!
 
 ## Contact
 

@@ -25,14 +25,14 @@
         \draw (2.15, -0.15) to (2.15, -2.05);
     \end{scope}
 
-    % SQL
+    % SLQ
     \begin{scope}[shift={(7, 5)}]
         \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
         \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Stochastic Lanczos quadrature}};
         \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
         
         \node[anchor=west] at (0.0, -0.35) {Origin};
-        \node[anchor=west] at (2.2, -0.35) {\cite{lin2017randomized} Lin et. al. (2016)};
+        \node[anchor=west] at (2.2, -0.35) {\cite{lin2016review} Lin et. al. (2016)};
         
         \node[anchor=west] at (0.0, -0.85) {Smoothing};
         \node[anchor=west] at (2.2, -0.85) {None};
@@ -49,7 +49,10 @@
     % Expansion based
     \draw[rounded corners, line width=2, color=darkblue] (-0.5, 1.55) rectangle (14, -8.75);
     \node[fill=white] at (6.75, 1.55) {\bfseries \textcolor{darkblue}{Expansion based}};
-    
+
+    \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (10, -0.5) -- (10.5, -0.5) -- (10.5, -2.25) node [midway, right] {\textcolor{darkblue}{$g_{\sigma}$}};
+    \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (3.5, -0.5) -- (3, -0.5) -- (3, -2.25) node [midway, left] {\textcolor{darkblue}{$g_{\sigma}$}};
+
     % KPM
     \begin{scope}[shift={(3.5, 0.5)}]
         \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
