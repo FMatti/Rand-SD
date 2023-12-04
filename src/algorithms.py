@@ -441,9 +441,9 @@ def SLQ(A, t, sigma, n_v, m=200, seed=0):
     sigma : int or float > 0
         Smearing parameter.
     n_v : int > 0
-        Number of random vectors used in Monte-Carlo estimate.
-    m : int > 0
         The number of Lanczos iterations.
+    m : int > 0
+        Number of random vectors used in Monte-Carlo estimate.
     seed : int >= 0
         The seed for generating the random matrix W.
 
@@ -466,10 +466,10 @@ def SLQ(A, t, sigma, n_v, m=200, seed=0):
     n = A.shape[0]
 
     phi_tilde = np.zeros_like(t)
-    for _ in range(n_v):
+    for _ in range(m):
         x = np.random.randn(n)
-        a, b = Lanczos(A, x / np.linalg.norm(x), m)
-        theta, S = sp.linalg.eigh_tridiagonal(a[: m], b[: m - 1])
+        a, b = Lanczos(A, x / np.linalg.norm(x), n_v)
+        theta, S = sp.linalg.eigh_tridiagonal(a[: n_v], b[: n_v - 1])
         t_minus_theta = np.subtract.outer(t, theta)
         phi_tilde += gaussian_kernel(t_minus_theta, sigma=sigma) @ S[0]**2
 
