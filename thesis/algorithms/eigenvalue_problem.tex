@@ -1,0 +1,9 @@
+\hspace*{\algorithmicindent} \textbf{Input:} Matrices $\mtx{K}_1, \mtx{K}_2 \in \mathbb{R}^{n_{\mtx{\Omega}} \times n_{\mtx{\Omega}}}$ \\
+\hspace*{\algorithmicindent} \textbf{Parameters:} Threshold $\tau$ \\
+\hspace*{\algorithmicindent} \textbf{Output:} $\Tr(\mtx{K}_1^{\dagger} \mtx{K}_2)$
+\begin{algorithmic}[1]
+    \State Compute spectral decomposition $\mtx{K}_1 = \mtx{V} \mtx{M} \mtx{V}^{\top}$
+    \State Let $\mtx{M}_1$ only contain eigenvalues larger than $\tau \max_{i=1, \dots, p} \lambda_i$ and $\mtx{V}_1$ the corresponding eigenvectors
+    \State Solve eigenvalue problem $\mtx{M}^{-1/2} \mtx{V}_1 \mtx{\Lambda} \mtx{M}^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi}$
+    \State Compute $\Tr(\mtx{\Xi})$
+\end{algorithmic}

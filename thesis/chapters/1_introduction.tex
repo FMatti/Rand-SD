@@ -28,7 +28,7 @@ spectral density.
         \phi(t) = \frac{1}{n} \sum_{i=1}^{n} \delta(t - \lambda_i),
         \label{equ:1-introduction-def-spectral-density}
     \end{equation}
-    where we used the \gls{dirac-delta} \cite[Chapter~15]{dirac1947quantum}
+    where we used the \gls{dirac-delta} \cite[chapter~15]{dirac1947quantum}
     and the \gls{spectral-parameter} $\in \mathbb{R}$.
 \end{definition}
 
@@ -94,7 +94,7 @@ but at the cost of losing many of the finer characteristics of the spectrum.
 
 In many applications \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing-parameter}
 \begin{equation}
-    g_{\sigma}(t) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{t^2}{2\sigma^2}},
+    g_{\sigma}(s) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{s^2}{2\sigma^2}},
     \label{equ:1-introduction-def-gaussian-kernel}
 \end{equation}
 but there are many other choices possible for \gls{smoothing-kernel}. Ideally,
@@ -107,10 +107,10 @@ we may represent $\mtx{A} \in \mathbb{R}^{n \times n}$ using its spectral
 decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$ where
 $\mtx{\Lambda} \in \mathbb{R}^{n \times n}$ is the diagonal matrix which carries
 the eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U} \in \mathbb{R}^{n \times n}$
-such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[Theorem~4.1.5]{horn1985matrix}.
+such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[theorem~4.1.5]{horn1985matrix}.
 Thus, if we absorb the \gls{matrix-size} in \gls{smoothing-kernel},
 apply the definition of a smooth function $f$ applied to a matrix $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
-with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[Definition~1.2]{higham2008functions},
+with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[definition~1.2]{higham2008functions},
 and use the invariance of the trace under orthonormal transformations, we may write
 \begin{equation}
     \phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})).
@@ -166,7 +166,7 @@ from \cite{lin2017randomized}, we see our main contributions to be the following
 
 \begin{itemize}
     \item The development of a consistent \gls{DCT}-based interpolation scheme which allows us
-          to speed up \cite[Algorithm~5]{lin2017randomized} by orders of magnitude
+          to speed up \cite[algorithm~5]{lin2017randomized} by orders of magnitude
           at no loss of accuracy;
     \item The derivation of an a priori guarantee for the number of matrix-vector
           products needed to get an accurate approximation of the spectral

@@ -5,7 +5,7 @@ We try to follow the notation which is used in contemporary literature in this f
 
 \begin{itemize}
     \item we only work with objects over the real numbers $\mathbb{R}$;
-    \item scalar are represented by lower case Greek or Latin letters ($x$, $\varepsilon$, \dots),
+    \item scalar are represented by lower case Greek or Latin letters ($s$, $\varepsilon$, \dots),
           vectors are additionally printed in bold ($\vct{v}$, $\vct{\mu}$, \dots),
           and matrices are additionally capitalized ($\mtx{A}$, $\mtx{\Omega}$, \dots);
     \item the components of a vector $\vct{v} \in \mathbb{R}^{n}$ are $v_i \in \mathbb{R}, i = 1, \dots, n$,
@@ -16,6 +16,10 @@ We try to follow the notation which is used in contemporary literature in this f
           zeros everywhere else;
     \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$
           are denoted with $\lambda_1 \geq \dots \geq \lambda_n$;
+    \item a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ is said to be positive
+          semi-definite if its eigenvalues are all non-negative, and we denote
+          this property with $\mtx{A} \succcurlyeq 0$;
+    %\item Schatten norm
     \item the trace of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ is
           the sum of its diagonal elements $\Tr(\mtx{A}) = \sum_{i=1}^n a_{ii}$
           but also the sum of its eigenvalues $\Tr(\mtx{A}) = \sum_{i=1}^n \lambda_i$;
@@ -29,7 +33,7 @@ We try to follow the notation which is used in contemporary literature in this f
           is $\lVert \mtx{A} \rVert _F = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
     \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo};
     \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
-    \item Dirac's delta distribution is written $\delta$ \cite[Chapter~15]{dirac1947quantum}
+    \item Dirac's delta distribution is written $\delta$ \cite[chapter~15]{dirac1947quantum}
           and the Kronecker delta $\delta_{ij}$;
     \item the cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
     \item the real part of a complex number $z$ is $\Re(z)$ while its imaginary part is $\Im(z)$;
@@ -37,7 +41,9 @@ We try to follow the notation which is used in contemporary literature in this f
           intervals as $(a, b) \subset \mathbb{R}$;
     \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
           on the complexity of a computation. For those more familiar with the
-          Bachmann-Landau notation \cite[Section~3.2]{cormen2009algorithms},
+          Bachmann-Landau notation \cite[section~3.2]{cormen2009algorithms},
           please allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$;
-    \item and finally, $c(n)$ denotes the computational complexity of a matrix-vector product.
+    \item $c(n)$ denotes the computational complexity of a matrix-vector product;
+    \item and finally, we call an operation prohibitively expensive, if its
+          complexity scales more than quadratically with the size of the problem.
 \end{itemize}

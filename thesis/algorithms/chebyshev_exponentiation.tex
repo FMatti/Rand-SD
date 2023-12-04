@@ -1,0 +1,13 @@
+\hspace*{\algorithmicindent} \textbf{Input:} Coefficients $\{ \mu_l \}_{l=0}^m$ of the expansion $\sum_{l=0}^m \mu_l T_l(s)$, exponent $k$ \\
+\hspace*{\algorithmicindent} \textbf{Output:} Coefficients $\{ \nu_l \}_{l=0}^{km}$ of the exponentiated expansion
+\begin{algorithmic}[1]
+    \State Define the vector $\widehat{\vct{\mu}}$ as
+        \begin{equation}
+            (\widehat{\vct{\mu}})_l = \begin{cases} \mu_l &\text{for $l=0, \dots, m$} \\
+                                                     0 &\text{for $l=m+1, \dots, km$} \end{cases}
+        \end{equation}
+    \State Compute $\vct{f} = \DCT(\widehat{\vct{\mu}})$
+    \State Let $(\vct{f}^{k})_l = (\vct{f})_l^k$ for $l=0, \dots, km$
+    \State Compute $\vct{\nu} = \DCT^{-1}(\vct{f}^{k})$
+    \State Let $\nu_l = (\vct{\nu})_l$ for $l=0, \dots, km$
+\end{algorithmic}

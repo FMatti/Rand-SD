@@ -18,7 +18,7 @@ which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.or
 \end{equation}
 We use $n_t=100$ evenly spaced evaluation points covering the whole spectrum of
 $\mtx{A}$. The choice of this metric can be justified by the fact that this
-error is the midpoint quadrature rule applied to \todo{refer to choice of metric} \cite[Chapter~9.2.1]{quarteroni2007numerical}. 
+error is the midpoint quadrature rule applied to \todo{refer to choice of metric} \cite[chapter~9.2.1]{quarteroni2007numerical}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -45,17 +45,17 @@ we consider the three-dimensional case, but for visualization purposes, we
 illustrate the potential in \reffig{fig:5-experiments-periodic-gaussian-well}
 in two dimensions.\\
 \begin{figure}[ht]
-    \begin{subfigure}[b]{0.33\columnwidth}
+    \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/periodic_gaussian_well_1.pgf}
         \caption{$c=1$}
         \label{fig:5-experiments-periodic-gaussian-well-1}
     \end{subfigure}
-    \begin{subfigure}[b]{0.33\columnwidth}
+    \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/periodic_gaussian_well_2.pgf}
         \caption{$c=2$}
         \label{fig:5-experiments-periodic-gaussian-well-2}
     \end{subfigure}
-    \begin{subfigure}[b]{0.33\columnwidth}
+    \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/periodic_gaussian_well_5.pgf}
         \caption{$c=5$}
         \label{fig:5-experiments-periodic-gaussian-well-5}
@@ -66,8 +66,8 @@ in two dimensions.\\
 
 For Gaussian \gls{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
 with \gls{smoothing-parameter} $=0.05$ we plot for two choices of \gls{chebyshev-degree}
-the convergence of the error with \gls{num-random-vectors} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}
-and equally for two choices of \gls{num-random-vectors} the convergence of the
+the convergence of the error with \gls{sketch-size} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}
+and equally for two choices of \gls{sketch-size} the convergence of the
 error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}.
 
 \begin{figure}[ht]
@@ -81,7 +81,7 @@ error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-struct
         \caption{$m=2400$}
         \label{fig:5-experiments-electronic-structure-convergence-nv-m2400}
     \end{subfigure}
-    \caption{Behavior with $n_v$ for $\sigma=0.05$}
+    \caption{Behavior with $n_{\mtx{\Omega}}$ for $\sigma=0.05$}
     \label{fig:5-experiments-electronic-structure-convergence-nv}
 \end{figure}
 
@@ -89,12 +89,12 @@ error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-struct
     \centering
     \begin{subfigure}[b]{0.45\columnwidth}
         \input{plots/electronic_structure_convergence_m_nv40.pgf}
-        \caption{$n_v=40$}
+        \caption{$n_{\mtx{\Omega}}=40$}
         \label{fig:5-experiments-electronic-structure-convergence-m-nv40}
     \end{subfigure}
     \begin{subfigure}[b]{0.5\columnwidth}
         \input{plots/electronic_structure_convergence_m_nv160.pgf}
-        \caption{$n_v=160$}
+        \caption{$n_{\mtx{\Omega}}=160$}
         \label{fig:5-experiments-electronic-structure-convergence-m-nv160}
     \end{subfigure}
     \caption{Behavior with $m$ for $\sigma=0.05$}
@@ -103,7 +103,7 @@ error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-struct
 
 In \reftab{tab:5-experiments-timing-DGC} we list the wall time each method
 takes to compute an approximate \gls{spectral-density} at $n_t=100$ points
-for different values of \gls{num-random-vectors} and \gls{chebyshev-degree}.
+for different values of \gls{sketch-size} and \gls{chebyshev-degree}.
 
 \begin{table}[ht]
     \caption{Runtime comparison}
@@ -121,7 +121,7 @@ trace estimation on the residual, is illustrated well in
 \reffig{fig:5-experiments-electronic-structure-matvec-mixture}.
 For various values of \gls{smoothing-parameter} and a simultaneously changing
 \gls{chebyshev-degree} $=120 / \sigma$ to keep an approximately equal interpolation
-accuracy, the behavior of the error for fixed $n_v + \widetilde{n}_v = 80$ is plotted.
+accuracy, the behavior of the error for fixed $n_{\mtx{\Omega}} + \widetilde{n}_v = 80$ is plotted.
 
 \begin{figure}[ht]
     \centering
@@ -153,7 +153,7 @@ is used.
 %$\vct{\psi} \in \mathbb{R}^n$ is used to
 %approximate the trace
 %\begin{equation}
-%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_v} \sum_{j=1}^{n_v} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j.
+%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_{\mtx{\Omega}}} \sum_{j=1}^{n_{\mtx{\Omega}}} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j.
 %    \label{equ:5-experiments-haydock-hutchinson}
 %\end{equation}
 %It turns out that each summand in \refequ{5-experiments-haydock-hutchinson} can
@@ -181,7 +181,7 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.
         \caption{$m=2400$}
         \label{fig:5-experiments-haydock-convergence-nv-m2400}
     \end{subfigure}
-    \caption{Behavior with $n_v$ for $\sigma=0.05$}
+    \caption{Behavior with $n_{\mtx{\Omega}}$ for $\sigma=0.05$}
     \label{fig:5-experiments-haydock-convergence-nv}
 \end{figure}
 
@@ -189,12 +189,12 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.
     \centering
     \begin{subfigure}[b]{0.45\columnwidth}
         \input{plots/haydock_convergence_m_nv40.pgf}
-        \caption{$n_v=40$}
+        \caption{$n_{\mtx{\Omega}}=40$}
         \label{fig:5-experiments-haydock-convergence-m-nv40}
     \end{subfigure}
     \begin{subfigure}[b]{0.5\columnwidth}
         \input{plots/haydock_convergence_m_nv160.pgf}
-        \caption{$n_v=160$}
+        \caption{$n_{\mtx{\Omega}}=160$}
         \label{fig:5-experiments-haydock-convergence-m-nv160}
     \end{subfigure}
     \caption{Behavior with $m$ for $\sigma=0.05$}
@@ -215,3 +215,10 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.
 \todo{[Same plots for multiple matrices]}
 
 \todo{Maybe comparison with SLQ, KPM, ...}
+
+%\begin{figure}[ht]
+%    \centering
+%    \input{plots/multi_matrix_convergence_ModES3D_8.pgf}
+%    \caption{$n_{\mtx{\Omega}}=160$}
+%    \label{fig:5-experiments-multi-matrix-convergence}
+%\end{figure}

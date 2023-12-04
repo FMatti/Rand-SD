@@ -37,10 +37,10 @@ The pseudocode for the \glsfirst{NCPP} is given in \refalg{alg:nystrom-chebyshev
 
 With the cost of a matrix-vector product denoted with
 with $c(n)$, and supposing we allocate the random vectors equally
-to the low-rank approximation and the trace estimation, i.e. $n_v \approx \widetilde{n}_v$,
+to the low-rank approximation and the trace estimation, i.e. $n_{\mtx{\Omega}} \approx \widetilde{n}_v$,
 we determine the computational complexity of the \gls{NCPP}
-method to be $\mathcal{O}(m \log(m) n_t + m n_v^2 n + m n_t n_v^2 +  m c(n) n_v + n_t n_v^3)$, with
-$\mathcal{O}(n n_v + n_v^2 n_t + m n_t)$ required additional storage.
+method to be $\mathcal{O}(m \log(m) n_t + m n_{\mtx{\Omega}}^2 n + m n_t n_{\mtx{\Omega}}^2 +  m c(n) n_{\mtx{\Omega}} + n_t n_{\mtx{\Omega}}^3)$, with
+$\mathcal{O}(n n_{\mtx{\Omega}} + n_{\mtx{\Omega}}^2 n_t + m n_t)$ required additional storage.
 
 \todo{Reuse eigenvectors from generalized eigenvalues to compute last term.}
 
@@ -54,6 +54,8 @@ we have mentioned in \refsec{sec:3-nystrom-other-low-rank}.
 
 Justify choice of norm.
 
+\todo{clean up messy notation with $n_v$}
+
 [Cite preprint]
 
 \begin{lemma}{Hutchinson}{4-nystromchebyshev-hutchinson}
@@ -65,23 +67,23 @@ Justify choice of norm.
 \end{lemma}
 
 \begin{theorem}{Trace correction}{4-nystromchebyshev-trace-correction}
-    Suppose $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric positive definite and continuous in $t \in [a, b]$. Let $\hat{\mtx{B}}(t)$ and $\{\mtx{\Delta}_k(t)\}_{n_v \geq 1}$ be any symmetric positive definite and continuous matrices in $t \in [a, b]$ such that:
+    Suppose $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric positive definite and continuous in $t \in [a, b]$. Let $\hat{\mtx{B}}(t)$ and $\{\mtx{\Delta}_k(t)\}_{n_{\mtx{\Omega}} \geq 1}$ be any symmetric positive definite and continuous matrices in $t \in [a, b]$ such that:
     \begin{equation}
         \Tr(\mtx{B}(t)) = \Tr(\hat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}_k(t)) \quad \text{and} \quad
-        \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t \leq C_2\frac{1}{\sqrt{n_v}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t \leq C_2\frac{1}{\sqrt{n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
     For a fixed constant $C$ and with probability $\geq 1 - \delta$, $Z(t) = \Tr(\hat{\mtx{B}}(t)) + \Hutch_l(\mtx{\Delta}_k(t))$ satisfies:
     \begin{equation}
         \int_{a}^{b} |Z(t) - \Tr(\mtx{\Delta}_k(t))| \mathrm{d}t \leq C \sqrt{\frac{\log(2/\delta)}{kl}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t
     \end{equation}
-    In particular, if $n_v=\widetilde{n}_v=\mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} \right)$, $Z(t)$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
+    In particular, if $n_{\mtx{\Omega}}=\widetilde{n}_v=\mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} \right)$, $Z(t)$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
 \end{theorem}
 
 \begin{proof}
     \begin{align*}
         \int_{a}^{b} |Z(t) - \Tr(\mtx{B}(t))| \mathrm{d}t
         &= \int_{a}^{b} |\Hutch_l(\mtx{\Delta}_k(t)) - \Tr(\mtx{\Delta}_k(t))| \mathrm{d}t && \text{(by definition of $Z(t)$)} \\
-        &= C_1 \sqrt{\frac{\log(2/\delta)}{\widetilde{n}_v}} \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t && \text{(using \refthm{lem:4-nystromchebyshev-hutchinson})} \\
+        &= C_1 \sqrt{\frac{\log(2/\delta)}{\widetilde{n}_v}} \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:4-nystromchebyshev-hutchinson})} \\
         &= C_1 C_2 \sqrt{\frac{\log(2/\delta)}{kl}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}_k(t)$)} \\
     \end{align*}
     Taking $C=C_1 C_2$, we get the desired result with probability $\geq 1 - \delta$.
@@ -94,14 +96,14 @@ Justify choice of norm.
     \begin{equation}
         \hat{\mtx{B}}(t) = (\mtx{B}(t) \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B}(t) \mtx{\Omega})^{\dagger} (\mtx{B}(t) \mtx{\Omega})^{\top}
     \end{equation}
-    with $\mtx{\Omega} \in \mathbb{R}^{n \times n_v}$ a standard Gaussian matrix, $n_v \geq 8 \log(1/\delta)$, and constant $C_2$, satisfies with probability $\geq 1 - \delta$
+    with $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$ a standard Gaussian matrix, $n_{\mtx{\Omega}} \geq 8 \log(1/\delta)$, and constant $C_2$, satisfies with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert \mtx{B}(t) - \hat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{n_v}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{B}(t) - \hat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
 \end{lemma}
 
 \begin{theorem}{Final}{4-nystromchebyshev-final}
-    The parameter-dependent Nystr\"om++ computed with $N_{n_v} = N_{\widetilde{n}_v} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$ for any symmetric positive definite matrix $\mtx{B}(t)$ which continuously depends on $t \in [a, b]$ satisfies, with probability $1 - \delta$: $(1 - \varepsilon) \int \Tr(\mtx{B}(t)) \mathrm{d}t \leq \int \Tr^{n++}(\mtx{B}(t)) \mathrm{d}t \leq  (1 + \varepsilon) \int \Tr(\mtx{B}(t)) \mathrm{d}t$.
+    The parameter-dependent Nystr\"om++ computed with $N_{n_{\mtx{\Omega}}} = N_{\widetilde{n}_v} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$ for any symmetric positive definite matrix $\mtx{B}(t)$ which continuously depends on $t \in [a, b]$ satisfies, with probability $1 - \delta$: $(1 - \varepsilon) \int \Tr(\mtx{B}(t)) \mathrm{d}t \leq \int \Tr^{n++}(\mtx{B}(t)) \mathrm{d}t \leq  (1 + \varepsilon) \int \Tr(\mtx{B}(t)) \mathrm{d}t$.
 \end{theorem}
 
 \begin{proof}
@@ -111,35 +113,35 @@ Justify choice of norm.
     \end{equation}
     for all $t \in [a, b]$ and with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert \mtx{B}(t) - \hat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{n_v}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{\Delta}_k(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert \mtx{B}(t) - \hat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_2 \frac{1}{\sqrt{n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
-    The latter follows from \reflem{lem:4-nystromchebyshev-parameter-nystrom}. Finally, the choices of $N_{\widetilde{n}_v}$ and $N_{n_v}$ follow from \refthm{thm:4-nystromchebyshev-trace-correction} and \reflem{lem:4-nystromchebyshev-parameter-nystrom}.
+    The latter follows from \reflem{lem:4-nystromchebyshev-parameter-nystrom}. Finally, the choices of $N_{\widetilde{n}_v}$ and $N_{n_{\mtx{\Omega}}}$ follow from \refthm{thm:4-nystromchebyshev-trace-correction} and \reflem{lem:4-nystromchebyshev-parameter-nystrom}.
 \end{proof}
 
 \Refthm{thm:4-nystromchebyshev-trace-correction} allows us to almost immediately
 also conclude $1/\varepsilon$ result for the higher order approximations
 \refequ{equ:3-nystrom-trace-generalization}.
 
-For RSVD ($k=2$), we use \cite[Theorem~9.1]{halko2011finding}
+For RSVD ($k=2$), we use \cite[theorem~9.1]{halko2011finding}
 \begin{equation}
     \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \leq \lVert \mtx{\Lambda}_2 \rVert _F + \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F.
 \end{equation}
 Result from parameter-dependent Nyström++ \todo{[cite preprint]}
 \begin{equation}
-    %\mathbb{E}^n_v\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
-    \mathbb{E}^{n_v/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{n_v} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_v}}
+    %\mathbb{E}^n_{\mtx{\Omega}}\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
+    \mathbb{E}^{n_{\mtx{\Omega}}/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{n_{\mtx{\Omega}}} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\mtx{\Omega}}}}
 \end{equation}
-where $n_v$ hence
+where $n_{\mtx{\Omega}}$ hence
 \begin{equation}
-    \mathbb{E}^{n_v/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
-    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_v}}.
+    \mathbb{E}^{n_{\mtx{\Omega}}/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
+    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\mtx{\Omega}}}}.
 \end{equation}
-By Markov's and Minkowski's inequalities we have for $n_v \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
+By Markov's and Minkowski's inequalities we have for $n_{\mtx{\Omega}} \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
 \begin{equation}
-    \int \lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int \frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_v}} \mathrm{d}t
+    \int \lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int \frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\mtx{\Omega}}}} \mathrm{d}t
 \end{equation}
 
-For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[Lemma~5.2]{tropp2023randomized}
+For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[lemma~5.2]{tropp2023randomized}
 to directly conclude from the RSVD case.
 
 Have result for all $k \geq 1$, but issue with implementation, since we do not
