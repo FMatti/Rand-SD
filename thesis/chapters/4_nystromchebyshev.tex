@@ -1,10 +1,35 @@
 \chapter{The Nystr\"om-Chebyshev++ method}
 \label{chp:4-nystromchebyshev}
 
-The idea from \cite{lin2017randomized} is to combine low-rank approximation
-with stochastic trace estimation. Recent theoretical developments confirm the
-efficacy of this approach \cite{meyer2021hutch,persson2022hutch}. In general,
-this is done by first computing a low-rank approximation $\widehat{\mtx{B}} \approx \mtx{B}$
+In \refsec{sec:2-chebyshev-stochastic-trace-estimation} we have introduced the
+classical approach for estimating the trace of a matrix using matrix-vector
+products. A drawback of this method is the rather slow, reciprocal decrease of
+the \gls{MSE} with \gls{num-hutchinson-queries}. Variance reduced trace estimators
+try to improve on this. They usually take a \enquote{hybrid} approach, combining
+low-rank approximation with stochastic trace estimation.\\
+
+This chapter will take the methods we have discussed in \refchp{chp:2-chebyshev}
+and \refchp{chp:3-nystrom} combine them to a variance reduced method which
+we call the \glsfirst{NCPP} method.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Variance reduced trace estimation}
+\label{sec:4-nystromchebyshev-hybrid}
+
+The initial idea from \cite{lin2017randomized} was to combine low-rank approximation
+with stochastic trace estimation to cause the \gls{MSE}, which -- for unbiased estimators
+-- is synonymous with the variance, to decrease quadratically with the square
+of the reciprocal of the number of matrix-vector products.
+Recent theoretical developments confirm the
+efficacy of this approach \cite{meyer2021hutch,persson2022hutch}.\\
+
+The hope is that by first computing a low-rank approximation $\widehat{\mtx{B}} \approx \mtx{B}$
+we can capture as much of the contribution of the dominant eigenvalues to the
+trace of $\mtx{B}$ as possible.
+
+\todo{Explain intuition and results behind Hutch++, and show it is also possible with Nystrom++}
+
 for which we can directly compute the trace. Subsequently, the
 Hutchinson's trace estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator}
 is used to estimate the trace of the residual
@@ -23,15 +48,19 @@ of the Hutchinson \refequ{equ:2-chebyshev-DGC-hutchinson-variance} also.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Implementation}
-\label{sec:4-nystromchebyshev-implementation}
+\section{The Nystr\"om-Chebyshev++ method}
+\label{sec:4-nystromchebyshev-nystromchebyshev-pp}
+
+The remainder is 
 
 Taking the developments from \refchp{chp:2-chebyshev} and \refchp{chp:3-nystrom},
 we can combine them to a powerful hybrid method which we call the \glsfirst{NCPP}
-method. Its implementations is similar to the \gls{NC} method (\refalg{alg:3-nystrom-nystrom-chebyshev}).
-The pseudocode for the \glsfirst{NCPP} is given in \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp}.
+method.
 
 \todo{Better explain how residual is estimated.}
+
+Its implementations is similar to the \gls{NC} method (\refalg{alg:3-nystrom-nystrom-chebyshev}).
+The pseudocode for the \glsfirst{NCPP} is given in \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp}.
 
 \begin{algo}{Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-nystrom-chebyshev-pp}
     \input{algorithms/nystrom_chebyshev_pp.tex}
@@ -43,6 +72,11 @@ to the low-rank approximation and the trace estimation, i.e. $n_{\mtx{\Omega}} \
 we determine the computational complexity of the \gls{NCPP}
 method to be $\mathcal{O}(m \log(m) n_t + m n_{\mtx{\Omega}}^2 n + m n_t n_{\mtx{\Omega}}^2 +  m c(n) n_{\mtx{\Omega}} + n_t n_{\mtx{\Omega}}^3)$, with
 $\mathcal{O}(n n_{\mtx{\Omega}} + n_{\mtx{\Omega}}^2 n_t + m n_t)$ required additional storage.\\
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Implementation details}
+\label{subsec:4-nystromchebyshev-implementation-details}
 
 \todo{
 In at the end of algorithm \refalg{alg:3-nystrom-eigenvalue-problem} we
@@ -57,17 +91,17 @@ to make solving this easier
 }
 
 It is not hard to extend this method to the other low-rank approximations
-we have mentioned in \refsec{sec:3-nystrom-other-low-rank}.
+we have mentioned in \refsec{subsec:3-nystrom-other-low-rank}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Theoretical analysis}
-\label{sec:4-nystromchebyshev-analysis}
+\subsection{Theoretical analysis}
+\label{subsec:4-nystromchebyshev-analysis}
 
-\todo{Justify choice of norm.}
-
-Using this result, we can derive an error for any trace estimator of the form
-\refequ{equ:4-nystromchebyshev-hutch-pp} which satisfies certain conditions.
+Using the result from \reflem{lem:2-chebyshev-parameter-hutchinson},
+we can -- under certain conditions -- derive an analogous result
+to \cite{meyer2021hutch} for any trace estimate of the form
+\refequ{equ:4-nystromchebyshev-hutch-pp} in the parameter-dependent case.
 
 \begin{theorem}{Trace correction}{4-nystromchebyshev-trace-correction}
     Suppose $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric positive definite
@@ -88,17 +122,25 @@ Using this result, we can derive an error for any trace estimator of the form
 \end{theorem}
 
 \begin{proof}
-    \begin{align*}
+    We may directly evaluate
+    \begin{align}
         \int_{a}^{b} |Z(t) - \Tr(\mtx{B}(t))| \mathrm{d}t
         &= \int_{a}^{b} |\Hutch_l(\mtx{\Delta}_{n_{\mtx{\Omega}}}(t)) - \Tr(\mtx{\Delta}_{n_{\mtx{\Omega}}}(t))| \mathrm{d}t && \text{(by definition of $Z(t)$)} \\
         &= C_{\mtx{\Psi}} \sqrt{\frac{\log(2/\delta)}{n_{\mtx{\Psi}}}} \int_{a}^{b} \lVert \mtx{\Delta}_{n_{\mtx{\Omega}}}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \\
         &= C_{\mtx{\Psi}} C_{\mtx{\Omega}} \sqrt{\frac{\log(2/\delta)}{n_{\mtx{\Psi}} n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}_{n_{\mtx{\Omega}}}(t)$)} \\
-    \end{align*}
+    \end{align}
     Taking $C=C_{\mtx{\Psi}} C_{\mtx{\Omega}}$, we get the desired result with probability $\geq 1 - \delta$.
 \end{proof}
 
-We can show that the Nystr\"om approximation converges as \gls{sketch-size} grows.
-This is captured in the following lemma \textcolor{red}{[cite preprint]}.
+For the Nystr\"om approximation in particular \refequ{equ:3-nystrom-nystrom},
+we can show that it is an approximation which satisfies the conditions
+in \refthm{thm:4-nystromchebyshev-trace-correction}. The key is to use the following
+lemma \textcolor{red}{[cite in preparation]} which guarantees the desired
+convergence property of the parameter-dependent Nystr\"om approximation to the
+
+
+the Nystr\"om approximation converges as \gls{sketch-size} grows.
+This is captured in the following lemma \textcolor{red}{[cite in preparation]}.
 \todo{define Nystr\"om++}
 
 \begin{lemma}{Parameter-dependent Nystr\"om approximation}{4-nystromchebyshev-parameter-nystrom}

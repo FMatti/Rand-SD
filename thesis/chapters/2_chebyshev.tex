@@ -163,7 +163,7 @@ The idea of the Hutchinson's trace estimator is to compute multiple such estimat
 for different, independent random vectors and take the average. This will again
 be an unbiased estimate of the trace, but with the reduced \gls{MSE}
 \begin{equation}
-    \MSE\left( \frac{1}{n_{\mtx{\Psi}}} \sum_{j=1}^{n_{\mtx{\Psi}}}\vct{\psi}_j^{\top} \mtx{B} \vct{\psi}_j\right) = \frac{2}{\sqrt{n_{\mtx{\Psi}}}} \lVert \mtx{B} \rVert _F^2.
+    \MSE\left( \frac{1}{n_{\mtx{\Psi}}} \sum_{j=1}^{n_{\mtx{\Psi}}}\vct{\psi}_j^{\top} \mtx{B} \vct{\psi}_j\right) = \frac{2}{n_{\mtx{\Psi}}} \lVert \mtx{B} \rVert _F^2.
     \label{equ:2-chebyshev-hutchinson-mse}
 \end{equation}
 Collecting the random vectors in the
@@ -213,7 +213,41 @@ We expand the \glsfirst{smoothing-kernel} in terms of Chebyshev polynomials, suc
     g_{\sigma}^m(t\mtx{I} - \mtx{A}) = \sum_{l=0}^m \mu_l(t) T_l(\mtx{A}).
     \label{equ:2-chebyshev-chebyshev-expansion}
 \end{equation}
-This, however, is only well-defined for matrices whose spectra are fully
+Plugging this expansion into \refequ{equ:1-introduction-spectral-density-as-trace}
+gives us the expanded spectral density
+\begin{equation}
+    \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
+    \label{equ:2-chebyshev-spectral-density-as-trace-expansion}
+\end{equation}\\
+
+By combining the Chebyshev expansion \refequ{equ:2-chebyshev-spectral-density-as-trace-expansion}
+with stochastic trace estimation
+we end up with the \glsfirst{DGC} method \cite[algorithm~2]{lin2017randomized}
+which approximates the \glsfirst{smooth-spectral-density} as
+\begin{equation}
+    \widetilde{\phi}_{\sigma}^m(t) = H_{n_{\mtx{\Psi}}}(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
+    \label{equ:2-chebyshev-DGC-final-estimator}
+\end{equation}\\
+
+An efficient implementation can be achieved thanks to the recurrence relation for the
+Chebyshev polynomials \refequ{equ:2-chebyshev-chebyshev-recursion}. The pseudocode
+for this method can be found in \refalg{alg:2-chebyshev-DGC}.
+\begin{algo}{Delta-Gauss-Chebyshev method}{2-chebyshev-DGC}
+    \input{algorithms/delta_gauss_chebyshev.tex}
+\end{algo}
+
+Thus, denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
+with $c(n)$, e.g. $\mathcal{O}(c(n)) = n^2$ for dense and
+$\mathcal{O}(c(n)) = n$ for sparse matrices, we determine the computational
+complexity of the \gls{DGC} method to be $\mathcal{O}(m \log(m) n_t + m n_{\mtx{\Psi}} c(n))$,
+with $\mathcal{O}(m n_t + n n_{\mtx{\Psi}})$ required additional storage.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Implementation-details}
+\label{subsec:2-chebyshev-implementation-details}
+
+Expression \refequ{equ:2-chebyshev-chebyshev-expansion} is only well-defined for matrices whose spectra are fully
 contained in $[-1, 1]$. To solve this issue for matrices whose spectra we know (or can estimate) to
 be within $[a, b]$, we can define a \gls{spectral-transformation} as follows
 \begin{equation}
@@ -230,13 +264,18 @@ rescaled to
 \end{equation}
 in order to get a consistent result.\\
 
-Plugging the expansion \refequ{equ:2-chebyshev-chebyshev-expansion} into 
-\refequ{equ:1-introduction-spectral-density-as-trace} gives us the expanded
-spectral density
+An additional speed-up can be achieved by smartly computing the trace of the 
+product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{N \times M}$ in
+$\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$ time, due to the relation
 \begin{equation}
-    \phi_{\sigma}^m(t) = \Tr(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
-    \label{equ:2-chebyshev-spectral-density-as-trace-expansion}
+    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{N} \sum_{j=1}^{M} B_{ij} C_{ij}.
+    \label{equ:2-chebyshev-fast-trace}
 \end{equation}
+Throughout the rest of this work we implicitly assume that all traces of this
+form are computed using this technique.
+
+\subsection{Theoretical analysis}
+\label{subsec:2-chebyshev-theoretical-analysis}
 
 The convergence of the expansion to the actual spectral density is exponential, 
 which is shown in the following theorem:
@@ -308,31 +347,3 @@ result slightly deviates from the aforementioned proof, we reproduce it hereafte
     \end{equation}
     where $C_1=\sqrt{\frac{2}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
 \end{proof}
-
-Finally, combining Chebyshev expansion with stochastic trace estimation
-we end up with the \glsfirst{DGC} method \cite[algorithm~2]{lin2017randomized}
-which approximates the \glsfirst{smooth-spectral-density} as
-\begin{equation}
-    \widetilde{\phi}_{\sigma}^m(t) = H_{n_{\mtx{\Psi}}}(g_{\sigma}^m(t\mtx{I} - \mtx{A})).
-    \label{equ:2-chebyshev-DGC-final-estimator}
-\end{equation}\\
-
-An efficient implementation can be achieved thanks to the recurrence relation for the
-Chebyshev polynomials \refequ{equ:2-chebyshev-chebyshev-recursion}. The pseudocode
-for this method can be found in \refalg{alg:2-chebyshev-DGC}.
-\begin{algo}{Delta-Gauss-Chebyshev method}{2-chebyshev-DGC}
-    \input{algorithms/delta_gauss_chebyshev.tex}
-\end{algo}
-
-One additional speed-up can be achieved by smartly computing the trace of the 
-product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{N \times M}$ in
-$\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$ time, due to the relation
-\begin{equation}
-    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{N} \sum_{j=1}^{M} B_{ij} C_{ij}.
-    \label{equ:2-chebyshev-fast-trace}
-\end{equation}
-Thus, denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
-with $c(n)$, e.g. $\mathcal{O}(c(n)) = n^2$ for dense and
-$\mathcal{O}(c(n)) = n$ for sparse matrices, we determine the computational
-complexity of the \gls{DGC} method to be $\mathcal{O}(m \log(m) n_t + m n_{\mtx{\Psi}} c(n))$,
-with $\mathcal{O}(m n_t + n n_{\mtx{\Psi}})$ required additional storage.

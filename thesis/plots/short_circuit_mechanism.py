@@ -17,8 +17,8 @@ np.random.seed(0)
 
 methods = FastNyCheb
 labels = ["no short-circuit", "short-circuit"]
-parameters = [{"m": 200, "sigma": 0.05, "n_v": 80, "delta": -1},
-              {"m": 200, "sigma": 0.05, "n_v": 80, "delta": 1e-5}]
+parameters = [{"m": 2000, "sigma": 0.05, "n_v": 80, "delta": -1},
+              {"m": 2000, "sigma": 0.05, "n_v": 80, "delta": 1e-5}]
 
 A = ModES3D()
 colors = ["#1f1f1f", "#7ab3f0", "#2F455C"]

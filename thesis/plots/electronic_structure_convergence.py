@@ -67,7 +67,7 @@ spectral_density_errors = compute_spectral_density_errors(A, methods, labels, va
 with open("thesis/plots/electronic_structure_convergence_m_nv40.pkl", "wb") as handle:
     pickle.dump(spectral_density_errors, handle)
 
-#with open("thesis/plots/electronic_structure_convergence_nv_m2400.pkl", "rb") as handle:
+#with open("thesis/plots/electronic_structure_convergence_m_nv40.pkl", "rb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
@@ -85,7 +85,7 @@ spectral_density_errors = compute_spectral_density_errors(A, methods, labels, va
 with open("thesis/plots/electronic_structure_convergence_m_nv160.pkl", "wb") as handle:
     pickle.dump(spectral_density_errors, handle)
 
-#with open("thesis/plots/electronic_structure_convergence_nv_m2400.pkl", "rb") as handle:
+#with open("thesis/plots/electronic_structure_convergence_m_nv160.pkl", "rb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
