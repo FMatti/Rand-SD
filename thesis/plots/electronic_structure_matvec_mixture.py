@@ -9,10 +9,16 @@ import matplotlib.pyplot as plt
 from src.algorithms import FastNyChebPP
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 
+import matplotlib
+matplotlib.rc("text", usetex=True)
+matplotlib.rcParams["font.family"] = r"serif"
+matplotlib.rcParams["font.serif"] = r"Palatino"
+matplotlib.rcParams["font.size"] = 12
+
 A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 
 methods = [FastNyChebPP]
-labels = ["$n_v=0$, $\\tilde{n}_v=80$ (DGC)", "$n_v=20$, $\\tilde{n}_v=60$ (NC++)", "$n_v=40$, $\\tilde{n}_v=40$ (NC++)", "$n_v=60$, $\\tilde{n}_v=20$ (NC++)", "$n_v=80$, $\\tilde{n}_v=0$ (NC)"]
+labels = ["$n_{\Omega}=0$, $n_{\Psi}=80$ (DGC)", "$n_{\Omega}=20$, $n_{\Psi}=60$ (NC++)", "$n_{\Omega}=40$, $n_{\Psi}=40$ (NC++)", "$n_{\Omega}=60$, $n_{\Psi}=20$ (NC++)", "$n_{\Omega}=80$, $n_{\Psi}=0$ (NC)"]
 fixed_parameters = [{"n_v": 0, "n_v_tilde": 80},
                     {"n_v": 20, "n_v_tilde": 60},
                     {"n_v": 40, "n_v_tilde": 40},
@@ -29,6 +35,6 @@ with open("thesis/plots/electronic_structure_matvec_mixture.pkl", "wb") as handl
 #with open("thesis/plots/electronic_structure_matvec_mixture.pkl", "rb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
-fig, ax = plt.subplots(figsize=(4, 3))
-plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["n_v", "n_v_tilde", "m"], error_metric_name="$L^1$ error", ax=ax)
+fig, ax = plt.subplots(figsize=(6, 3))
+plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["n_v", "n_v_tilde", "m"], error_metric_name="$L^1$ relative error", x_label="$\sigma$", ax=ax)
 plt.savefig("thesis/plots/electronic_structure_matvec_mixture.pgf", bbox_inches="tight")

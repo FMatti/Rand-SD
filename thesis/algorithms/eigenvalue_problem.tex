@@ -2,8 +2,9 @@
 \hspace*{\algorithmicindent} \textbf{Parameters:} Threshold $\tau$ \\
 \hspace*{\algorithmicindent} \textbf{Output:} $\Tr(\mtx{K}_1^{\dagger} \mtx{K}_2)$
 \begin{algorithmic}[1]
-    \State Compute spectral decomposition $\mtx{K}_1 = \mtx{V} \mtx{M} \mtx{V}^{\top}$
-    \State Let $\mtx{M}_1$ only contain eigenvalues larger than $\tau \max_{i=1, \dots, p} \lambda_i$ and $\mtx{V}_1$ the corresponding eigenvectors
-    \State Solve eigenvalue problem $\mtx{M}^{-1/2} \mtx{V}_1 \mtx{\Lambda} \mtx{M}^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi}$
+    \State Compute spectral decomposition $\mtx{K}_1 = \mtx{W} \mtx{\Gamma} \mtx{W}^{\top}$
+    \State Let $\mtx{\Gamma}_1$ only contain eigenvalues larger than $\tau \max_{i=1, \dots, p} \gamma_i$ and $\mtx{W}_1$ the corresponding eigenvectors
+    \State Solve eigenvalue problem $\mtx{\Gamma}^{-1/2} \mtx{W}_1^{\top} \mtx{K}_2 \mtx{W}_1 \mtx{\Gamma}^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi}$
+    \State Set all values in $\mtx{\Xi}$ which are outside of $[0, 1 / (n \sqrt{2 \pi \sigma^2})]$ to zero
     \State Compute $\Tr(\mtx{\Xi})$
 \end{algorithmic}

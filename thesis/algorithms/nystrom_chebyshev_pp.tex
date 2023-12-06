@@ -1,9 +1,9 @@
 \hspace*{\algorithmicindent} \textbf{Input:} Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, evaluation points $\{t_i\}_{i=1}^{n_t}$ \\
-\hspace*{\algorithmicindent} \textbf{Parameters:} Sketch size $n_v$, Hutchinson's queries $\widetilde{n}_v$, expansion degree $m$ \\
+\hspace*{\algorithmicindent} \textbf{Parameters:} \Glsfirst{sketch-size}, \glsfirst{num-hutchinson-queries}, \glsfirst{chebyshev-degree} \\
 \hspace*{\algorithmicindent} \textbf{Output:} Approximate evaluations of the spectral density $\{\widetilde{\phi}_{\sigma}^m(t_i)\}_{i=1}^{n_t}$
 \begin{algorithmic}[1]
-    \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
-    \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refequ{equ:3-nystrom-chebyshev-potentiate-coefficients}
+    \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refalg{alg:2-chebyshev-chebyshev-expansion}
+    \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refalg{alg:3-nystrom-chebyshev-exponentiation}
     \State Generate \glsfirst{sketching-matrix} $\in \mathbb{R}^{n \times n_v}$ and \glsfirst{random-matrix} $\in \mathbb{R}^{n \times \widetilde{n}_v}$
     \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_v}, \mtx{\mtx{\Omega}}, \mtx{0}_{n \times n_v}]$
     \State Initialize $[\mtx{W}_1, \mtx{W}_2, \mtx{W}_3] \gets [\mtx{0}_{n \times \widetilde{n}_v}, \mtx{\Psi}, \mtx{0}_{n \times \widetilde{n}_v}]$

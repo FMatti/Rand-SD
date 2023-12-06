@@ -1,7 +1,7 @@
 \chapter{Randomized low-rank approximation}
 \label{chp:3-nystrom}
 
-We go back to \refequ{equ:1-introduction-spectral-density-as-trace}, and now
+We again go back to \refequ{equ:1-introduction-spectral-density-as-trace}, but now
 directly analyze the structure of the matrix function
 \begin{equation}
     g_{\sigma}(t\mtx{I} - \mtx{A}).
@@ -14,23 +14,29 @@ Suppose $\mtx{A}$ is symmetric and has a spectral decomposition
         = \sum_{i=1}^n \lambda_i \vct{u}_i \vct{u}_i^{\top}.
     \label{equ:3-nystrom-matrix-spectral-decomposition}
 \end{equation}
-Appling the matrix function, we see
+Appling the matrix function to this expression, we see that
 \begin{equation}
     g_{\sigma}(t\mtx{I} - \mtx{A})
         = \sum_{i=1}^n g_{\sigma}(t - \lambda_i) \vct{u}_i \vct{u}_i^{\top}.
     \label{equ:3-nystrom-matrix-function-spectral-decomposition}
 \end{equation}
-Because for example the Gaussian \glsfirst{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
-decays rapidly to zero when its argument deviates from zero, particularly for
-small \gls{smoothing-parameter}, we see that all terms in the sum \refequ{equ:3-nystrom-matrix-function-spectral-decomposition}
+The \glsfirst{smoothing-kernel} typically decays
+rapidly to zero when its argument deviates from zero, particularly for
+small \gls{smoothing-parameter}. This can for example be observed when using Gaussian
+smoothing \refequ{equ:1-introduction-def-gaussian-kernel}.
+Therefore, that all terms in the sum \refequ{equ:3-nystrom-matrix-function-spectral-decomposition}
 are suppressed except the ones for which $\lambda_i$ is close to $t$. Thus,
 \begin{equation}
     g_{\sigma}(t\mtx{I} - \mtx{A})
-        \approx \sum_{i: |t - \lambda_i|/\sigma~\text{small}} g_{\sigma}(t - \lambda_i) \vct{u}_i \vct{u}_i^{\top}.
+        \approx \sum_{i: |t - \lambda_i|/\sigma~\text{small}} g_{\sigma}(t - \lambda_i) \vct{u}_i \vct{u}_i^{\top}
     \label{equ:3-nystrom-matrix-function-low-rank-approximation}
 \end{equation}
 exhibits an approximate \emph{low-rank structure}, i.e. the matrix can approximately 
-be represented by a product of two or more matrices which are significantly smaller.
+be represented by a product of two or more matrices which are significantly smaller.\\
+
+The aim of this chapter is to find a good factorization of \refequ{equ:3-nystrom-matrix-function}
+in terms of smaller matrices, which we can quickly compute and for which we can
+easily compute the trace.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -38,9 +44,9 @@ be represented by a product of two or more matrices which are significantly smal
 \label{sec:3-nystrom-numerical-rank}
 
 To quantify by how much a matrix could be compressed when being represented as the
-product of smaller matrices, we introduce the rank of a matrix \cite[section~III.3]{hefferon2012linear}:
+product of smaller matrices, we introduce the rank of a matrix \cite[section~III.3]{hefferon2012linear}.
 \begin{definition}{Rank of a matrix}{3-nystrom-rank}
-    The rank of a symmetric matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ is defined as
+    The rank of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ is defined as
     \begin{equation}
         \rank(\mtx{B}) = \dimension(\range(\mtx{B})),
         \label{equ:3-nystrom-rank}
@@ -50,67 +56,69 @@ product of smaller matrices, we introduce the rank of a matrix \cite[section~III
 \end{definition}
 
 To account for the finite precision of floating point operations, we use the
-notion of the \gls{numerical-rank} \cite[definition~1.1]{noga2013rank}
-which we define as:
+notion of the \gls{numerical-rank} \cite[definition~1.1]{noga2013rank}.
 \begin{definition}{Numerical rank of a matrix}{3-nystrom-numerical-rank}
-    The numerical rank of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ is the number
+    The numerical rank of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
+    in the norm $\lVert \cdot \rVert _{\cdot}$ is the number
     \begin{equation}
         r_{\varepsilon, \cdot}(\mtx{B}) = \min \{\rank(\mtx{C}): \mtx{C} \in \mathbb{R}^{n \times n}: \lVert \mtx{B} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}.
         \label{equ:3-nystrom-def-numerical-rank}
     \end{equation}
-\end{definition}
-A matrix is then said to be numerically low-rank, if $r_{\varepsilon, \cdot}(\mtx{B}) \ll n$.\\ 
+\end{definition}%
+A matrix is said to be numerically low-rank, if $r_{\varepsilon, \cdot}(\mtx{B}) \ll n$.\\ 
 
 For unitarily invariant norms $\lVert \cdot \rVert _{\cdot}$ and 
 symmetric positive definite matrices $\mtx{B}$, we may use
 \cite[theorem~5]{mirsky1960truncation} to express \gls{numerical-rank} in terms
-of the eigenvalues $\mu_1, \dots, \mu_n$ of $\mtx{B}$.
+of its eigenvalues $\lambda_1(\mtx{B}), \dots, \lambda_n(\mtx{B})$.
 In particular, for the spectral norm $\lVert \cdot \rVert _2$ we have
 \begin{equation}
-    r_{\varepsilon, 2}(\mtx{B}) = \min \{1 \leq r \leq n: \mu_{r+1} \leq \varepsilon \},
+    r_{\varepsilon, 2}(\mtx{B}) = \min \{1 \leq r \leq n: \lambda_{r+1}(\mtx{B}) \leq \varepsilon \},
     \label{equ:3-nystrom-numerical-rank-spectral-norm}
 \end{equation}
 while for the Frobenius norm $\lVert \cdot \rVert _F$ we obtain
 \begin{equation}
-    r_{\varepsilon, F}(\mtx{B}) = \min \{1 \leq r \leq n: \sum_{j=r+1}^n \mu_{j}^2 \leq \varepsilon^2 \}.
+    r_{\varepsilon, F}(\mtx{B}) = \min \{1 \leq r \leq n: \sum_{j=r+1}^n \lambda_{j}(\mtx{B})^2 \leq \varepsilon^2 \}.
     \label{equ:3-nystrom-numerical-rank-frobenius-norm}
 \end{equation}\\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{The Nystr\"om low-rank approximation}
+\section{Low-rank factorization}
 \label{sec:3-nystrom-nystrom}
 
 From \refdef{def:3-nystrom-rank}, it is clear that the rank of a symmetric
 matrix is also equal to the number of its eigenvalues which are non-zero.
-Hence, for a symmetric matrix of rank $r \ll n$, we can obtain a low-rank factorization
-by looking at its spectral decomposition
+Hence, for a symmetric matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
+of rank $r \ll n$, we can immediately obtain a factorization of the matrix in
+terms of smaller matrices by looking at its spectral decomposition
 \begin{equation}
-    \mtx{B} 
-        = \mtx{U} \mtx{\Lambda} \mtx{U}^{\top} 
-        = \begin{bmatrix} \mtx{U}_1 & \mtx{U}_2 \end{bmatrix} 
-          \begin{bmatrix} \mtx{\Lambda}_1 & \mtx{0} \\ \mtx{0} & \mtx{0} \end{bmatrix} 
-          \begin{bmatrix} \mtx{U}_1^{\top} \\ \mtx{U}_2^{\top} \end{bmatrix}
-        = \mtx{U}_1 \mtx{\Lambda}_1 \mtx{U}_1^{\top}
+    \mtx{B}
+        = \mtx{V} \mtx{\Sigma} \mtx{V}^{\top} 
+        = \begin{bmatrix} \mtx{V}_1 & \mtx{V}_2 \end{bmatrix} 
+          \begin{bmatrix} \mtx{\Sigma}_1 & \mtx{0} \\ \mtx{0} & \mtx{0} \end{bmatrix} 
+          \begin{bmatrix} \mtx{V}_1^{\top} \\ \mtx{V}_2^{\top} \end{bmatrix}
+        = \mtx{V}_1 \mtx{\Sigma}_1 \mtx{V}_1^{\top}
     \label{equ:3-nystrom-eigenvalue-decoposition}
 \end{equation}
-with $\mtx{\Lambda}_1 \in \mathbb{R}^{r \times r}$, $\mtx{U}_1 \in \mathbb{R}^{n \times r}$,
-and $\mtx{U}_2 \in \mathbb{R}^{n \times (n - r)}$. What's more, we see that
+with $\mtx{\Sigma}_1 \in \mathbb{R}^{r \times r}$ containing all non-zero
+eigenvalues and $\mtx{V}_1 \in \mathbb{R}^{n \times r}$ the corresponding
+eigenvectors. What's more, we see that
 \begin{equation}
-    \mtx{U}_1 \mtx{U}_1^{\top} \mtx{B} = \mtx{B},
+    \mtx{V}_1 \mtx{V}_1^{\top} \mtx{B} = \mtx{B},
     \label{equ:3-nystrom-range-captured}
 \end{equation}
-i.e. the columns of the matrix $\mtx{U}_1$ fully capture the range of $\mtx{B}$.
+i.e. the columns of the matrix $\mtx{V}_1$ fully capture the range of $\mtx{B}$.\\
+
 However, computing the spectral
 decomposition is often prohibitively expensive and usually not necessary for
-computing approximate factorizations of a matrix. There exist multiple approximate
-factorization methods of low-rank matrices, many of which are based on sketching.\\
-
+obtaining approximate factorizations of a matrix. There exist multiple approximate
+factorization methods of low-rank matrices, many of which are based on sketching.
 Sketching is a widely used technique for approximating the column space of a matrix
 \cite{halko2011finding,woodruff2014sketching,lin2017randomized,tropp2017sketching,tropp2023randomized}.
-Multiplying a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ with a standard Gaussian
+Multiplying a low-rank matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ with a standard Gaussian
 \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$ with $n_{\mtx{\Omega}} \ll n$, will
-result in a significantly smaller matrix $\mtx{B}\mtx{\Omega}$ whose
+result in a significantly smaller matrix $\mtx{B}\mtx{\Omega}$ -- the sketch -- whose
 columns roughly span the same range as the columns of $\mtx{B}$.
 Closely following \cite[section~2.1]{tropp2023randomized}, we illustrate the
 reason why this approach works hereafter.\\
@@ -118,31 +126,32 @@ reason why this approach works hereafter.\\
 Suppose $\mtx{B}$ is symmetric and admits a spectral decomposition
 \begin{equation}
     \mtx{B}
-        = \mtx{U} \mtx{\Lambda} \mtx{U}^{\top} 
-        = \sum_{i=1}^n \lambda_i \vct{u}_i \vct{u}_i^{\top}.
+        = \mtx{V} \mtx{\Sigma} \mtx{V}^{\top} 
+        = \sum_{i=1}^n \lambda_i \vct{v}_i \vct{v}_i^{\top}.
     \label{equ:3-nystrom-sketching-spectral-decomposition}
 \end{equation}
 If we left-multiply $\mtx{B}$ with a standard Gaussian random vector $\vct{\omega} \in \mathbb{R}^n$,
 we obtain
 \begin{equation}
     \mtx{B}\vct{\omega}
-        = \sum_{i=1}^n \lambda_i \vct{u}_i (\vct{u}_i^{\top} \vct{\omega})
-        = \sum_{i=1}^n (\lambda_i  z_i) \vct{u}_i,
+        = \sum_{i=1}^n \lambda_i \vct{v}_i (\vct{v}_i^{\top} \vct{\omega})
+        = \sum_{i=1}^n (\lambda_i  z_i) \vct{v}_i,
         \label{equ:3-nystrom-sketching-random-multiplication}
 \end{equation}
-where $z_i$ again follows a standard Gaussian distribution, since $\vct{u}_i$ are
-normalized. The component of $\mtx{B}\vct{\omega}$ in the direction of the
-$j$-th eigenvector $\vct{u}_j$ is
+where $z_i = \vct{v}_i^{\top} \vct{\omega} \in \mathbb{R}$ again follows a
+standard Gaussian distribution, since the $\vct{v}_i$
+have unit norm. The component of $\mtx{B}\vct{\omega}$ in the direction of the
+$j$-th eigenvector $\vct{v}_j$ is
 \begin{equation}
-    \vct{u}_j^{\top}\mtx{B}\vct{\omega}
-        = \sum_{i=1}^n (\lambda_i  z_i) (\vct{u}_j^{\top} \vct{u}_i)
+    \vct{v}_j^{\top}\mtx{B}\vct{\omega}
+        = \sum_{i=1}^n (\lambda_i  z_i) (\vct{v}_j^{\top} \vct{v}_i)
         = \lambda_j  z_j.
         \label{equ:3-nystrom-sketching-dominant-component}
 \end{equation}
 That is, $\mtx{B}\vct{\omega}$ is roughly aligned with the eigenvectors corresponding
 to the largest eigenvalues: the dominant eigenvectors.
 When repeating this procedure for multiple $\vct{\omega}$ by right-multiplying $\mtx{B}$
-with a standard Gaussian random \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$,
+with a standard Gaussian \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$,
 it is shown in \cite{halko2011finding} that
 \begin{equation}
     \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) (\mtx{B} \mtx{\Omega})^{\dagger} \mtx{B}
@@ -157,8 +166,8 @@ of the form
     \label{equ:3-nystrom-nystrom-general}
 \end{equation}
 We want $\widehat{\mtx{B}} \approx \mtx{B}$. Therefore, by multiplying \refequ{equ:3-nystrom-nystrom-general}
-from the left with $\mtx{\Omega}^{\top}$ and from the right with $\mtx{\Omega}$
-we get
+from the left with $\mtx{\Omega}^{\top}$ and from the right with $\mtx{\Omega}$,
+and by imposing $\widehat{\mtx{B}} = \mtx{B}$ we get
 \begin{equation}
     \mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}) \mtx{C} (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\top}.
     \label{equ:3-nystrom-nystrom-unknown}
@@ -173,19 +182,14 @@ This approximation is referred to as the Nystr\"om approximation \cite{gittens20
 \end{equation}
 It is shown in \cite[lemma~5.2]{tropp2023randomized} that the Nystr\"om approximation
 is at least as accurate as the approximation in \refequ{equ:3-nystrom-RSVD}
-for positive semi-definite matrices when measured in for example the spectral
+for positive semi-definite matrices when measured in the spectral
 and Frobenius norms.\\
 
-In the case where we are only interested in the trace of this approximation,
-we may use the cyclic property of the trace to rewrite
-\begin{equation}
-    \Tr(\widehat{\mtx{B}})
-        = \Tr\left((\mtx{B} \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{B} \mtx{\Omega})^{\top} \right)
-        = \Tr\left((\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \right).
-    \label{equ:3-nystrom-nystrom-trace}
-\end{equation}
-
-\todo{Introduce parameter dependent case}
+These two low-rank factorizations can be extended in a straightforward way
+to the case where the matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ depends
+continuously on a parameter $t \in [a, b]$. In the case of the Nystr\"om
+we give an expression for the trace estimation error in the $p$-norm in the
+following theorem.
 \begin{theorem}{Error of Nystr\"om trace}{3-nystrom-frobenius-norm}
     Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ be symmetric positive semi-definite
     and continuously depend on $t \in [a,b] \subset \mathbb{R}$. Let the \gls{sketching-matrix}
@@ -194,12 +198,13 @@ we may use the cyclic property of the trace to rewrite
     for all $\gamma \geq 1$, the inequality
     \begin{equation}
         \int_{a}^{b} | \Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))| \mathrm{d}t
-            < \gamma \sqrt{1 + r} \int_{a}^{b} \sum_{i = r+1}^n \sigma_i(\mtx{B}(t)) \mathrm{d}t
+            < \gamma \sqrt{1 + r} \int_{a}^{b} \sum_{i = r+1}^n \lambda_i(\mtx{B}(t)) \mathrm{d}t
     \end{equation}
-    holds with probability $\gamma^{-p}$.
+    holds with probability $1 - \gamma^{-p}$.
 \end{theorem}
 
 \begin{proof}
+    \todo{Check if this goes through} For every $t \in [a, b]$ we have
     \begin{align}
         |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))|
             &= |\Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t))| && \text{(linearity of trace)} \notag \\ 
@@ -211,7 +216,7 @@ we may use the cyclic property of the trace to rewrite
     Thus, we can apply \cite[theorem~9]{kressner2023randomized} to get
     \begin{equation}
         \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))| \mathrm{d}t
-            < \gamma \sqrt{1 + r} \int_{a}^{b} \sum_{i = r+1}^n \sigma_i(\mtx{B}(t)) \mathrm{d}t
+            < \gamma \sqrt{1 + r} \int_{a}^{b} \sum_{i = r+1}^n \lambda_i(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
 \end{proof}
 
@@ -220,16 +225,27 @@ we may use the cyclic property of the trace to rewrite
 \section{The Nystr\"om-Chebyshev method}
 \label{sec:3-nystrom-nystrom-chebyshev}
 
+Motivated by the observations from the beginning of this chapter, we now present
+an algorithm for estimating the \glsfirst{smooth-spectral-density}.
+Since all \gls{smoothing-kernel} we consider are symmetric
+and non-negative, the matrix function \refequ{equ:3-nystrom-matrix-function} is
+symmetric positive semi-definite. Therefore, we opt for the Nystr\"om approximation
+as our randomized low-rank factorization engine. Before we go into the details
+of the method, we need to quantify the \glsfirst{numerical-rank} of this matrix
+function, in order to get an a priori guarantee for the convergence of the 
+method.\\
+
 The eigenvalues of $g_{\sigma}(t\mtx{I} - \mtx{A})$ are given by
 \begin{equation}
-    \mu_i(t) = g_{\sigma}(t - \lambda_{(i)}) = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{-\frac{(t - \lambda_{(i)})^2}{2 \sigma^2}}
+    \lambda_i(g_{\sigma}(t\mtx{I} - \mtx{A})) = g_{\sigma}(t - \lambda_{(i)}(\mtx{A})) = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{-\frac{(t - \lambda_{(i)}(\mtx{A}))^2}{2 \sigma^2}}
     \label{equ:3-nystrom-kernel-function-eigenvalues}
 \end{equation}
-where $\lambda_{(i)}$ denote the eigenvalues of $\mtx{A}$ sorted by increasing
-distance from $t$, i.e. such that $\mu_1(t) \geq \dots \geq \mu_n(t)$. Consequently,
+where $\lambda_{(1)}(\mtx{A}), \dots, \lambda_{(n)}(\mtx{A})$ denote the
+eigenvalues of $\mtx{A}$ sorted by increasing
+distance from $t$, i.e. such that $\lambda_1(g_{\sigma}(t\mtx{I} - \mtx{A})) \geq \dots \geq \lambda_n(g_{\sigma}(t\mtx{I} - \mtx{A}))$. Consequently,
 we may upper bound the numerical rank of \refequ{equ:3-nystrom-matrix-function} as
 \begin{equation}
-    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) \leq \#\{1\leq i\leq n: |t - \mu_i(t)| \leq C_{\varepsilon, \cdot}(\sigma)\}
+    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) \leq \#\{1\leq i\leq n: |t - \lambda_i(g_{\sigma}(t\mtx{I} - \mtx{A}))| \leq C_{\varepsilon, \cdot}(\sigma)\}
     \label{equ:3-nystrom-kernel-numerical-rank}
 \end{equation}
 where we define the distances
@@ -243,23 +259,25 @@ The expression \refequ{equ:3-nystrom-kernel-numerical-rank} has a very
 visual interpretation: The \glsfirst{numerical-rank} of a matrix is at most
 equal to the number of eigenvalues which are closer to $t$ than $C_{\varepsilon, \cdot}(\sigma)$.
 This is also illustrated in \reffig{fig:3-nystrom-numerical-rank-constant}.\\
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \input{figures/numerical_rank.tex}
-    \caption{The numerical rank.}
+    \caption{Computing the numerical rank by counting the number of eigenvalues
+        $\lambda_1, \dots, \lambda_n$ of a matrix $\mtx{A}$ which lie at most
+        a constant $C_{\varepsilon, \cdot}(\sigma)$ away from $t$.}
     \label{fig:3-nystrom-numerical-rank-constant}
 \end{figure}
 
 If we additionally assume the eigenvalues of the matrix $\mtx{A}$
-to be evenly distributed within $[a, b]$, i.e. in any subinterval of fixed length in
+to be evenly distributed within $[a, b]$, that is, in any subinterval of fixed length in
 $[a, b]$ we can expect to find roughly the same number of eigenvalues (see \reffig{fig:3-nystrom-evenly-distributed-spectrum}), then
-we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$ as
+we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$ to be
 \begin{equation}
     r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I} - \mtx{A})) \lessapprox \frac{2 n}{b - a} C_{\varepsilon, \cdot}(\sigma).
     \label{equ:3-nystrom-kernel-numerical-rank-even-eigenvalues}
 \end{equation}
 
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \begin{subfigure}[t]{0.45\columnwidth}
         \input{figures/uneven_spectrum.tex}
@@ -269,54 +287,69 @@ we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$ as
         \input{figures/even_spectrum.tex}
         \caption{Evenly distributed spectrum}
     \end{subfigure}      
-    \caption{Examples of an evenly and unevenly distributed spectrum.}
+    \caption{Examples of an unevenly and an evenly distributed spectrum.}
     \label{fig:3-nystrom-evenly-distributed-spectrum}
 \end{figure}
 
 In \reffig{fig:3-nystrom-singular-value-decay}, we numerically check the decay
 of the eigenvalues for one of our example matrices which we use in the numerical
-experiments (\refsec{sec:5-experiments-density-function}).
+experiments (\refsec{sec:5-experiments-density-function}). Clearly, the estimated
+numerical rank of the matrix not accurate in this case, since the spectrum is
+nowhere near evenly distributed. Nevertheless, it provides us with a good first
+guess which can be used to decide on what \gls{sketch-size} to use.\\
 \begin{figure}[ht]
     \centering
     \input{figures/singular_value_decay.tex}
-    \caption{Singular value decay. \todo{add spectrum to show why not lowrank}}
+    \caption{Singular value decay of a Gaussian \glsfirst{smoothing-kernel}
+       with \gls{smoothing-parameter} $=0.05$ applied to the matrix introduced
+       \refsec{sec:5-experiments-density-function} for $c=1$.
+       \todo{Add spectrum to show uneven distribution}}
     \label{fig:3-nystrom-singular-value-decay}
 \end{figure}
 
-\todo{Create transition between paragraphs}
-
-What results is a way of approximating \refequ{equ:1-introduction-spectral-density-as-trace}
-using a low-rank approximation, which is the backbone of what is known
-as the spectrum sweeping method \cite{lin2017randomized},
+The backbone of what is also known as the spectrum sweeping method \cite{lin2017randomized}
+is the Nystr\"om approximation of the Chebyshev expansion \refequ{equ:2-chebyshev-chebyshev-expansion},
+hence why we refer to it as the \gls{NC} method. 
+For some standard Gaussian random matrix $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$,
+the approximation is
+\begin{equation}
+    \widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A})
+    = (g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega}) (\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega})^{\dagger} (g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega})^{\top}.
+    \label{equ:3-nystrom-nystrom-smoothing-kernel}
+\end{equation}
+Since we are only interested in the trace of this approximation,
+we may use the cyclic property of the trace to obtain
 \begin{equation}
     \widehat{\phi}_{\sigma}^m(t)
         = \Tr\left((\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 \mtx{\Omega})\right).
     \label{equ:3-nystrom-spectral-density}
 \end{equation}\\
 
-With the interpolation framework introducted in \refsec{sec:2-chebyshev-interpolation},
-we interpolate the \glsfirst{smoothing-kernel}. Instead of performing the extremely
+The interpolation framework introducted in \refsec{sec:2-chebyshev-interpolation},
+allows us to interpolate the \glsfirst{smoothing-kernel}. Instead of performing the prohibitively
 expensive operation of squaring the matrix function in \refequ{equ:3-nystrom-spectral-density}
 explicitly, \cite{lin2017randomized} suggests to instead interpolate the
-squared \gls{smoothing-kernel}$^2$ in a consisten expansion with
-\refequ{equ:2-chebyshev-chebyshev-expansion}:
+squared \gls{smoothing-kernel} in a separate expansion
 \begin{equation}
-    (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 = \sum_{l=0}^{2m} \nu_l(t) T_l(A).
+    (g_{\sigma}(t\mtx{I} - \mtx{A})^2)^m = \sum_{l=0}^{2m} \nu_l(t) T_l(A).
     \label{equ:3-nystrom-ESS-chebyshev-expansion}
 \end{equation}
-However, we have found that a separate expansion leads to the loss of the
+However, a separate expansion of the squared kernel leads to the loss of the
 square relation between the two expansions, i.e. the square of the
-first expansion is not the same as the second expansion, and this inconsistency
-decreases the numerical accuracy (see \reffig{fig:3-nystrom-interpolation-issue}).\\
+first expansion is not the same as the second expansion, and we have observed that
+this inconsistency decreases the numerical accuracy noticeably, which is
+shown in \reffig{fig:3-nystrom-interpolation-issue}.\\
 \begin{figure}[ht]
     \centering
     \input{plots/interpolation_issue.pgf}
-    \caption{Interpolation issue.}
+    \caption{Difference in the accuracy when computing \refequ{equ:3-nystrom-spectral-density}
+        using a separate expansion (interpolation) versus explicitly squaring
+        the matrix function (squaring).}
     \label{fig:3-nystrom-interpolation-issue}
 \end{figure}
 
-In order to circumvent the above mentioned issue, we propose a way of consistently computing
-an expansion for \gls{smoothing-kernel}$^2$ which is even faster and simpler:
+In order to circumvent the above mentioned issue, we propose a way of computing
+a consistent expansion for \gls{smoothing-kernel}$^2$ which is even faster and simpler.
 The relation of the Chebyshev expansion to the \gls{DCT} shown in \refequ{equ:2-chebyshev-chebyshev-DCT}
 can be exploited to design fast and exact multiplication algorithms between polynomials
 of the form \refequ{equ:2-chebyshev-chebyshev-expansion} \cite[proposition~3.1]{baszenski1997cosine}.
@@ -333,16 +366,21 @@ and subsequently computing
     \label{equ:3-nystrom-chebyshev-potentiate-coefficients}
 \end{equation}
 where the exponentiation of a vector is understood elementwise.
-This approach is exactly equivalent to \cite[algorithm~5]{lin2017randomized}, but
-often orders of magnitude faster. The corresponding algorithm is presented hereafter.
-
-\begin{algo}{Exponentiation of Chebyshev polynomials}{3-nystrom-chebyshev-squaring}
+The corresponding algorithm is presented hereafter.
+\begin{algo}{Exponentiation of Chebyshev polynomials}{3-nystrom-chebyshev-exponentiation}
     \input{algorithms/chebyshev_exponentiation.tex}
 \end{algo}
+This algorithm gives us the consistent expansion
+\begin{equation}
+    (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 = \sum_{l=0}^{2m} \nu_l(t) T_l(A).
+    \label{equ:3-nystrom-consistent-chebyshev-expansion}
+\end{equation}
+This approach is exactly equivalent to \cite[algorithm~5]{lin2017randomized}, but
+often orders of magnitude faster.\\
 
-We call the corresponding algorithm the \glsfirst{NC} method, whose pseudocode
-can be found in \refalg{alg:nystrom-chebyshev}.
-\begin{algo}{Nystr\"om-Chebyshev method}{nystrom-chebyshev}
+Putting all things together, we get the \gls{NC} method, whose pseudocode
+can be found in \refalg{alg:3-nystrom-nystrom-chebyshev}.
+\begin{algo}{Nystr\"om-Chebyshev method}{3-nystrom-nystrom-chebyshev}
     \input{algorithms/nystrom_chebyshev.tex}
 \end{algo}
 
@@ -357,120 +395,156 @@ $\mathcal{O}(n n_{\mtx{\Omega}} + n_{\mtx{\Omega}}^2 n_t + m n_t)$ required addi
 \section{Implementation details}
 \label{sec:3-nystrom-implementation-details}
 
+In \refalg{alg:3-nystrom-nystrom-chebyshev}, we have that
+\begin{equation}
+    \mtx{K}_1(t_i) = \mtx{\Omega}^{\top} g_{\sigma}^m(t_i\mtx{I} - \mtx{A}) \mtx{\Omega}.
+    \label{equ:3-nystrom-interpolated-matrix}
+\end{equation}
+Hence, if $g_{\sigma}^m(t_i\mtx{I} - \mtx{A})$ is close to the zero matrix,
+which we have seen in \refsec{sec:3-nystrom-nystrom-chebyshev} to happen if
+$t_i$ is far away from any of the eigenvalues of $\mtx{A}$, $\mtx{K}_1(t_i)$ will
+also be close to the zero matrix. In this case, it may not be a good idea to
+compute the pseudo-inverse of $\mtx{K}_1(t_i)$ in \reflin{lin:3-nystrom-pseudo-inverse}
+of \refalg{alg:3-nystrom-nystrom-chebyshev}. Even less, since in that case we already know that
+\begin{equation}
+    \phi_{\sigma}^m(t_i) = \Tr(g_{\sigma}^m(t_i\mtx{I} - \mtx{A})) \approx \Tr(\mtx{0}) = 0.
+    \label{equ:3-nystrom-short-circuit}
+\end{equation}
+Motivated by this observation we use a \enquote{short-circuit} mechanism which 
+computes the $n_{\mtx{\Omega}}$-query Hutchinson's estimate \refequ{equ:2-chebyshev-DGC-hutchionson-estimator}
+\begin{equation}
+    \frac{1}{n_{\mtx{\Omega}}} \Tr(\mtx{K}_1(t_i))
+    \label{equ:3-nystrom-short-circuit-hutchinson}
+\end{equation}
+of $\Tr(g_{\sigma}^m(t_i\mtx{I} - \mtx{A}))$
+before executing \reflin{lin:3-nystrom-pseudo-inverse} in \refalg{alg:3-nystrom-nystrom-chebyshev}.
+If the result is smaller than a threshold $\delta > 0$, it immediately sets
+$\widetilde{\phi}_{\sigma}^m(t_i)=0$ and skips \reflin{lin:3-nystrom-pseudo-inverse}.
+for this $t_i$. We usually use $\delta = 10^{-5}$. The effect this short-circuit
+mechanism has on the approximation quality can be seen in \reffig{fig:3-nystrom-short-circuit-mechanism}.\\
+
+\begin{figure}[ht]
+    \centering
+    \input{plots/short_circuit_mechanism.pgf}
+    \caption{The difference the short-circuit mechanism can make when approximating
+        a spectral density using \refalg{alg:3-nystrom-nystrom-chebyshev}.}
+    \label{fig:3-nystrom-short-circuit-mechanism}
+\end{figure}
+
 There exists an alternative way of computing the result on \reflin{lin:3-nystrom-pseudo-inverse}
-in \refalg{alg:nystrom-chebyshev}, namely traces of the form
+in \refalg{alg:3-nystrom-nystrom-chebyshev}, namely traces of the form
 \begin{equation}
     \Tr((\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger}(\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega})).
     \label{equ:3-nystrom-trace-pseudo-inverse}
 \end{equation}
 
-It converts the problem of computing such a trace into solving a generalized
-eigenvalue problem.
+Rather than explicitly forming the pseudo-inverse,
+it converts the problem of computing such a trace into solving a generalized
+eigenvalue problem by making use of the following theorem \cite[theorem~3]{lin2017randomized}.
 
 \begin{theorem}{Generalized eigenvalue problem to compute pseudo-inverse}{3-nystrom-eigenvalue-problem}
     Let $\mtx{B} \in \mathbb{R}^{n \times n}$ be symmetric with rank $r \ll n$ and
     truncated spectral decomposition \refequ{equ:3-nystrom-eigenvalue-decoposition}
     \begin{equation}
-        \mtx{B} = \mtx{U}_1 \mtx{\Lambda}_1 \mtx{U}_1^{\top},
+        \mtx{B} = \mtx{V}_1 \mtx{\Sigma}_1 \mtx{V}_1^{\top},
         \label{equ:3-nystrom-eigenvalue-problem-spectral-decomposition}
     \end{equation}
-    where $\mtx{\Lambda}_1 \in \mathbb{R}^{r \times r}$ and
-    $\mtx{U}_1 \in \mathbb{R}^{n \times r}$ with $\mtx{U}_1^{\top} \mtx{U}_1 = \mtx{I}$.
+    where $\mtx{\Sigma}_1 \in \mathbb{R}^{r \times r}$ and
+    $\mtx{V}_1 \in \mathbb{R}^{n \times r}$ with $\mtx{V}_1^{\top} \mtx{V}_1 = \mtx{I}$.
     For $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\mtx{\Omega}}}, n_{\mtx{\Omega}} > r$,
-    such that $\mtx{\Omega}^{\top} \mtx{U}_1$ has linearly independent columns.
+    such that $\mtx{\Omega}^{\top} \mtx{V}_1$ has linearly independent columns.
     Then the solution of the generalized eigenvalue problem
     \begin{equation}
         (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \mtx{C} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}) \mtx{C}  \mtx{\Xi}
-        \label{equ:low-rank-eigenvalue-problem}
+        \label{equ:3-nystrom-low-rank-eigenvalue-problem}
     \end{equation}
     with $\mtx{C} \in \mathbb{R}^{n_{\mtx{\Omega}} \times r}$ and $\mtx{\Xi} \in \mathbb{R}^{r \times r}$ a 
-    non-zero diagonal matrix is $\mtx{C} = (\mtx{U}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Theta}$
-    and $\mtx{\Xi} = \mtx{\Theta}^{\top} \mtx{\Lambda}_1 \mtx{\Theta}$
+    non-zero diagonal matrix is $\mtx{C} = (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Theta}$
+    and $\mtx{\Xi} = \mtx{\Theta}^{\top} \mtx{\Sigma}_1 \mtx{\Theta}$
     for a permutation matrix $\mtx{\Theta} \in \mathbb{R}^{r \times r}$.
 
     Furthermore,
     \begin{equation}
         \Tr((\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger}(\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega})) = \Tr(\mtx{\Xi})
-        \label{equ:low-rank-trace-equalities}
+        \label{equ:3-nystrom-low-rank-trace-equalities}
     \end{equation}
 \end{theorem}
 A proof of this theorem can be found in \cite[theorem~3]{lin2017randomized}. We
 choose to still include our own version which goes slightly more into detail.
 \begin{proof}
-    Since $\mtx{\Omega}^{\top} \mtx{U}_1$ has independent columns, its pseudo-inverse
+    Since $\mtx{\Omega}^{\top} \mtx{V}_1$ has independent columns, its pseudo-inverse
     is its left inverse, meaning 
-    $(\mtx{\Omega}^{\top} \mtx{U}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{U}_1) = ( \mtx{U}_1^{\top}\mtx{\Omega}) ( \mtx{U}_1^{\top}\mtx{\Omega})^{\dagger} = \mtx{I}$.
-    We use $\mtx{B} = \mtx{U}_1 \mtx{\Lambda}_1 \mtx{U}_1^{\top}$ and insert
-    $\mtx{C} = (\mtx{U}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Theta}^{\top}$
-    and $\mtx{\Xi} = \mtx{\Theta} \mtx{\Lambda} \mtx{\Theta}^{\top}$ in the
-    left-hand side of \refequ{equ:low-rank-eigenvalue-problem} to get
+    $(\mtx{\Omega}^{\top} \mtx{V}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{V}_1) = ( \mtx{V}_1^{\top}\mtx{\Omega}) ( \mtx{V}_1^{\top}\mtx{\Omega})^{\dagger} = \mtx{I}$.
+    We use $\mtx{B} = \mtx{V}_1 \mtx{\Sigma}_1 \mtx{V}_1^{\top}$ and insert
+    $\mtx{C} = (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Theta}^{\top}$
+    and $\mtx{\Xi} = \mtx{\Theta} \mtx{\Sigma} \mtx{\Theta}^{\top}$ in the
+    left-hand side of \refequ{equ:3-nystrom-low-rank-eigenvalue-problem} to get
     \begin{equation}
-        (\mtx{\Omega}^{\top} \mtx{U}_1) \mtx{\Lambda}_1^2 \underbrace{(\mtx{U}_1^{\top} \mtx{\Omega}) (\mtx{U}_1^{\top} \mtx{\Omega})^{\dagger}}_{=\mtx{I}} \mtx{\Theta} = (\mtx{\Omega}^{\top} \mtx{U}_1) \mtx{\Lambda}_1^2 \mtx{\Theta}
+        (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1^2 \underbrace{(\mtx{V}_1^{\top} \mtx{\Omega}) (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger}}_{=\mtx{I}} \mtx{\Theta} = (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1^2 \mtx{\Theta}
     \end{equation}
-    and on the right-hand side of \refequ{equ:low-rank-eigenvalue-problem} for
+    and on the right-hand side of \refequ{equ:3-nystrom-low-rank-eigenvalue-problem} for
     \begin{equation}
-        (\mtx{\Omega}^{\top} \mtx{U}_1) \mtx{\Lambda}_1 \underbrace{(\mtx{U}_1^{\top} \mtx{\Omega}) (\mtx{U}_1^{\top} \mtx{\Omega})^{\dagger}}_{=\mtx{I}} \mtx{\Theta} \mtx{\Theta}^{\top} \mtx{\Lambda}_1 \mtx{\Theta} = (\mtx{\Omega}^{\top} \mtx{U}_1) \mtx{\Lambda}_1^2 \mtx{\Theta}
+        (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1 \underbrace{(\mtx{V}_1^{\top} \mtx{\Omega}) (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger}}_{=\mtx{I}} \underbrace{\mtx{\Theta} \mtx{\Theta}^{\top}}_{=\mtx{I}} \mtx{\Sigma}_1 \mtx{\Theta} = (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1^2 \mtx{\Theta}
     \end{equation}
-    Now that $\mtx{\Omega}^{\top} \mtx{U}_1$ has linearly independent columns, $\mtx{\Lambda}_1$ is a non-zero
+    Now that $\mtx{\Omega}^{\top} \mtx{V}_1$ has linearly independent columns, $\mtx{\Sigma}_1$ is a non-zero
     diagonal matrix, and $\mtx{\Theta}$ is a permutation, we conclude that
     the given $\mtx{C}$ and $\mtx{\Xi}$ indeed solve the generalized eigenvalue problem.
     By the uniqueness of generalized eigenvalues and eigenvectors (up to
     permutation and scaling), these are indeed the only solutions.
 
-    \refequ{equ:low-rank-trace-equalities} can be shown by using inserting the
+    \refequ{equ:3-nystrom-low-rank-trace-equalities} can be shown by inserting the truncated
     spectral decomposition \refequ{equ:3-nystrom-eigenvalue-problem-spectral-decomposition}
     and using the properties of the pseudo-inverse
     \begin{align*}
         &\Tr((\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger}(\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega})) \notag \\
-            &= \Tr((\mtx{U}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Lambda}_1^{-1} (\mtx{\Omega}^{\top} \mtx{U}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{U}_1) \mtx{\Lambda}_1^2 (\mtx{U}_1^{\top} \mtx{\Omega})) &&\text{(spectral decomposition of $\mtx{B}$)} \notag \\
-            &= \Tr(\mtx{\Lambda}_1^{-1} \underbrace{(\mtx{\Omega}^{\top} \mtx{U}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{U}_1)}_{=\mtx{I}} \mtx{\Lambda}_1^2 \underbrace{(\mtx{U}_1^{\top} \mtx{\Omega}) (\mtx{U}_1^{\top} \mtx{\Omega})^{\dagger}}_{=\mtx{I}}) &&\text{(cyclic property of trace)} \notag \\
-            &= \Tr(\mtx{\Lambda}_1) &&\text{($\mtx{\Omega}^{\top} \mtx{U}_1$ independent columns)}  \notag \\
-            &= \Tr(\mtx{\Xi}) &&\text{($\mtx{\Xi} = \mtx{\Lambda}_1$ up to permutation)}
+            &= \Tr((\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Sigma}_1^{-1} (\mtx{\Omega}^{\top} \mtx{V}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1^2 (\mtx{V}_1^{\top} \mtx{\Omega})) &&\text{(spectral decomposition of $\mtx{B}$)} \notag \\
+            &= \Tr(\mtx{\Sigma}_1^{-1} (\mtx{\Omega}^{\top} \mtx{V}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{V}_1)\mtx{\Sigma}_1^2 (\mtx{V}_1^{\top} \mtx{\Omega}) (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger}) &&\text{(cyclic property of trace)} \notag \\
+            &= \Tr(\mtx{\Sigma}_1^{-1} \underbrace{(\mtx{\Omega}^{\top} \mtx{V}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{V}_1)}_{=\mtx{I}} \mtx{\Sigma}_1^2 \underbrace{(\mtx{V}_1^{\top} \mtx{\Omega}) (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger}}_{=\mtx{I}}) &&\text{($\mtx{\Omega}^{\top} \mtx{V}_1$ independent columns)} \notag \\
+            &= \Tr(\mtx{\Sigma}_1) &&\text{($\mtx{\Sigma}_1^{-1} \mtx{\Sigma}_1^{2} = \mtx{\Sigma}_1$)}  \notag \\
+            &= \Tr(\mtx{\Xi}) &&\text{($\mtx{\Sigma}_1 = \mtx{\Xi}$ up to permutation)}
     \end{align*}
 \end{proof}
 
-Computing the pseudo-inverse in this way has the advantage \todo{non-negative, filtering}
-
-\todo{
-$\Xi(t)$ permutation of eigenvalues of $g_{\sigma}(tI - A)$
-Filtering $[0, 1 / (n \sqrt{2 \pi \sigma^2})]$ \cite{lin2017randomized}
-Adding some tolerance to avoid filtering
-}
-
-Standard conversion to eigenvalue problem
+A standard way of computing \refequ{equ:3-nystrom-low-rank-eigenvalue-problem}
+is based on the spectral decomposition
 \begin{equation}
-    \mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega} = \begin{bmatrix} \mtx{V}_1 & \mtx{V}_2 \end{bmatrix} 
-    \begin{bmatrix} \mtx{M}_1 & \mtx{0} \\ \mtx{0} & \mtx{M}_2 \ \end{bmatrix} 
-    \begin{bmatrix} \mtx{V}_1^{\top} \\ \mtx{V}_2^{\top} \end{bmatrix}
+    \mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega} = \begin{bmatrix} \mtx{W}_1 & \mtx{W}_2 \end{bmatrix} 
+    \begin{bmatrix} \mtx{\Gamma}_1 & \mtx{0} \\ \mtx{0} & \mtx{\Gamma}_2 \ \end{bmatrix} 
+    \begin{bmatrix} \mtx{W}_1^{\top} \\ \mtx{W}_2^{\top} \end{bmatrix}.
 \end{equation}
-
+It allows us to convert the generalized eigenvalue problem \refequ{equ:3-nystrom-low-rank-eigenvalue-problem}
+into the standard eigenvalue problem
 \begin{equation}
-    \mtx{M}^{-1/2} \mtx{V}_1 \mtx{\Lambda} \mtx{M}^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi}
+    \mtx{\Gamma}_1^{-1/2} \mtx{W}_1^{\top} (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \mtx{W}_1 \mtx{\Gamma}_1^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi},
     \label{equ:converted-generalized-eigenvalue-problem}
 \end{equation}
+which projects out the kernel of $\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}$.
+We can retrieve the generalized eigenvector as
+\begin{equation}
+    \mtx{C} = \mtx{V}_1 \mtx{M}^{-1/2} \mtx{X}.
+    \label{equ:3-nystrom-generalized-eigenvector}
+\end{equation}\\
 
-with $\mtx{C} = \mtx{V}_1 \mtx{M}^{-1/2} \mtx{X}$.
 
+\todo{
+Since by \refthm{thm:3-nystrom-eigenvalue-problem} the diagonal of $\mtx{\Xi}(t)$
+should merely be a permutation of the eigenvalues of $g_{\sigma}(tI - A)$,
+its elements should be within the range of $g_{\sigma}$. Hence, we may remove
+all elements in $\mtx{\Xi}(t)$ which are outside of $[0, 1 / (n \sqrt{2 \pi \sigma^2})]$ \cite{lin2017randomized}.
+In this way, we can filter out computational artefacts which for example might result
+from an inaccurate Chebyshev expansion and furthermore 
+can enforce non-negativity of the resulting approximation of
+\gls{smooth-spectral-density}.
+
+[Numerical experiments comparing resolution approaches]\\
+}
+
+Finally, we can summarize this alternative way of treating
+\reflin{lin:3-nystrom-pseudo-inverse} of \refalg{alg:3-nystrom-nystrom-chebyshev}
+in the following algorithm.
 \begin{algo}{Trace through generalized eigenvalue problem}{3-nystrom-eigenvalue-problem}
     \input{algorithms/eigenvalue_problem.tex}
 \end{algo}
-
-\todo{numerical experiments with generalized eigenproblem}
-
-Short-circuit: Not a good idea to compute pseudoinverse if
-both $\mtx{K}_1$ and $\mtx{K}_2$ are zero (noise divided by noise)
-\begin{equation}
-    \phi_{\sigma}^m(t_i) \approx \frac{1}{n_{\mtx{\Omega}}} \Tr(\mtx{K}_1(t_i))
-    \label{equ:3-nystrom-shortcircuit-hutchinson}
-\end{equation}
-If smaller than a threshold $\delta = 10^{-5}$
-
-\begin{figure}[ht]
-    \centering
-    \input{plots/short_circuit_mechanism.pgf}
-    \caption{Short-circuit mechanism.}
-    \label{fig:3-nystrom-short-circuit-mechanism}
-\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -478,7 +552,7 @@ If smaller than a threshold $\delta = 10^{-5}$
 \label{sec:3-nystrom-other-low-rank}
 
 Notice that many other methods \cite{halko2011finding,tropp2023randomized} fit
-into the scheme of \refequ{equ:3-nystrom-nystrom-trace}. In fact, if we
+into the scheme of \refequ{equ:3-nystrom-spectral-density}. In fact, if we
 generalize
 \begin{equation}
     \Tr^{k}(\widehat{\mtx{B}})
@@ -487,19 +561,22 @@ generalize
 \end{equation}
 the underlying low-rank approximation for $k=1$ is the Nystr\"om approximation
 which we have discussed in \refsec{sec:3-nystrom-nystrom}.
-For $k=2$, it is the randomized low-rank approximation \todo{[refequ above]} \cite{halko2011finding, tropp2023randomized}
+For $k=2$, it corresponds to the approximation \refequ{equ:3-nystrom-RSVD}
+if we rewrite it as
 \begin{equation}
     \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) ((\mtx{B} \mtx{\Omega})^{\top} (\mtx{B} \mtx{\Omega}))^{\dagger} (\mtx{B} \mtx{\Omega})^{\top} \mtx{B},
     \label{equ:3-nystrom-RSVD-rewritten}
 \end{equation}
-for $k=3$ the Nystr\"om approximation with one subspace iteration \cite{tropp2023randomized}
+using the definition of the pseudo-inverse.
+For $k=3$ we would obtain a scheme which theoretically coincides with the Nystr\"om
+approximation with one subspace iteration \cite{tropp2023randomized}
 \begin{equation}
     \widehat{\mtx{B}} = (\mtx{B}^2 \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B}^3 \mtx{\Omega})^{\dagger} (\mtx{B}^2 \mtx{\Omega})^{\top},
     \label{equ:3-nystrom-nystrom-SI}
 \end{equation}
 and so on.\\
 
-Generalizing \refalg{alg:nystrom-chebyshev} is straight forward and
-due to the efficient exponentiation of Chebyshev polynomials using the \gls{DCT}
-(see \refequ{equ:3-nystrom-chebyshev-potentiate-coefficients}), of the same
+Generalizing \refalg{alg:3-nystrom-nystrom-chebyshev} is straight forward and
+due to the efficient exponentiation of Chebyshev polynomials using
+\refalg{alg:3-nystrom-chebyshev-exponentiation}, remains of the same
 computational and storage complexity.

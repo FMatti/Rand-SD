@@ -10,6 +10,10 @@ from src.kernel import gaussian_kernel
 
 import matplotlib
 colors = matplotlib.colormaps["magma_r"]
+matplotlib.rc("text", usetex=True)
+matplotlib.rcParams["font.family"] = r"serif"
+matplotlib.rcParams["font.serif"] = r"Palatino"
+matplotlib.rcParams["font.size"] = 12
 
 A = ModES3D()
 min_ev = sp.sparse.linalg.eigsh(A, k=1, which="SA", return_eigenvectors=False)[0]
@@ -32,7 +36,7 @@ eigenvalues = g_sigma_eigenvalues(A, t=t, sigma=sigma / ((max_ev - min_ev) / 2))
 
 plt.figure(figsize=(4, 3))
 for i in range(n_t):
-    plt.plot(eigenvalues[i], color=colors(i / n_t), label="$t$ = {:.2f}".format(t[i]))
+    plt.plot(eigenvalues[i], color=colors(i / n_t), label="$t = {:.2f}$".format(t[i]))
 #plt.axvline(theoretical_numerical_rank(A.shape[0], sigma / ((max_ev - min_ev) / 2), epsilon=epsilon), linewidth=3, color="white")
 plt.axvline(theoretical_numerical_rank(A.shape[0], sigma / ((max_ev - min_ev) / 2), epsilon=epsilon), linewidth=1, linestyle="dashed", color="black")
 plt.text(theoretical_numerical_rank(A.shape[0], sigma / ((max_ev - min_ev) / 2), epsilon=epsilon), 8e-1, "$r_{\\varepsilon, 2}$", va="top", rotation=270)

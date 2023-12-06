@@ -11,15 +11,13 @@ We try to follow the notation which is used in contemporary literature in this f
     \item the components of a vector $\vct{v} \in \mathbb{R}^{n}$ are $v_i \in \mathbb{R}, i = 1, \dots, n$,
           and the elements of a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ are $a_{ij} \in \mathbb{R}, i, j = 1, \dots, n$;
     \item the $i$-th canonical unit vectors is $\vct{e}_i = (0, \dots, 1, \dots, 0)^{\top}$
-          are zero everywhere except in the $i$-th component and the identity matrix
+          with zeros everywhere except in the $i$-th component and the identity matrix
           $\mtx{I} = \diag(1, \dots, 1)$ which carries ones on its diagonal and 
           zeros everywhere else;
     \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$
-          are denoted with $\lambda_1 \geq \dots \geq \lambda_n$;
-    \item a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ is said to be positive
-          semi-definite if its eigenvalues are all non-negative, and we denote
-          this property with $\mtx{A} \succcurlyeq 0$;
-    %\item Schatten norm
+          are denoted with $\lambda_1(\mtx{A}) \geq \dots \geq \lambda_n(\mtx{A})$
+          or simply $\lambda_1 \geq \dots \geq \lambda_n$ if it is obvious from
+          the context;
     \item the trace of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ is
           the sum of its diagonal elements $\Tr(\mtx{A}) = \sum_{i=1}^n a_{ii}$
           but also the sum of its eigenvalues $\Tr(\mtx{A}) = \sum_{i=1}^n \lambda_i$;
@@ -28,10 +26,19 @@ We try to follow the notation which is used in contemporary literature in this f
           allow a spectral decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$
           with $\mtx{\Lambda} = \diag(\lambda_1, \dots, \lambda_n) \in \mathbb{R}^{n \times n}$ and 
           $\mtx{U} \in \mathbb{R}^{n \times n}$ such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$;
-    \item Norms are denoted with $\lVert \cdot \rVert _{\cdot}$. The spectral norm is
-          $\lVert \mtx{A} \rVert _2 = \lambda_1$, the Frobenius norm
-          is $\lVert \mtx{A} \rVert _F = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
+    \item matrix norms are denoted with $\lVert \cdot \rVert _{\cdot}$.
+          For symmetric matrices, the Schatten norm is
+          $\lVert \mtx{A} \rVert _{(p)} = (\sum_{i=1}^n |\lambda_i|^p)^{1/p}$
+          We refer to the spectral norm as
+          $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \lambda_1$, the Frobenius norm
+          is $\lVert \mtx{A} \rVert _F = \lVert \mtx{A} \rVert _{(2)} = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
     \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo};
+    \item a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ is said to be positive
+          semi-definite if its eigenvalues are all non-negative, and we denote
+          this property with $\mtx{B} \succcurlyeq 0$;
+    \item the $p$-norm of a real-valued, measurable function $f$ on a
+          domain $[a, b]$ is defined as
+          $\lVert f \rVert _{p} = (\int_{a}^{b} |f|^p \mathrm{d}x)^{1/p}$;
     \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
     \item Dirac's delta distribution is written $\delta$ \cite[chapter~15]{dirac1947quantum}
           and the Kronecker delta $\delta_{ij}$;
@@ -44,6 +51,6 @@ We try to follow the notation which is used in contemporary literature in this f
           Bachmann-Landau notation \cite[section~3.2]{cormen2009algorithms},
           please allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$;
     \item $c(n)$ denotes the computational complexity of a matrix-vector product;
-    \item and finally, we call an operation prohibitively expensive, if its
+    \item and finally, we call an operation \emph{prohibitively expensive}, if its
           complexity scales more than quadratically with the size of the problem.
 \end{itemize}

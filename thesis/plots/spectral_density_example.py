@@ -5,6 +5,12 @@ import matplotlib.pyplot as plt
 
 from src.utils import form_spectral_density
 
+import matplotlib
+matplotlib.rc("text", usetex=True)
+matplotlib.rcParams["font.family"] = r"serif"
+matplotlib.rcParams["font.serif"] = r"Palatino"
+matplotlib.rcParams["font.size"] = 12
+
 # Define sample points
 n_t = 500
 x = np.linspace(0, 1, n_t)

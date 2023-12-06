@@ -1,14 +1,12 @@
 \chapter{Introduction}
 \label{chp:1-introduction}
 
-In many problems in engineering, physics, chemistry, and computer science, 
+In many problems in physics, chemistry, engineering, and computer science, 
 the eigenvalues of certain matrices help understand the nature of a system:
 In electronic structure calculations they represent the allowed energy levels 
 electrons can occupy \cite{ducastelle1970charge, haydock1972electronic, lin2017randomized};
 in neural network optimization they are indicative of the optimization speed \cite{ghorbani2019investigation,chen2021slq,adepu2021hessian};
 and in graph processing they can uncover hidden graph motifs \cite{kruzick2018graph,huang2021kernels,patane2022filter}.\\
-\todo{relevance for fundamental linear algebraic tasks: computing matrix functions (Fan et al., 2019)
-and eigensolvers (Polizzi, 2009; Li et al., 2019, FEAST)}
 
 The eigenvalues of a matrix $\mtx{A}$ are all scalars $\lambda$ which, together
 with some non-zero vectors $\vct{v}$, satisfy the equation
@@ -16,10 +14,10 @@ with some non-zero vectors $\vct{v}$, satisfy the equation
     \mtx{A} \vct{v} = \lambda \vct{v}.
     \label{equ:1-introduction-eigenvalue}
 \end{equation}
-In most applications, the matrices are real, i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$,
-and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$, such that their eigenvalues 
-$\lambda_1, \dots, \lambda_n$ are all real. This allows us to define its
-spectral density.
+In most applications, the studied matrices are real,
+i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$, and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$,
+such that their eigenvalues $\lambda_1, \dots, \lambda_n$ are all real.
+This allows us to define their spectral density.
 
 \begin{definition}{Spectral density of a matrix}{spectral-density}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix with \glspl{eigenvalue}
@@ -28,13 +26,13 @@ spectral density.
         \phi(t) = \frac{1}{n} \sum_{i=1}^{n} \delta(t - \lambda_i),
         \label{equ:1-introduction-def-spectral-density}
     \end{equation}
-    where we used the \gls{dirac-delta} \cite[chapter~15]{dirac1947quantum}
+    where we used the \gls{dirac-delta}
     and the \gls{spectral-parameter} $\in \mathbb{R}$.
 \end{definition}
 
 \gls{spectral-density} is the probability density \cite{klenke2013probability}
 of the cumulative empirical spectral measure \cite{chen2021slq}. Knowing \gls{spectral-density}
-of a matrix would in theory allow us to reconstruct its eigenvalues.
+of a matrix would -- in theory -- allow us to determine its eigenvalues.
 Furthermore, the spectral density of a matrix can for example be used to count
 the number of eigenvalues which lie within an interval $[a, b]$
 \begin{equation}
@@ -48,20 +46,20 @@ or to compute the trace of a matrix function \cite{lin2017randomized}
 \end{equation}\\
 
 However, constructing the spectral density of a matrix amounts to knowing all
-the eigenvalues of the same matrix, which are often prohibitively expensive to
-compute. In many of the above mentioned applications, not the exact individual
-eigenvalues are of interest, but their approximate, relative locations to each
-other. Hence, it is sufficient to consider approximations of \refequ{equ:1-introduction-def-spectral-density}.
-
+the eigenvalues of this matrix, which are often prohibitively expensive to
+compute. But in many of the above mentioned applications, not the exact individual
+eigenvalues are of interest, but their approximate relative locations to each
+other. Hence, it is sufficient to find estimates of \refequ{equ:1-introduction-def-spectral-density}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Smoothened spectral density}
 \label{sec:1-introduction-properties}
 
-Since we cannot hope to measure the convergence of any smooth function to \gls{spectral-density},
+Since we cannot hope to measure the convergence of any smooth function to
+\gls{spectral-density} in any of the conventionally used $p$-norms,
 we first regularize \gls{spectral-density} with a suitable \gls{smoothing-kernel}
-and define the \gls{smooth-spectral-density} as the convolution
+to define the \gls{smooth-spectral-density} as the convolution
 \begin{equation}
     \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(t - s) \mathrm{d}s = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i).
     \label{equ:1-introduction-def-smooth-spectral-density}
@@ -69,20 +67,20 @@ and define the \gls{smooth-spectral-density} as the convolution
 The \gls{smoothing-parameter} $>0$ controls by how much \gls{spectral-density} is
 smoothened (see \reffig{fig:1-introduction-smoothened-spectral-density}). Typically,
 small \gls{smoothing-parameter} allow for easier approximations of \gls{smooth-spectral-density}
-but at the cost of losing many of the finer characteristics of the spectrum.
+but at the cost of losing many of the finer characteristics of the spectrum.\\
 
 \begin{figure}[ht]
-    \begin{subfigure}[b]{0.33\columnwidth}
+    \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/spectral_density_example_0.01.pgf}
         \caption{small $\sigma$}
         \label{fig:1-introduction-spectral-density-example-0.01}
     \end{subfigure}
-    \begin{subfigure}[b]{0.33\columnwidth}
+    \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/spectral_density_example_0.02.pgf}
         \caption{medium $\sigma$}
         \label{fig:1-introduction-spectral-density-example-0.02}
     \end{subfigure}
-    \begin{subfigure}[b]{0.33\columnwidth}
+    \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/spectral_density_example_0.05.pgf}
         \caption{large $\sigma$}
         \label{fig:1-introduction-spectral-density-example-0.05}
@@ -92,26 +90,29 @@ but at the cost of losing many of the finer characteristics of the spectrum.
     \label{fig:1-introduction-smoothened-spectral-density}
 \end{figure}
 
-In many applications \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing-parameter}
+Commonly, \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smoothing-parameter}
 \begin{equation}
     g_{\sigma}(s) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{s^2}{2\sigma^2}},
     \label{equ:1-introduction-def-gaussian-kernel}
 \end{equation}
-but there are many other choices possible for \gls{smoothing-kernel}. Ideally,
-\gls{smoothing-kernel} should be symmetric, non-negative, and tend towards the
-Dirac delta function in the limit of \gls{smoothing-parameter} $\to 0$. Another
-commonly used kernel will be discussed in \refsec{sec:5-experiments-haydock-method}.\\
+due to its rapidly decaying tail and desirable interpolation properties \cite{lin2017randomized}.
+There are many other choices possible for \gls{smoothing-kernel}. Ideally,
+\gls{smoothing-kernel} should be symmetric, non-negative, and tend -- in a weak sense --
+towards the Dirac delta function in the limit of \gls{smoothing-parameter} $\to 0$. Another
+commonly used kernel is the Lorentzian, which will be discussed in \refsec{sec:5-experiments-haydock-method}.\\
 
 Because we only consider symmetric matrices, 
 we may represent $\mtx{A} \in \mathbb{R}^{n \times n}$ using its spectral
-decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$ where
+decomposition $\mtx{A} = \mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$ where
 $\mtx{\Lambda} \in \mathbb{R}^{n \times n}$ is the diagonal matrix which carries
 the eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U} \in \mathbb{R}^{n \times n}$
-such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[theorem~4.1.5]{horn1985matrix}.
-Thus, if we absorb the \gls{matrix-size} in \gls{smoothing-kernel},
-apply the definition of a smooth function $f$ applied to a matrix $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
+is orthogonal, i.e. $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[theorem~4.1.5]{horn1985matrix}.
+Thus, if we absorb the factor in \refequ{equ:1-introduction-def-smooth-spectral-density}
+involving the \gls{matrix-size} in \gls{smoothing-kernel},
+use the definition of a smooth function $f$ applied to a symmetric matrix
+$f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
 with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[definition~1.2]{higham2008functions},
-and use the invariance of the trace under orthonormal transformations, we may write
+and finally use the invariance of the trace under orthogonal transformations, we may write
 \begin{equation}
     \phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})).
     \label{equ:1-introduction-spectral-density-as-trace}
@@ -126,28 +127,18 @@ for which -- we will see -- exist many efficient algorithms.
 \label{sec:1-introduction-related}
 
 Multiple approaches have been taken for approximating the \glsfirst{spectral-density}
-of large symmetric matrices. They can be grouped into two families of methods:
+of large symmetric matrices. They can loosely be grouped into two big families
+of methods (see also \reffig{fig:1-introduction-literature-overview} for an
+illustrated overview of the methods):
 
 \begin{enumerate}
-    \item Lanczos-based methods
-    first partially tridiagonalize a matrix and subsequently either extract Ritz values
-    \cite{lin2016review, chen2021slq} or directly exploit properties of the
-    \glsfirst{smoothing-kernel} \cite{haydock1972electronic, lin2016review}
-    to approximate \gls{spectral-density};
-    \item and interpolation-based methods which either expand
-    \gls{spectral-density} \cite{weisse2006kpm} or \gls{smoothing-kernel}
-    \cite{lin2016review,lin2017randomized} in a polynomial and subsequently
-    use trace estimation to approximate \gls{spectral-density}.
+    \item Lanczos-based methods first partially tridiagonalize the matrix and
+    subsequently either extract Ritz values or directly exploit properties of the
+    \glsfirst{smoothing-kernel} to approximate \gls{spectral-density};
+    \item and expansion-based methods which either compute a truncated expansion of
+    \gls{spectral-density} or \gls{smoothing-kernel} in a polynomial basis and subsequently
+    make use of trace estimation to approximate \gls{spectral-density}.
 \end{enumerate}
-
-\todo{Mention methods explicitly}
-
-It turns out that these two families intersect, and many of these methods
-can be shown to be equivalent to each other \cite{chen2023kpm}.\\
-
-\todo{Broaden view to general trace estimation}
-
-Our work bases on the methods presented in \cite{lin2017randomized}.
 
 \begin{figure}[ht]
     \centering
@@ -156,28 +147,59 @@ Our work bases on the methods presented in \cite{lin2017randomized}.
     \label{fig:1-introduction-literature-overview}
 \end{figure}
 
+Among the Lanczos-based methods features the Haydock method \cite{haydock1972electronic, lin2016review}.
+It stochastically estimates the trace of the Lorentzian kernel applied to a matrix
+by first tridiagonalizing the matrix with a few iterations of the Lanczos algorithm
+\cite{lanczos1950iteration} and subsequently evaluating the matrix function using
+a continued fraction formula. The stochastic Lanczos quadrature \cite{lin2016review, ubaru2017lanczos,chen2021slq}
+also first tridiagonalizes the matrix. It then extracts the nodes and weights
+for the corresponding Gaussian quadrature to build an approximate spectral density.
+The expansion-based methods encompass the kernel polynomial methods \cite{silver1994kpm, wang1994kpm, weisse2006kpm}
+which involve the formal expansion of a suitable modification of \gls{spectral-density}
+in a basis of orthogonal polynomials. The Delta-Gauss-Legendre \cite{lin2016review}
+and Delta-Gauss-Chebyshev \cite{lin2017randomized} methods instead expand \gls{smoothing-kernel}
+and use this expansion to efficiently evaluate a stochastic trace estimator.
+It turns out that these two families are not distinct, and in fact some of these
+methods can be shown to be equivalent to each other: The Lanczos algorithm
+can be used as an engine for the kernel polynomial method \cite{chen2023kpm},
+while smoothing the approximation resulting from the kernel polynomial method 
+will give the same result as the Delta-Gauss-Legendre and Delta-Gauss-Chebyshev
+methods \cite{lin2016review}.\\ 
+
+Spectral densities of matrices have found use in priming the computation of matrix
+functions \cite{fan2020spectrum} and in parallelized eigenvalue solvers
+\cite{polizzi2009density, li2019slicing}. In recent years, significant progress
+in the theory of stochastic trace estimation, which is the backbone of most
+expansion-based methods, has been made \cite{meyer2021hutch, persson2022hutch}.
+These developments involved demonstrating the reciprocal decrease
+of the approximation error with the number of matrix-vector multiplication
+queries used, which is a desirable algorithmic property.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Main contributions}
 \label{sec:1-introduction-contributions}
 
 Besides a couple of small clarifications and improvements to the algorithms 
-from \cite{lin2017randomized}, we see our main contributions to be the following:% Corrected proof / quadrature free
+from \cite{lin2017randomized}, we see our main contributions to be
 
 \begin{itemize}
-    \item The development of a consistent \gls{DCT}-based interpolation scheme which allows us
+    \item the development of a consistent \gls{DCT}-based interpolation scheme which allows us
           to speed up \cite[algorithm~5]{lin2017randomized} by orders of magnitude
           at no loss of accuracy;
-    \item The derivation of an a priori guarantee for the number of matrix-vector
+    \item the derivation of an a priori guarantee for the number of matrix-vector
           products needed to get an accurate approximation of the spectral
           density under certain assumptions on the matrix;
-    \item A simple generalization of the presented methods to other
+    \item proposal of a simple generalization of the presented methods to other
           commonly used randomized low-rank approximation schemes;
-    \item \todo{How to formulate this: The $1/\epsilon$-result for the paramter-dependent Nystr\"om++ approximation}
-    \item A fast and rigorously documented implementation of all the algorithms
+    \item an analogoue result for the reciprocal decrease of the approximation
+          error with the number of queries as seen in \cite[theorem~1]{meyer2021hutch}
+          but for the trace of parameter dependent matrices;
+    \item a fast and rigorously documented implementation of all the algorithms
           following the notation and conventions of this thesis, which can be used to
-          reproduce every plot, table, and much more\footnote{GitHub repository with
-          code available under \url{https://github.com/FMatti/Rand-SD}}.
+          reproduce every plot, table, and much more\footnote{A GitHub repository
+          with the code which allows to easily reproduce every component of this
+          document is available at \url{https://github.com/FMatti/Rand-SD}.}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

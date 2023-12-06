@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 
 from src.matrices import regular_grid, periodic_gaussian_well
 
+import matplotlib
+matplotlib.rc("text", usetex=True)
+matplotlib.rcParams["font.family"] = r"serif"
+matplotlib.rcParams["font.serif"] = r"Palatino"
+matplotlib.rcParams["font.size"] = 12
+
 # Define grid parameters
 N = 100
 L = 6
