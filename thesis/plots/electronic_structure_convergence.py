@@ -18,7 +18,7 @@ matplotlib.rcParams["font.size"] = 12
 A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 
 methods = [DGC, FastNyCheb, FastNyChebPP]
-labels = ["DGC", "NC", "NCPP"]
+labels = ["DGC", "NC", "NC++"]
 
 ################################################################################
 

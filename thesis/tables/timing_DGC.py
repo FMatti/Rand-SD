@@ -27,6 +27,6 @@ for i in range(len(methods)):
         means[i, j] = mean
         errors[i, j] = error
 
-headline = ["", "\shortstack[c]{$m=800$ \\ $n_{\Omega} + n_{\Psi}=40$}", "\shortstack[c]{$m=2400$ \\ $n_{\Omega} + n_{\Psi}=40$}", "\shortstack[c]{$m=800$ \\ $n_{\Omega} + n_{\Psi}=160$}", "\shortstack[c]{$m=2400$ \\ $n_{\Omega} + n_{\Psi}=160$}"]
+headline = ["", r"\shortstack[c]{$m=800$ \\ $n_{\Omega} + n_{\Psi}=40$}", r"\shortstack[c]{$m=2400$ \\ $n_{\Omega} + n_{\Psi}=40$}", r"\shortstack[c]{$m=800$ \\ $n_{\Omega} + n_{\Psi}=160$}", r"\shortstack[c]{$m=2400$ \\ $n_{\Omega} + n_{\Psi}=160$}"]
 
 generate_tex_tabular(means, "thesis/tables/timing_DGC.tex", headline, labels, errors)

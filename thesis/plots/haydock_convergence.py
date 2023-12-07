@@ -54,6 +54,7 @@ with open("thesis/plots/haydock_convergence_nv_m2400.pkl", "wb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
+#ax.plot(variable_parameters_values, 0.5/variable_parameters_values, linestyle="dashed", color="#7a7a7a", alpha=0.5, label="$(n_{\Omega} + n_{\Psi})^{-2}$")
 plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega} + n_{\Psi}$", ax=ax)
 plt.savefig("thesis/plots/haydock_convergence_nv_m2400.pgf", bbox_inches="tight")
 

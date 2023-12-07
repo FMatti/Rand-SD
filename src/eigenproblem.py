@@ -161,14 +161,7 @@ def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
 
-    s, U = np.linalg.eigh(K_Z)
-
-    idx = np.where(s >= tau**2 * np.max(s))[0].flatten()
-    s_tilde = s[idx]
-    U_tilde = U[:, idx]
-    K_Z_truncated = U_tilde @ np.diag(s_tilde) @ U_tilde.T
-
-    Xi = np.linalg.pinv(K_W, rcond=tau) @ K_Z_truncated
+    Xi = np.linalg.pinv(K_W, rcond=tau) @ K_Z
 
     return np.diag(Xi), None
 

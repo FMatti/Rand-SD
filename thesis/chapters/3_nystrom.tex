@@ -204,7 +204,7 @@ following theorem.
 \end{theorem}
 
 \begin{proof}
-    \todo{Check if this goes through} For every $t \in [a, b]$ we have
+    \todo{[Double-check this]} For every $t \in [a, b]$ we have
     \begin{align}
         |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))|
             &= |\Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t))| && \text{(linearity of trace)} \notag \\ 
@@ -294,16 +294,18 @@ we can estimate the numerical rank of $g_{\sigma}(t\mtx{I} - \mtx{A})$ to be
 In \reffig{fig:3-nystrom-singular-value-decay}, we numerically check the decay
 of the eigenvalues for one of our example matrices which we use in the numerical
 experiments (\refsec{sec:5-experiments-density-function}). Clearly, the estimated
-numerical rank of the matrix not accurate in this case, since the spectrum is
+numerical rank of the matrix not accurate for some values of \gls{spectral-parameter}
+in this case, since the spectrum is
 nowhere near evenly distributed. Nevertheless, it provides us with a good first
 guess which can be used to decide on what \gls{sketch-size} to use.\\
 \begin{figure}[ht]
     \centering
     \input{figures/singular_value_decay.tex}
     \caption{Singular value decay of a Gaussian \glsfirst{smoothing-kernel}
-       with \gls{smoothing-parameter} $=0.05$ applied to the matrix introduced
-       \refsec{sec:5-experiments-density-function} for $c=1$.
-       \todo{Add spectrum to show uneven distribution}}
+       with \gls{smoothing-parameter}$=0.05$ applied to the matrix introduced
+       \refsec{sec:5-experiments-density-function} for $c=1$. For reference,
+       the effective spectral density is plotted above the color bar which
+       assigns a color to each value of \gls{spectral-parameter}.}
     \label{fig:3-nystrom-singular-value-decay}
 \end{figure}
 
@@ -516,7 +518,7 @@ It allows us to convert the generalized eigenvalue problem \refequ{equ:3-nystrom
 into the standard eigenvalue problem
 \begin{equation}
     \mtx{\Gamma}_1^{-1/2} \mtx{W}_1^{\top} (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \mtx{W}_1 \mtx{\Gamma}_1^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi},
-    \label{equ:converted-generalized-eigenvalue-problem}
+    \label{equ:3-nystrom-converted-generalized-eigenvalue-problem}
 \end{equation}
 which projects out the kernel of $\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}$.
 We can retrieve the generalized eigenvector as
@@ -525,26 +527,42 @@ We can retrieve the generalized eigenvector as
     \label{equ:3-nystrom-generalized-eigenvector}
 \end{equation}\\
 
-
-\todo{
 Since by \refthm{thm:3-nystrom-eigenvalue-problem} the diagonal of $\mtx{\Xi}(t)$
 should merely be a permutation of the eigenvalues of $g_{\sigma}(tI - A)$,
-its elements should be within the range of $g_{\sigma}$. Hence, we may remove
+we expect its elements to be within the range of $g_{\sigma}$. Hence, we may remove
 all elements in $\mtx{\Xi}(t)$ which are outside of $[0, 1 / (n \sqrt{2 \pi \sigma^2})]$ \cite{lin2017randomized}.
 In this way, we can filter out computational artefacts which for example might result
 from an inaccurate Chebyshev expansion and furthermore 
 can enforce non-negativity of the resulting approximation of
-\gls{smooth-spectral-density}.
+\gls{smooth-spectral-density}.\\
 
-[Numerical experiments comparing resolution approaches]\\
-}
-
-Finally, we can summarize this alternative way of treating
+We can summarize this alternative way of treating
 \reflin{lin:3-nystrom-pseudo-inverse} of \refalg{alg:3-nystrom-nystrom-chebyshev}
 in the following algorithm.
 \begin{algo}{Trace through generalized eigenvalue problem}{3-nystrom-eigenvalue-problem}
     \input{algorithms/eigenvalue_problem.tex}
 \end{algo}
+
+In the end, this procedure only slightly improves the accuracy
+and only for small \gls{chebyshev-degree}, i.e. when the Chebyshev expansion has
+not converged yet. This is shown with an example in \reffig{fig:3-nystrom-eigenvalue-problem}.
+
+\begin{figure}[ht]
+    \centering
+    \input{plots/eigenvalue_problem.pgf}
+    \caption{The difference between directly computing the pseudo-inverse
+        in \reflin{lin:3-nystrom-pseudo-inverse} of \refalg{alg:2-chebyshev-DGC}
+        versus solving the eigenvalue problem \refequ{equ:3-nystrom-converted-generalized-eigenvalue-problem}.}
+    \label{fig:3-nystrom-eigenvalue-problem}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Theoretical analysis}
+\label{subsec:3-nystrom-theoretical-analysis}
+
+\todo{Combine matrix rank result with approximation result}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
