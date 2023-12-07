@@ -26,6 +26,11 @@
 % Comment
 \newcommand\todo[1]{{{\color{red}#1}}}
 
+% Remove page numbering from empty page at chapter end
+\let\origdoublepage\cleardoublepage
+\newcommand{\clearemptydoublepage}{\clearpage{\pagestyle{empty}\origdoublepage}}
+\let\cleardoublepage\clearemptydoublepage
+
 
 %%% COLOR THEME
 

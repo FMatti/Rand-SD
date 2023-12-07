@@ -1,4 +1,25 @@
 \chapter*{Résumé}
 \label{chp:0-resume}
 
-\todo{Is supposedly required: \url{https://www.epfl.ch/schools/sb/sma/wp-content/uploads/2022/02/PdM-Info-en.pdf}. Will write this in the end to avoid retranslating multiple times.}
+Nous étudions une famille de méthodes utilisées pour calculer approximativement
+la densité spectrale de grandes matrices symétriques auxquelles on ne peut accéder
+que par des produits matrice-vecteur. Ces méthodes sont basées sur l'expansion
+polynomiale d'un noyau en combinaison avec une estimation randomisé
+de la trace, une approximation randomisé de bas rang, ou les deux simultanément.\\
+
+D'abord, nous présentons une introduction et un aperçu des procédures
+utilisées pour calculer la densité spectrale des matrices. Ensuite, nous montrons
+comment certaines fonctions matricielles peuvent être calculées efficacement sur
+la base de leur expansion de Chebyshev -- le schéma d'interpolation de choix pour
+nos méthodes. Un premier algorithme est proposé, basé sur l'estimateur stochastique
+de trace de Hutchinson. Ensuite, l'utilisation d'une approximation de bas rang
+est motivée et un second algorithme basé sur l'approximationde Nystr\"om est présenté.
+Enfin, une méthode hybride basée sur une combinaison des deux techniques mentionnées
+précédemment est discutée.\\
+
+Les techniques employées dans ces méthodes sont motivées et introduites de manière
+rigoureuse. Nous présentons plusieurs stratégies d'implémentation pour améliorer
+la vitesse de calcul, la précision et la stabilité, et nous donnons une analyse
+théorique de chaque méthode. Dans diverses expériences, l'analyse de nos algorithmes
+est confirmée numériquement et leur efficacité est comparée à d'autres méthodes
+conventionnelles.

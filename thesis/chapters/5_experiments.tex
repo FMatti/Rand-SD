@@ -81,7 +81,7 @@ error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-struct
         \caption{$m=2400$}
         \label{fig:5-experiments-electronic-structure-convergence-nv-m2400}
     \end{subfigure}
-    \caption{Behavior with $n_{\mtx{\Omega}}$ for $\sigma=0.05$}
+    \caption{Behavior with $n_{\Omega}$ for $\sigma=0.05$}
     \label{fig:5-experiments-electronic-structure-convergence-nv}
 \end{figure}
 
@@ -89,12 +89,12 @@ error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-struct
     \centering
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/electronic_structure_convergence_m_nv40.pgf}
-        \caption{$n_{\mtx{\Omega}}=40$}
+        \caption{$n_{\Omega}=40$}
         \label{fig:5-experiments-electronic-structure-convergence-m-nv40}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/electronic_structure_convergence_m_nv160.pgf}
-        \caption{$n_{\mtx{\Omega}}=160$}
+        \caption{$n_{\Omega}=160$}
         \label{fig:5-experiments-electronic-structure-convergence-m-nv160}
     \end{subfigure}
     \caption{Behavior with $m$ for $\sigma=0.05$}
@@ -121,7 +121,7 @@ trace estimation on the residual, is illustrated well in
 \reffig{fig:5-experiments-electronic-structure-matvec-mixture}.
 For various values of \gls{smoothing-parameter} and a simultaneously changing
 \gls{chebyshev-degree} $=120 / \sigma$ to keep an approximately equal interpolation
-accuracy, the behavior of the error for fixed $n_{\mtx{\Omega}} + n_{\mtx{\Psi}} = 80$ is plotted.
+accuracy, the behavior of the error for fixed $n_{\Omega} + n_{\Psi} = 80$ is plotted.
 
 \begin{figure}[ht]
     \centering
@@ -153,7 +153,7 @@ is used.
 %$\vct{\psi} \in \mathbb{R}^n$ is used to
 %approximate the trace
 %\begin{equation}
-%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_{\mtx{\Omega}}} \sum_{j=1}^{n_{\mtx{\Omega}}} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j.
+%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_{\Omega}} \sum_{j=1}^{n_{\Omega}} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j.
 %    \label{equ:5-experiments-haydock-hutchinson}
 %\end{equation}
 %It turns out that each summand in \refequ{5-experiments-haydock-hutchinson} can
@@ -181,7 +181,7 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.
         \caption{$m=2400$}
         \label{fig:5-experiments-haydock-convergence-nv-m2400}
     \end{subfigure}
-    \caption{Behavior with $n_{\mtx{\Omega}}$ for $\sigma=0.05$}
+    \caption{Behavior with $n_{\Omega}$ for $\sigma=0.05$}
     \label{fig:5-experiments-haydock-convergence-nv}
 \end{figure}
 
@@ -189,12 +189,12 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.
     \centering
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/haydock_convergence_m_nv40.pgf}
-        \caption{$n_{\mtx{\Omega}}=40$}
+        \caption{$n_{\Omega}=40$}
         \label{fig:5-experiments-haydock-convergence-m-nv40}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/haydock_convergence_m_nv160.pgf}
-        \caption{$n_{\mtx{\Omega}}=160$}
+        \caption{$n_{\Omega}=160$}
         \label{fig:5-experiments-haydock-convergence-m-nv160}
     \end{subfigure}
     \caption{Behavior with $m$ for $\sigma=0.05$}
@@ -219,6 +219,6 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.
 %\begin{figure}[ht]
 %    \centering
 %    \input{plots/multi_matrix_convergence_ModES3D_8.pgf}
-%    \caption{$n_{\mtx{\Omega}}=160$}
+%    \caption{$n_{\Omega}=160$}
 %    \label{fig:5-experiments-multi-matrix-convergence}
 %\end{figure}

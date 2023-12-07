@@ -125,7 +125,7 @@ def KPM(A, t, m, n_v, seed=0, sigma=None):
     return phi_tilde
 
 
-def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -146,7 +146,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
         The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
     tau : int or float in (0, 1]
         Truncation parameter.
-    delta : float > 0
+    kappa : float > 0
         The threshold on the Hutchinson estimate of g_sigma. If it is below this
         value, instead of solving the possibly ill-conditioned generalized
         eigenvalue problem, we set the spectral density at that point to zero.
@@ -212,7 +212,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
         # Check if rank of if Hutchinson (k=1) for Tr(g^m(tI-A)) is almost zero
-        if np.trace(K_W[i]) / n_v < delta:
+        if np.trace(K_W[i]) / n_v < kappa:
             phi_tilde[i] = 0
             continue
         else:
@@ -233,7 +233,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, ker
     return phi_tilde
 
 
-def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Robust and efficient spectrum sweeping with Delta-Gauss-Chebyshev method
     for estimating the spectral density.
@@ -256,7 +256,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
         The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
     tau : int or float in (0, 1]
         Truncation parameter.
-    delta : float > 0
+    kappa : float > 0
         The threshold on the Hutchinson estimate of g_sigma. If it is below this
         value, instead of solving the possibly ill-conditioned generalized
         eigenvalue problem, we set the spectral density at that point to zero.
@@ -306,7 +306,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
         n_v_tilde = n_v // 2
         n_v = n_v // 2
     elif n_v_tilde == 0:
-        return FastNyCheb(A, t, m, sigma, n_v, k, tau, delta, epsilon, kernel, square_coefficients, eigenproblem, seed)
+        return FastNyCheb(A, t, m, sigma, n_v, k, tau, kappa, epsilon, kernel, square_coefficients, eigenproblem, seed)
 
     # Chebyshev expansion
     g = lambda x: kernel(x, n=n, sigma=sigma)
@@ -336,7 +336,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, delta=1e-5,
 
     phi_tilde = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
-        if np.trace(K_W[i]) / n_v < delta:  # Hutchinson for Tr(g^m(tI-A))
+        if np.trace(K_W[i]) / n_v < kappa:  # Hutchinson for Tr(g^m(tI-A))
             continue
 
         if eigenproblem == "kernelunion":

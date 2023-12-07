@@ -89,7 +89,7 @@ while for the Frobenius norm $\lVert \cdot \rVert _F$ we obtain
 
 From \refdef{def:3-nystrom-rank}, it is clear that the rank of a symmetric
 matrix is also equal to the number of its eigenvalues which are non-zero.
-Hence, for a symmetric matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
+Hence, for a symmetric positive definite matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
 of rank $r \ll n$, we can immediately obtain a factorization of the matrix in
 terms of smaller matrices by looking at its spectral decomposition
 \begin{equation}
@@ -117,7 +117,7 @@ factorization methods of low-rank matrices, many of which are based on sketching
 Sketching is a widely used technique for approximating the column space of a matrix
 \cite{halko2011finding,woodruff2014sketching,lin2017randomized,tropp2017sketching,tropp2023randomized}.
 Multiplying a low-rank matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ with a standard Gaussian
-\gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$ with $n_{\mtx{\Omega}} \ll n$, will
+\gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$ with $n_{\Omega} \ll n$, will
 result in a significantly smaller matrix $\mtx{B}\mtx{\Omega}$ -- the sketch -- whose
 columns roughly span the same range as the columns of $\mtx{B}$.
 Closely following \cite[section~2.1]{tropp2023randomized}, we illustrate the
@@ -151,7 +151,7 @@ $j$-th eigenvector $\vct{v}_j$ is
 That is, $\mtx{B}\vct{\omega}$ is roughly aligned with the eigenvectors corresponding
 to the largest eigenvalues: the dominant eigenvectors.
 When repeating this procedure for multiple $\vct{\omega}$ by right-multiplying $\mtx{B}$
-with a standard Gaussian \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$,
+with a standard Gaussian \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$,
 it is shown in \cite{halko2011finding} that
 \begin{equation}
     \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) (\mtx{B} \mtx{\Omega})^{\dagger} \mtx{B}
@@ -194,7 +194,7 @@ following theorem.
     Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ be symmetric positive semi-definite
     and continuously depend on $t \in [a,b] \subset \mathbb{R}$. Let the \gls{sketching-matrix}
     used in \refequ{equ:3-nystrom-nystrom} have
-    $n_{\mtx{\Omega}} = r + p$ columns for some $r \geq 2, p \geq 4$. Then
+    $n_{\Omega} = r + p$ columns for some $r \geq 2, p \geq 4$. Then
     for all $\gamma \geq 1$, the inequality
     \begin{equation}
         \int_{a}^{b} | \Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))| \mathrm{d}t
@@ -210,7 +210,7 @@ following theorem.
             &= |\Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t))| && \text{(linearity of trace)} \notag \\ 
             &= \Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t)) &&  \text{($\mtx{B}(t) - \widehat{\mtx{B}}(t) \succcurlyeq 0$ \cite[lemma~2.1]{frangella2023preconditioning})} \notag \\ 
             &= \sum_{i=1}^n \lambda_i(\mtx{B}(t) - \widehat{\mtx{B}}(t)) &&  \text{(trace is sum of eigenvalues)} \notag \\
-            &= \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _1 && \text{(definition of Schatten norm)} \notag \\
+            &= \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _{(1)} && \text{(definition of Schatten norm)} \notag \\
             &= \lVert (\mtx{I} - \Pi_{\mtx{B}(t)^{1/2} \mtx{\Omega}})\mtx{B}(t)^{1/2} \rVert _F^2 && \text{(\cite[proof of corollary 8.8]{tropp2023randomized})}
     \end{align}
     Thus, we can apply \cite[theorem~9]{kressner2023randomized} to get
@@ -310,7 +310,7 @@ guess which can be used to decide on what \gls{sketch-size} to use.\\
 The backbone of what is also known as the spectrum sweeping method \cite{lin2017randomized}
 is the Nystr\"om approximation of the Chebyshev expansion \refequ{equ:2-chebyshev-chebyshev-expansion},
 hence why we refer to it as the \gls{NC} method. 
-For some standard Gaussian random matrix $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$,
+For some standard Gaussian random matrix $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\Omega}}$,
 the approximation is
 \begin{equation}
     \widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A})
@@ -387,8 +387,8 @@ can be found in \refalg{alg:3-nystrom-nystrom-chebyshev}.
 Again denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
 with $c(n)$, e.g. $\mathcal{O}(c(n)) = n^2$ for dense and $\mathcal{O}(c(n)) = n$
 for sparse matrices, we find the computational complexity of the \gls{NC}
-method to be $\mathcal{O}(m \log(m) n_t + m n_{\mtx{\Omega}}^2 n + m n_t n_{\mtx{\Omega}}^2 +  m c(n) n_{\mtx{\Omega}} + n_t n_{\mtx{\Omega}}^3)$, with
-$\mathcal{O}(n n_{\mtx{\Omega}} + n_{\mtx{\Omega}}^2 n_t + m n_t)$ required additional storage.
+method to be $\mathcal{O}(m \log(m) n_t + m n_{\Omega}^2 n + m n_t n_{\Omega}^2 +  m c(n) n_{\Omega} + n_t n_{\Omega}^3)$, with
+$\mathcal{O}(n n_{\Omega} + n_{\Omega}^2 n_t + m n_t)$ required additional storage.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -411,16 +411,16 @@ of \refalg{alg:3-nystrom-nystrom-chebyshev}. Even less, since in that case we al
     \label{equ:3-nystrom-short-circuit}
 \end{equation}
 Motivated by this observation we use a \enquote{short-circuit} mechanism which 
-computes the $n_{\mtx{\Omega}}$-query Hutchinson's estimate \refequ{equ:2-chebyshev-DGC-hutchionson-estimator}
+computes the $n_{\Omega}$-query Hutchinson's estimate \refequ{equ:2-chebyshev-DGC-hutchionson-estimator}
 \begin{equation}
-    \frac{1}{n_{\mtx{\Omega}}} \Tr(\mtx{K}_1(t_i))
+    \frac{1}{n_{\Omega}} \Tr(\mtx{K}_1(t_i))
     \label{equ:3-nystrom-short-circuit-hutchinson}
 \end{equation}
 of $\Tr(g_{\sigma}^m(t_i\mtx{I} - \mtx{A}))$
 before executing \reflin{lin:3-nystrom-pseudo-inverse} in \refalg{alg:3-nystrom-nystrom-chebyshev}.
-If the result is smaller than a threshold $\delta > 0$, it immediately sets
+If the result is smaller than a threshold $\kappa > 0$, it immediately sets
 $\widetilde{\phi}_{\sigma}^m(t_i)=0$ and skips \reflin{lin:3-nystrom-pseudo-inverse}.
-for this $t_i$. We usually use $\delta = 10^{-5}$. The effect this short-circuit
+for this $t_i$. We usually use $\kappa = 10^{-5}$. The effect this short-circuit
 mechanism has on the approximation quality can be seen in \reffig{fig:3-nystrom-short-circuit-mechanism}.\\
 
 \begin{figure}[ht]
@@ -451,14 +451,14 @@ eigenvalue problem by making use of the following theorem \cite[theorem~3]{lin20
     \end{equation}
     where $\mtx{\Sigma}_1 \in \mathbb{R}^{r \times r}$ and
     $\mtx{V}_1 \in \mathbb{R}^{n \times r}$ with $\mtx{V}_1^{\top} \mtx{V}_1 = \mtx{I}$.
-    For $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\mtx{\Omega}}}, n_{\mtx{\Omega}} > r$,
+    For $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\Omega}}, n_{\Omega} > r$,
     such that $\mtx{\Omega}^{\top} \mtx{V}_1$ has linearly independent columns.
     Then the solution of the generalized eigenvalue problem
     \begin{equation}
         (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \mtx{C} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}) \mtx{C}  \mtx{\Xi}
         \label{equ:3-nystrom-low-rank-eigenvalue-problem}
     \end{equation}
-    with $\mtx{C} \in \mathbb{R}^{n_{\mtx{\Omega}} \times r}$ and $\mtx{\Xi} \in \mathbb{R}^{r \times r}$ a 
+    with $\mtx{C} \in \mathbb{R}^{n_{\Omega} \times r}$ and $\mtx{\Xi} \in \mathbb{R}^{r \times r}$ a 
     non-zero diagonal matrix is $\mtx{C} = (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Theta}$
     and $\mtx{\Xi} = \mtx{\Theta}^{\top} \mtx{\Sigma}_1 \mtx{\Theta}$
     for a permutation matrix $\mtx{\Theta} \in \mathbb{R}^{r \times r}$.

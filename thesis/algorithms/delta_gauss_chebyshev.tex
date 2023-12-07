@@ -3,7 +3,7 @@
 \hspace*{\algorithmicindent} \textbf{Output:} Approximate evaluations of the spectral density $\{\widetilde{\phi}_{\sigma}^m(t_i)\}_{i=1}^{n_t}$
 \begin{algorithmic}[1]
     \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refequ{equ:2-chebyshev-chebyshev-DCT}
-    \State Generate \glsfirst{random-matrix} $\in \mathbb{R}^{n \times n_{\mtx{\Psi}}}$
+    \State Generate \glsfirst{random-matrix} $\in \mathbb{R}^{n \times n_{\Psi}}$
     \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_{\mtx{\Psi}}}, \mtx{\Psi}, \mtx{0}_{n \times n_{\mtx{\Psi}}}]$
     \State Set ${\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
     \For {$l = 0, \dots, m$}

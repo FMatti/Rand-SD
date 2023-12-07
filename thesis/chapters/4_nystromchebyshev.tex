@@ -68,10 +68,10 @@ The pseudocode for the \glsfirst{NCPP} is given in \refalg{alg:4-nystromchebyshe
 
 With the cost of a matrix-vector product denoted by
 $c(n)$, and supposing we allocate the random vectors equally
-to the low-rank approximation and the trace estimation, i.e. $n_{\mtx{\Omega}} \approx n_{\mtx{\Psi}}$,
+to the low-rank approximation and the trace estimation, i.e. $n_{\Omega} \approx n_{\Psi}$,
 we determine the computational complexity of the \gls{NCPP}
-method to be $\mathcal{O}(m \log(m) n_t + m n_{\mtx{\Omega}}^2 n + m n_t n_{\mtx{\Omega}}^2 +  m c(n) n_{\mtx{\Omega}} + n_t n_{\mtx{\Omega}}^3)$, with
-$\mathcal{O}(n n_{\mtx{\Omega}} + n_{\mtx{\Omega}}^2 n_t + m n_t)$ required additional storage.\\
+method to be $\mathcal{O}(m \log(m) n_t + m n_{\Omega}^2 n + m n_t n_{\Omega}^2 +  m c(n) n_{\Omega} + n_t n_{\Omega}^3)$, with
+$\mathcal{O}(n n_{\Omega} + n_{\Omega}^2 n_t + m n_t)$ required additional storage.\\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -106,30 +106,30 @@ to \cite{meyer2021hutch} for any trace estimate of the form
 \begin{theorem}{Trace correction}{4-nystromchebyshev-trace-correction}
     Suppose $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric positive definite
     and continuous in $t \in [a, b]$. Let $\widehat{\mtx{B}}(t)$ and
-    $\{\mtx{\Delta}_{n_{\mtx{\Omega}}}(t)\}_{n_{\mtx{\Omega}} \geq 1}$ be any
+    $\{\mtx{\Delta}_{n_{\Omega}}(t)\}_{n_{\Omega} \geq 1}$ be any
     symmetric positive definite and continuous matrices in $t \in [a, b]$ such that
     \begin{equation}
         \begin{cases}
-            \Tr(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}_{n_{\mtx{\Omega}}}(t)); \\
-            \int_{a}^{b} \lVert \mtx{\Delta}_{n_{\mtx{\Omega}}}(t) \rVert _F \mathrm{d}t \leq C_{\mtx{\Omega}} \frac{1}{\sqrt{n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+            \Tr(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}_{n_{\Omega}}(t)); \\
+            \int_{a}^{b} \lVert \mtx{\Delta}_{n_{\Omega}}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
         \end{cases}
     \end{equation}
-    For a fixed constant $C$ and with probability $\geq 1 - \delta$, $Z(t) = \Tr(\widehat{\mtx{B}}(t)) + \Hutch_l(\mtx{\Delta}_{n_{\mtx{\Omega}}}(t))$ satisfies:
+    For a fixed constant $C$ and with probability $\geq 1 - \delta$, $Z(t) = \Tr(\widehat{\mtx{B}}(t)) + \Hutch_l(\mtx{\Delta}_{n_{\Omega}}(t))$ satisfies:
     \begin{equation}
-        \int_{a}^{b} |Z(t) - \Tr(\mtx{\Delta}_{n_{\mtx{\Omega}}}(t))| \mathrm{d}t \leq C \sqrt{\frac{\log(2/\delta)}{n_{\mtx{\Psi}} n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t
+        \int_{a}^{b} |Z(t) - \Tr(\mtx{\Delta}_{n_{\Omega}}(t))| \mathrm{d}t \leq C \sqrt{\frac{\log(2/\delta)}{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t
     \end{equation}
-    In particular, if $n_{\mtx{\Omega}}=n_{\mtx{\Psi}}=\mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} \right)$, $Z(t)$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
+    In particular, if $n_{\Omega}=n_{\Psi}=\mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} \right)$, $Z(t)$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
 \end{theorem}
 
 \begin{proof}
     We may directly evaluate
     \begin{align}
         \int_{a}^{b} |Z(t) - \Tr(\mtx{B}(t))| \mathrm{d}t
-        &= \int_{a}^{b} |\Hutch_l(\mtx{\Delta}_{n_{\mtx{\Omega}}}(t)) - \Tr(\mtx{\Delta}_{n_{\mtx{\Omega}}}(t))| \mathrm{d}t && \text{(by definition of $Z(t)$)} \\
-        &= C_{\mtx{\Psi}} \sqrt{\frac{\log(2/\delta)}{n_{\mtx{\Psi}}}} \int_{a}^{b} \lVert \mtx{\Delta}_{n_{\mtx{\Omega}}}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \\
-        &= C_{\mtx{\Psi}} C_{\mtx{\Omega}} \sqrt{\frac{\log(2/\delta)}{n_{\mtx{\Psi}} n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}_{n_{\mtx{\Omega}}}(t)$)} \\
+        &= \int_{a}^{b} |\Hutch_l(\mtx{\Delta}_{n_{\Omega}}(t)) - \Tr(\mtx{\Delta}_{n_{\Omega}}(t))| \mathrm{d}t && \text{(by definition of $Z(t)$)} \\
+        &= C_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{\Delta}_{n_{\Omega}}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \\
+        &= C_{\Psi} C_{\Omega} \sqrt{\frac{\log(2/\delta)}{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}_{n_{\Omega}}(t)$)} \\
     \end{align}
-    Taking $C=C_{\mtx{\Psi}} C_{\mtx{\Omega}}$, we get the desired result with probability $\geq 1 - \delta$.
+    Taking $C=C_{\Psi} C_{\Omega}$, we get the desired result with probability $\geq 1 - \delta$.
 \end{proof}
 
 For the Nystr\"om approximation in particular \refequ{equ:3-nystrom-nystrom},
@@ -148,15 +148,15 @@ This is captured in the following lemma \textcolor{red}{[cite in preparation]}.
     \begin{equation}
         \widehat{\mtx{B}}(t) = (\mtx{B}(t) \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B}(t) \mtx{\Omega})^{\dagger} (\mtx{B}(t) \mtx{\Omega})^{\top}
     \end{equation}
-    with $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\mtx{\Omega}}}$ a standard Gaussian matrix, $n_{\mtx{\Omega}} \geq 8 \log(1/\delta)$, and constant $C_{\mtx{\Omega}}$, satisfies with probability $\geq 1 - \delta$
+    with $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\Omega}}$ a standard Gaussian matrix, $n_{\Omega} \geq 8 \log(1/\delta)$, and constant $C_{\Omega}$, satisfies with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\mtx{\Omega}} \frac{1}{\sqrt{n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
 \end{lemma}
 
 \begin{theorem}{Parameter-dependent Nystr\"om++ estimator}{4-nystromchebyshev-final}
     The parameter-dependent Nystr\"om++ computed with
-    $n_{\mtx{\Omega}} = n_{\mtx{\Psi}} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$
+    $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$
     for any symmetric positive definite matrix $\mtx{B}(t)$ which continuously
     depends on $t \in [a, b]$ satisfies, with probability
     $1 - \delta$
@@ -172,7 +172,7 @@ This is captured in the following lemma \textcolor{red}{[cite in preparation]}.
     \end{equation}
     for all $t \in [a, b]$ and with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert \mtx{\Delta}_{n_{\mtx{\Omega}}}(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\mtx{\Omega}} \frac{1}{\sqrt{n_{\mtx{\Omega}}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{\Delta}_{n_{\Omega}}(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
     The latter follows from \reflem{lem:4-nystromchebyshev-parameter-nystrom}. Finally, the choices of \gls{sketch-size} and \gls{num-hutchinson-queries} follow from \refthm{thm:4-nystromchebyshev-trace-correction} and \reflem{lem:4-nystromchebyshev-parameter-nystrom}.
 \end{proof}
@@ -180,7 +180,7 @@ This is captured in the following lemma \textcolor{red}{[cite in preparation]}.
 These results now allow us to state an error guarantee for the output of the
 \gls{NCPP} algorithm.
 \begin{theorem}{Final}{4-nystromchebyshev-spectral-density}
-    The \gls{NCPP} method with $n_{\mtx{\Omega}} = n_{\mtx{\Psi}} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$
+    The \gls{NCPP} method with $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$
     \todo{condition on $m$} satisfies with probability $1 - \delta$
     \begin{equation}
         (1 - \epsilon) \int_{a}^{b} \phi_{\sigma}(t) \mathrm{d}t \leq \int_{a}^{b} \widetilde{\phi}_{\sigma}(t) \mathrm{d}t \leq (1 + \epsilon) \int_{a}^{b} \phi_{\sigma}(t) \mathrm{d}t.
@@ -197,17 +197,17 @@ For RSVD ($k=2$), we use \cite[theorem~9.1]{halko2011finding}
 \end{equation}
 Result from parameter-dependent Nyström++ \todo{[cite preprint]}
 \begin{equation}
-    %\mathbb{E}^n_{\mtx{\Omega}}\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
-    \mathbb{E}^{n_{\mtx{\Omega}}/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{n_{\mtx{\Omega}}} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\mtx{\Omega}}}}
+    %\mathbb{E}^n_{\Omega}\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
+    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{n_{\Omega}} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}
 \end{equation}
-where $n_{\mtx{\Omega}}$ hence
+where $n_{\Omega}$ hence
 \begin{equation}
-    \mathbb{E}^{n_{\mtx{\Omega}}/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
-    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\mtx{\Omega}}}}.
+    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
+    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}.
 \end{equation}
-By Markov's and Minkowski's inequalities we have for $n_{\mtx{\Omega}} \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
+By Markov's and Minkowski's inequalities we have for $n_{\Omega} \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
 \begin{equation}
-    \int_{a}^{b}\lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int_{a}^{b}\frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\mtx{\Omega}}}} \mathrm{d}t
+    \int_{a}^{b}\lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int_{a}^{b}\frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\Omega}}} \mathrm{d}t
 \end{equation}
 
 For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[lemma~5.2]{tropp2023randomized}
