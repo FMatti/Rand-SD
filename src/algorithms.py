@@ -11,9 +11,9 @@ import numpy as np
 import scipy as sp
 
 from src.kernel import gaussian_kernel
-from src.interpolation import chebyshev_coefficients, squared_chebyshev_coefficients, exponentiate_chebyshev_coefficients_cosine_transform, _squared_chebyshev_coefficients_summation, chebyshev_recurrence, multiply_chebyshev_coefficients_cosine_transform
+from src.interpolation import chebyshev_coefficients, exponentiate_chebyshev_coefficients_cosine_transform, chebyshev_recurrence
 from src.eigenproblem import generalized_eigenproblem_standard, generalized_eigenproblem_pinv, generalized_eigenproblem_dggev, generalized_eigenproblem_lstsq, generalized_eigenproblem_kernelunion, generalied_eigenproblem_direct
-from src.approximation import generalized_nystrom_pinv, generalized_nystrom_qr, generalized_nystrom_stable_qr, nystrom_svd
+from src.approximation import generalized_nystrom_pinv, generalized_nystrom_qr, generalized_nystrom_stable_qr
 from src.utils import continued_fraction
 
 
@@ -343,9 +343,13 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5,
             xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
         elif eigenproblem == "direct":
             xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
+        elif eigenproblem == "test":
+            xi_tilde, C_tilde = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
+            T = np.trace(K_C[i] @ np.linalg.pinv(K_W[i], rcond=tau) @ K_D[i].T)
+            #if i == 50: print(T)
         else:  # square_coefficients == "standard":
             xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
-        T = np.trace(K_C[i] @ C_tilde @ C_tilde.conjugate().T @ K_D[i].T)
+            T = np.trace(K_C[i] @ C_tilde @ C_tilde.conjugate().T @ K_D[i].T)
         phi_tilde[i] = np.sum(xi_tilde) + (K_W_tilde[i] - T) / n_v_tilde
 
     return phi_tilde

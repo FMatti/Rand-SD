@@ -9,7 +9,7 @@ import numpy as np
 import scipy as sp
 
 
-def chebyshev_coefficients(t, m, function, adjust_first=True):
+def chebyshev_coefficients(t, m, function):
     """
     Chebyshev expansion of a function.
 
@@ -43,15 +43,15 @@ def chebyshev_coefficients(t, m, function, adjust_first=True):
 
     # Compute the coefficients mu for all t and l simultaneously with FFT
     t_minus_theta = np.subtract.outer(t, np.cos(theta))
-    mu = 1 / m * sp.fft.dct(function(t_minus_theta), type=1)
+    mu = sp.fft.idct(function(t_minus_theta), type=1)
 
-    if adjust_first:
-        mu[:, 0] /= 2
+    # Rescale coefficients due to type-2 DCT convention
+    mu[:, 1:-1] *= 2
 
     return mu
 
 
-def squared_chebyshev_coefficients(t, m, function, adjust_first=True):
+def squared_chebyshev_coefficients(t, m, function):
     """
     Determine the Che.
 
@@ -68,12 +68,12 @@ def squared_chebyshev_coefficients(t, m, function, adjust_first=True):
         Chebyshev coefficients for square of expansion defined by mu.
     """
     function_squared = lambda x: function(x) ** 2
-    nu = chebyshev_coefficients(t, m, function=function_squared, adjust_first=adjust_first)
+    nu = chebyshev_coefficients(t, m, function=function_squared)
 
     return nu
 
 
-def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None, adjust_first=True):
+def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None):
     """
     Squared expansion of the polynomial defined by Chebyshev coefficients mu.
     The discrete cosine transform is used to efficiently compute the
@@ -87,8 +87,6 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None, adjust
         The power to which the Chebyshev polynomial should be raised.
     m : int > 0 or None
         Degree of the squared Chebyshev polynomial.
-    adjust_first : bool
-        Whether to use the convention to divide the first coefficient mu_0 by 2.
 
     Returns
     -------
@@ -108,56 +106,11 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None, adjust
     if m is None:
         m = k * M_mu
     mu_tilde = np.hstack((mu, np.zeros((mu.shape[0], m + 1 - M_mu))))
-    if adjust_first:
-        mu_tilde[:, 0] *= 2
-    nu = (m + 1) ** (k - 1) * sp.fft.dct(sp.fft.idct(mu_tilde, type=1) ** k, type=1)[:, : m + 1]
 
-    if adjust_first:
-        nu[:, 0] /= 2
-
-    return nu
-
-
-def multiply_chebyshev_coefficients_cosine_transform(mu_1, mu_2, m=None, adjust_first=True):
-    """
-    Squared expansion of the polynomial defined by Chebyshev coefficients mu.
-    The discrete cosine transform is used to efficiently compute the
-    coefficients of the squared Chebyshev polynomial.
-
-    Parameters
-    ----------
-    mu : np.ndarray (n_t, M_mu + 1)
-        Chebyshev coefficients corresponding to an expansion of a function.
-    m : int > 0 or None
-        Degree of the squared Chebyshev polynomial.
-
-    Returns
-    -------
-    nu : np.ndarray of shape (n_t, m + 1)
-        Chebyshev coefficients for square of expansion defined by mu.
-
-    References
-    ----------
-    [4] G. Baszenski, m. Tasche. Fast Polynomial Multiplication and Convolutions
-        Related to the Discrete Cosine Transform.
-        Linear Algebra and its Applications 252:1-25. (1997)
-        DOI: https://doi.org/10.1016/0024-3795(95)00696-6
-    """
-    M_mu_1 = mu_1.shape[1] - 1
-    M_mu_2 = mu_2.shape[1] - 1
-    if m is None:
-        m = M_mu_1 + M_mu_2
-    mu_1_tilde = np.hstack((mu_1, np.zeros((mu_1.shape[0], m + 1 - M_mu_1))))
-    mu_2_tilde = np.hstack((mu_2, np.zeros((mu_2.shape[0], m + 1 - M_mu_2))))
-
-    if adjust_first:
-        mu_1_tilde[:, 0] *= 2
-        mu_2_tilde[:, 0] *= 2
-
-    nu = (m + 1) * sp.fft.dct(sp.fft.idct(mu_1_tilde, type=1) * sp.fft.idct(mu_2_tilde, type=1), type=1)[:, : m + 1]
-
-    if adjust_first:
-        nu[:, 0] /= 2
+    # Rescale coefficients due to type-2 DCT convention
+    mu_tilde[:, 1:M_mu] /= 2
+    nu = sp.fft.idct(sp.fft.dct(mu_tilde, type=1) ** k, type=1)[:, : m + 1]
+    nu[:, 1:-1] *= 2
 
     return nu
 
@@ -314,3 +267,48 @@ def _squared_chebyshev_coefficients_summation(mu, m=None):
         nu[:, n] += 0.5 * np.sum(mu[:, max(0, n - M_mu) : min(M_mu, n) + 1] * mu[:, n - min(M_mu, n):n - max(0, n - M_mu) + 1][:, ::-1], axis=1)
 
     return nu
+
+
+def _multiply_chebyshev_coefficients_cosine_transform(mu_1, mu_2, m=None, adjust_first=True):
+    """
+    Squared expansion of the polynomial defined by Chebyshev coefficients mu.
+    The discrete cosine transform is used to efficiently compute the
+    coefficients of the squared Chebyshev polynomial.
+
+    Parameters
+    ----------
+    mu : np.ndarray (n_t, M_mu + 1)
+        Chebyshev coefficients corresponding to an expansion of a function.
+    m : int > 0 or None
+        Degree of the squared Chebyshev polynomial.
+
+    Returns
+    -------
+    nu : np.ndarray of shape (n_t, m + 1)
+        Chebyshev coefficients for square of expansion defined by mu.
+
+    References
+    ----------
+    [4] G. Baszenski, m. Tasche. Fast Polynomial Multiplication and Convolutions
+        Related to the Discrete Cosine Transform.
+        Linear Algebra and its Applications 252:1-25. (1997)
+        DOI: https://doi.org/10.1016/0024-3795(95)00696-6
+    """
+    M_mu_1 = mu_1.shape[1] - 1
+    M_mu_2 = mu_2.shape[1] - 1
+    if m is None:
+        m = M_mu_1 + M_mu_2
+    mu_1_tilde = np.hstack((mu_1, np.zeros((mu_1.shape[0], m + 1 - M_mu_1))))
+    mu_2_tilde = np.hstack((mu_2, np.zeros((mu_2.shape[0], m + 1 - M_mu_2))))
+
+    if adjust_first:
+        mu_1_tilde[:, 0] *= 2
+        mu_2_tilde[:, 0] *= 2
+
+    nu = (m + 1) * sp.fft.dct(sp.fft.idct(mu_1_tilde, type=1) * sp.fft.idct(mu_2_tilde, type=1), type=1)[:, : m + 1]
+
+    if adjust_first:
+        nu[:, 0] /= 2
+
+    return nu
+

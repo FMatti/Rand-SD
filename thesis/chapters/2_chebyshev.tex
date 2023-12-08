@@ -93,10 +93,10 @@ have found a significantly simpler and faster method: Note that polynomials of
 degree $m$ are uniquely defined by $m+1$ function evaluations at distinct points \cite{gauss1799demonstratio}.
 Hence, if we know the values $f^m(s_i)$ at some $m+1$ distinct points 
 $\{s_i\}_{i=0}^m$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^m$
-of this polynomial. For convenience, we may choose $s_i = \cos(2 \pi i/m), i=0,\dots,m$.
+of this polynomial. For convenience, we may choose $s_i = \cos(\pi i/m), i=0,\dots,m$.
 In that case,
 \begin{equation}
-    f^m(s_i) = \sum_{l=0}^{m} \mu_l \cos\left(\frac{2 \pi l i}{m}\right),
+    f^m(s_i) = \sum_{l=0}^{m} \mu_l \cos\left(\frac{\pi l i}{m}\right),
     \label{equ:2-chebyshev-chebyshev-nodes-evaluation}
 \end{equation}
 which coincides with a \glsfirst{DCT}\footnote{There exist multiple conventions for the DCT.
@@ -120,6 +120,13 @@ operations \cite{makhoul1980fct}.
 \begin{algo}{Chebyshev expansion}{2-chebyshev-chebyshev-expansion}
     \input{algorithms/chebyshev_expansion.tex}
 \end{algo}
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/chebyshev_convergence.tex}
+    \caption{Convergence of Chebyshev expansion.}
+    \label{fig:2-chebyshev-chebyshev-convergence}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
