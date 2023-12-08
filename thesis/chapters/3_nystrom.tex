@@ -87,6 +87,12 @@ while for the Frobenius norm $\lVert \cdot \rVert _F$ we obtain
 \section{Low-rank factorization}
 \label{sec:3-nystrom-nystrom}
 
+We will now give an introduction to low-rank factorizations of
+constant matrices.
+
+\subsection{Constant matrices}
+\label{subsec:3-nystrom-factorization-constant-matrices}
+
 From \refdef{def:3-nystrom-rank}, it is clear that the rank of a symmetric
 matrix is also equal to the number of its eigenvalues which are non-zero.
 Hence, for a symmetric positive definite matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
@@ -162,18 +168,18 @@ is a good approximation of $\mtx{B}$.\\
 Based on the sketch $\mtx{B}\mtx{\Omega}$, we can also compute low-rank approximations
 of the form
 \begin{equation}
-    \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) \mtx{C} (\mtx{B} \mtx{\Omega})^{\top}.
+    \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) \mtx{K} (\mtx{B} \mtx{\Omega})^{\top}.
     \label{equ:3-nystrom-nystrom-general}
 \end{equation}
 We want $\widehat{\mtx{B}} \approx \mtx{B}$. Therefore, by multiplying \refequ{equ:3-nystrom-nystrom-general}
 from the left with $\mtx{\Omega}^{\top}$ and from the right with $\mtx{\Omega}$,
 and by imposing $\widehat{\mtx{B}} = \mtx{B}$ we get
 \begin{equation}
-    \mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}) \mtx{C} (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\top}.
+    \mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}) \mtx{K} (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\top}.
     \label{equ:3-nystrom-nystrom-unknown}
 \end{equation}
 By the properties of the pseudo-inverse of a matrix we see that
-$\mtx{C} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger}$ satisfies this
+$\mtx{K} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger}$ satisfies this
 relation \cite[section~3.1]{lin2017randomized}.
 This approximation is referred to as the Nystr\"om approximation \cite{gittens2013nystrom,lin2017randomized}
 \begin{equation}
@@ -183,7 +189,16 @@ This approximation is referred to as the Nystr\"om approximation \cite{gittens20
 It is shown in \cite[lemma~5.2]{tropp2023randomized} that the Nystr\"om approximation
 is at least as accurate as the approximation in \refequ{equ:3-nystrom-RSVD}
 for positive semi-definite matrices when measured in the spectral
-and Frobenius norms.\\
+and Frobenius norms. From \\
+
+\begin{equation}
+    \lVert \mtx{B} - \widehat{\mtx{B}} \rVert _F \leq \lVert \mtx{\Sigma}_2 \rVert _F + \lVert \mtx{\Sigma}_2 \rVert _F
+\end{equation}
+
+\todo{Give non-parametric results of Nystrom?}
+
+\subsection{Parameter-dependent matrices}
+\label{subsec:3-nystrom-factorization-parameter-matrices}
 
 These two low-rank factorizations can be extended in a straightforward way
 to the case where the matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ depends
@@ -191,6 +206,7 @@ continuously on a parameter $t \in [a, b]$. In the case of the Nystr\"om
 we give an expression for the trace estimation error in the $p$-norm in the
 following theorem.
 \begin{theorem}{Error of Nystr\"om trace}{3-nystrom-frobenius-norm}
+    \todo{[cite in preparation]}
     Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ be symmetric positive semi-definite
     and continuously depend on $t \in [a,b] \subset \mathbb{R}$. Let the \gls{sketching-matrix}
     used in \refequ{equ:3-nystrom-nystrom} have
@@ -323,10 +339,11 @@ Since we are only interested in the trace of this approximation,
 we may use the cyclic property of the trace to obtain
 \begin{equation}
     \widehat{\phi}_{\sigma}^m(t)
-        = \Tr\left((\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 \mtx{\Omega})\right).
+        = \Tr\big((\underbrace{\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega}}_{=\mtx{K}_1(t)})^{\dagger} (\underbrace{\mtx{\Omega}^{\top} (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 \mtx{\Omega}}_{=\mtx{K}_2(t)})\big).
     \label{equ:3-nystrom-spectral-density}
 \end{equation}\\
 
+\todo{move to implementation details and compare using plot}
 The interpolation framework introducted in \refsec{sec:2-chebyshev-interpolation},
 allows us to interpolate the \glsfirst{smoothing-kernel}. Instead of performing the prohibitively
 expensive operation of squaring the matrix function in \refequ{equ:3-nystrom-spectral-density}
@@ -351,7 +368,7 @@ shown in \reffig{fig:3-nystrom-interpolation-issue}.\\
 \end{figure}
 
 In order to circumvent the above mentioned issue, we propose a way of computing
-a consistent expansion for \gls{smoothing-kernel}$^2$ which is even faster and simpler.
+a consistent expansion for \gls{smoothing-kernel}$^2$ which is even faster \todo{compare complexity (mention function evaluations saved, timing to compare with Lin Lin)} and simpler.
 The relation of the Chebyshev expansion to the \gls{DCT} shown in \refequ{equ:2-chebyshev-chebyshev-DCT}
 can be exploited to design fast and exact multiplication algorithms between polynomials
 of the form \refequ{equ:2-chebyshev-chebyshev-expansion} \cite[proposition~3.1]{baszenski1997cosine}.
@@ -520,12 +537,13 @@ into the standard eigenvalue problem
     \mtx{\Gamma}_1^{-1/2} \mtx{W}_1^{\top} (\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega}) \mtx{W}_1 \mtx{\Gamma}_1^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi},
     \label{equ:3-nystrom-converted-generalized-eigenvalue-problem}
 \end{equation}
-which projects out the kernel of $\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}$.
-We can retrieve the generalized eigenvector as
-\begin{equation}
-    \mtx{C} = \mtx{V}_1 \mtx{M}^{-1/2} \mtx{X}.
-    \label{equ:3-nystrom-generalized-eigenvector}
-\end{equation}\\
+which projects out the kernel of $\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}$.\\
+%By identifying 
+%We can retrieve the generalized eigenvector as
+%\begin{equation}
+%    \mtx{C} = \mtx{V}_1 \mtx{M}^{-1/2} \mtx{X}.
+%    \label{equ:3-nystrom-generalized-eigenvector}
+%\end{equation}\\
 
 Since by \refthm{thm:3-nystrom-eigenvalue-problem} the diagonal of $\mtx{\Xi}(t)$
 should merely be a permutation of the eigenvalues of $g_{\sigma}(tI - A)$,

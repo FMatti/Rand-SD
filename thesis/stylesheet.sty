@@ -192,33 +192,7 @@
 
 \tcbuselibrary{theorems}
 
-\newtcbtheorem[]{lemma}{Lemma}%
-{
-  colframe = darkblue,
-  colback  = lightblue,
-  coltitle = white,
-  sharp corners,
-  before skip=10pt,
-  after skip=10pt,
-  left=3pt,
-  right=3pt,
-  boxrule=0pt,
-}{lem}
-
-\newtcbtheorem[]{definition}{Definition}%
-{
-  colframe = darkblue,
-  colback  = lightblue,
-  coltitle = white,
-  sharp corners,
-  before skip=10pt,
-  after skip=10pt,
-  left=3pt,
-  right=3pt,
-  boxrule=0pt,
-}{def}
-
-\newtcbtheorem[]{theorem}{Theorem}%
+\newtcbtheorem[number within=chapter]{theorem}{Theorem}%
 {
   colframe = darkblue,
   colback  = lightblue,
@@ -231,7 +205,33 @@
   boxrule=0pt,
 }{thm}
 
-\newtcbtheorem[]{algo}{Algorithm}%
+\newtcbtheorem[number within=chapter, use counter from=theorem]{lemma}{Lemma}%
+{
+  colframe = darkblue,
+  colback  = lightblue,
+  coltitle = white,
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+}{lem}
+
+\newtcbtheorem[number within=chapter, use counter from=theorem]{definition}{Definition}%
+{
+  colframe = darkblue,
+  colback  = lightblue,
+  coltitle = white,
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+}{def}
+
+\newtcbtheorem[number within=chapter, use counter from=theorem]{algo}{Algorithm}%
 {
   colframe = darkblue,
   colback  = lightblue,

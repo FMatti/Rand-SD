@@ -1,6 +1,6 @@
 \hspace*{\algorithmicindent} \textbf{Input:} Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, evaluation points $\{t_i\}_{i=1}^{n_t}$ \\
 \hspace*{\algorithmicindent} \textbf{Parameters:} \Glsfirst{sketch-size}, \glsfirst{chebyshev-degree} \\
-\hspace*{\algorithmicindent} \textbf{Output:} Approximate evaluations of the spectral density $\{\widetilde{\phi}_{\sigma}^m(t_i)\}_{i=1}^{n_t}$
+\hspace*{\algorithmicindent} \textbf{Output:} Approximate evaluations of the spectral density $\{\widehat{\phi}_{\sigma}^m(t_i)\}_{i=1}^{n_t}$
 \begin{algorithmic}[1]
     \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refalg{alg:2-chebyshev-chebyshev-expansion}
     \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refalg{alg:3-nystrom-chebyshev-exponentiation}
@@ -20,6 +20,6 @@
       \State $\mtx{V}_1 \gets \mtx{V}_2, \mtx{V}_2 \gets \mtx{V}_3$
     \EndFor
     \For {$i = 1, \dots, n_t$}
-      \State Compute $\widetilde{\phi}_{\sigma}^m(t_i) \gets \Tr\left( \mtx{K}_1(t_i)^{\dagger}\mtx{K}_2(t_i) \right)$ \label{lin:3-nystrom-pseudo-inverse}
+      \State Compute $\widehat{\phi}_{\sigma}^m(t_i) \gets \Tr\left( \mtx{K}_1(t_i)^{\dagger}\mtx{K}_2(t_i) \right)$ \label{lin:3-nystrom-pseudo-inverse}
     \EndFor
 \end{algorithmic}

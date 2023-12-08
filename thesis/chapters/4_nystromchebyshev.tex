@@ -22,7 +22,12 @@ with stochastic trace estimation to cause the \gls{MSE}, which -- for unbiased e
 -- is synonymous with the variance, to decrease quadratically with the square
 of the reciprocal of the number of matrix-vector products.
 Recent theoretical developments confirm the
-efficacy of this approach \cite{meyer2021hutch,persson2022hutch}.\\
+efficacy of this approach \cite{meyer2021hutch,persson2022hutch}.
+We will first briefly discuss these results which are valid 
+for constant matrices.\\
+
+\subsection{Constant matrices}
+\label{subsec:4-nystromchebyshev-reduction-constant-matrices}
 
 The hope is that by first computing a low-rank approximation $\widehat{\mtx{B}} \approx \mtx{B}$
 we can capture as much of the contribution of the dominant eigenvalues to the
@@ -46,57 +51,8 @@ If we are able to compute a good low-rank approximation, the Frobenius norm
 of the residual $\mtx{\Delta}$ will be small, and, hence, the \gls{MSE}
 of the Hutchinson \refequ{equ:2-chebyshev-DGC-hutchinson-variance} also.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{The Nystr\"om-Chebyshev++ method}
-\label{sec:4-nystromchebyshev-nystromchebyshev-pp}
-
-The remainder is 
-
-Taking the developments from \refchp{chp:2-chebyshev} and \refchp{chp:3-nystrom},
-we can combine them to a powerful hybrid method which we call the \glsfirst{NCPP}
-method.
-
-\todo{Better explain how residual is estimated.}
-
-Its implementations is similar to the \gls{NC} method (\refalg{alg:3-nystrom-nystrom-chebyshev}).
-The pseudocode for the \glsfirst{NCPP} is given in \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp}.
-
-\begin{algo}{Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-nystrom-chebyshev-pp}
-    \input{algorithms/nystrom_chebyshev_pp.tex}
-\end{algo}
-
-With the cost of a matrix-vector product denoted by
-$c(n)$, and supposing we allocate the random vectors equally
-to the low-rank approximation and the trace estimation, i.e. $n_{\Omega} \approx n_{\Psi}$,
-we determine the computational complexity of the \gls{NCPP}
-method to be $\mathcal{O}(m \log(m) n_t + m n_{\Omega}^2 n + m n_t n_{\Omega}^2 +  m c(n) n_{\Omega} + n_t n_{\Omega}^3)$, with
-$\mathcal{O}(n n_{\Omega} + n_{\Omega}^2 n_t + m n_t)$ required additional storage.\\
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Implementation details}
-\label{subsec:4-nystromchebyshev-implementation-details}
-
-\todo{
-In at the end of algorithm \refalg{alg:3-nystrom-eigenvalue-problem} we
-can additionally compute the generalized eigenvectors \refequ{equ:3-nystrom-generalized-eigenvector}
-to make solving this easier
-
-\begin{equation}
-    \Tr(\mtx{L}_2(t_i)^{\top} \mtx{K}_1(t_i)^{\dagger} \mtx{L}_2(t_i))
-        = \Tr(\Omega \dots )
-    \label{equ:4-nystromchebyshev-eigenvectors}
-\end{equation}
-}
-
-It is not hard to extend this method to the other low-rank approximations
-we have mentioned in \refsec{subsec:3-nystrom-other-low-rank}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Theoretical analysis}
-\label{subsec:4-nystromchebyshev-analysis}
+\subsection{Parameter-dependent matrices}
+\label{subsec:4-nystromchebyshev-reduction-parametrized-matrices}
 
 Using the result from \reflem{lem:2-chebyshev-parameter-hutchinson},
 we can -- under certain conditions -- derive an analogous result
@@ -136,12 +92,7 @@ For the Nystr\"om approximation in particular \refequ{equ:3-nystrom-nystrom},
 we can show that it is an approximation which satisfies the conditions
 in \refthm{thm:4-nystromchebyshev-trace-correction}. The key is to use the following
 lemma \textcolor{red}{[cite in preparation]} which guarantees the desired
-convergence property of the parameter-dependent Nystr\"om approximation to the
-
-
-the Nystr\"om approximation converges as \gls{sketch-size} grows.
-This is captured in the following lemma \textcolor{red}{[cite in preparation]}.
-\todo{define Nystr\"om++}
+convergence property of the parameter-dependent Nystr\"om approximation.
 
 \begin{lemma}{Parameter-dependent Nystr\"om approximation}{4-nystromchebyshev-parameter-nystrom}
     Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric positive definite and continuous in $t \in [a, b]$. Then the parameter-dependent Nystr\"om approximation
@@ -177,43 +128,151 @@ This is captured in the following lemma \textcolor{red}{[cite in preparation]}.
     The latter follows from \reflem{lem:4-nystromchebyshev-parameter-nystrom}. Finally, the choices of \gls{sketch-size} and \gls{num-hutchinson-queries} follow from \refthm{thm:4-nystromchebyshev-trace-correction} and \reflem{lem:4-nystromchebyshev-parameter-nystrom}.
 \end{proof}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Nystr\"om-Chebyshev++ method}
+\label{sec:4-nystromchebyshev-nystromchebyshev-pp}
+
+Taking the algorithmic developments from \refchp{chp:2-chebyshev} and \refchp{chp:3-nystrom},
+we can easily combine them to a powerful hybrid method which we call the \glsfirst{NCPP}
+method.
+
+As introduced in \refsec{sec:4-nystromchebyshev-hybrid}, this method improves
+upon the \gls{NC} method with an additional estimation of the trace of the
+residual $\mtx{\Delta}(t) = g_{\sigma}^m(t\mtx{I} - \mtx{A}) - \widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A})$
+from the Nystr\"om approximation using the Hutchinson's estimator
+\refequ{equ:2-chebyshev-DGC-hutchionson-estimator} as follows
+\begin{align}
+    \breve{\phi}_{\sigma}^m(t)
+    %&= \Tr(\widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A}))
+    %- \Hutch_{n_{\Psi}}(\underbrace{g_{\sigma}^m(t\mtx{I} - \mtx{A}) + \widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A})}_{=\mtx{\Delta}(t)}) \notag \\
+    &= \Tr(\widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A}))
+    + \Hutch_{n_{\Psi}}(g_{\sigma}^m(t\mtx{I} - \mtx{A}) - \widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A})) \notag \\
+    &= \underbrace{\Tr(\widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A}))}_{=\widehat{\phi}_{\sigma}^m(t)}
+    + \underbrace{\Hutch_{n_{\Psi}}(g_{\sigma}^m(t\mtx{I} - \mtx{A}))}_{=\widetilde{\phi}_{\sigma}^m(t)}
+    - \Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A})).
+    \label{equ:4-nystromchebyshev-spectral-density-decomposition}
+\end{align}
+It turns out that two of the three terms appearing in \refequ{equ:4-nystromchebyshev-spectral-density-decomposition}
+are already quite familiar to us: In \refchp{chp:2-chebyshev} we have seen
+how to compute $\widetilde{\phi}_{\sigma}^m(t)$ with the \gls{DGC} method, whereas
+in \refchp{chp:3-nystrom}, $\widehat{\phi}_{\sigma}^m(t)$ is computed with the \gls{NC}
+method. Only the last term is new. Using the standard Gaussian \glsfirst{random-matrix},
+the \glsfirst{sketching-matrix}, and the definition of the Nystr\"om approximation
+$\widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A})$ \refequ{equ:3-nystrom-nystrom-smoothing-kernel}
+we may rewrite it as
+\begin{equation}
+    % \Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^m(t\mtx{I} - \mtx{A}))
+    \frac{1}{n_{\Psi}}\Tr\big(
+        (\underbrace{\mtx{\Psi}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega}}_{=\mtx{L}_2(t)^{\top}})
+        (\underbrace{\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega}}_{=\mtx{K}_1(t)})^{\dagger}
+        (\underbrace{\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Psi}}_{=\mtx{L}_2(t)})
+      ).
+\end{equation}
+Notice how all the involved objects $l_1(t) \in \mathbb{R}$, $\mtx{L}_2(t) \in \mathbb{R}^{n_{\Omega} \times n_{\Psi}}$, and $\mtx{K}_1(t) \in \mathbb{R}^{n_{\Omega} \times n_{\Omega}}$
+again have a form in which they can be expanded efficiently and for all $t$ simultaneously.\\
+
+The implementation of this new method is similar to the \gls{DGC} and \gls{NC} methods (\refalg{alg:2-chebyshev-DGC} and \refalg{alg:3-nystrom-nystrom-chebyshev}).
+The pseudocode for the \glsfirst{NCPP} is given in \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp}.
+
+\begin{algo}{Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-nystrom-chebyshev-pp}
+    \input{algorithms/nystrom_chebyshev_pp.tex}
+\end{algo}
+
+With the cost of a matrix-vector product denoted by
+$c(n)$, and supposing we allocate the random vectors equally
+to the low-rank approximation and the trace estimation, i.e. $n_{\Omega} \approx n_{\Psi}$,
+we determine the computational complexity of the \gls{NCPP}
+method to be $\mathcal{O}(m \log(m) n_t + m n_{\Omega}^2 n + m n_t n_{\Omega}^2 +  m c(n) n_{\Omega} + n_t n_{\Omega}^3)$, with
+$\mathcal{O}(n n_{\Omega} + n_{\Omega}^2 n_t + m n_t)$ required additional storage.\\
+
+It is not hard to extend this method to the other low-rank approximations
+we have mentioned in \refsec{subsec:3-nystrom-other-low-rank}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Implementation details}
+\label{subsec:4-nystromchebyshev-implementation-details}
+
+All of the implementation details for the \gls{DGC} method (\refsec{subsec:2-chebyshev-implementation-details})
+and \gls{NC} method (\refsec{subsec:4-nystromchebyshev-implementation-details})
+can be directly transfered to the \gls{NCPP} method.\\
+
+\todo{Elaborate more on this:}
+An interesting observation we can take from \refequ{equ:3-nystrom-converted-generalized-eigenvalue-problem}
+is that by identifying
+\begin{equation}
+    \mtx{D} = \mtx{W}_1 \mtx{\Gamma}_1^{-1/2} \mtx{X},
+    \label{equ:4-nystromchebyshev-generalized-eigenvector}
+\end{equation}
+we can quickly and consistently compute
+\begin{equation}
+    \mtx{\Xi} = \mtx{D}^{\top} (\mtx{\Omega}^{\top} (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 \mtx{\Omega}) \mtx{D}
+    \label{equ:4-nystromchebyshev-generalized-eigenvector-xi}
+\end{equation}
+Unlike claimed in \cite[algorithm~4]{lin2017randomized}, $\mtx{D}$ is not -- in general --
+a generalized eigenvector of \refequ{equ:3-nystrom-low-rank-eigenvalue-problem}.
+Hence,
+\begin{align}
+    \Tr(\mtx{\Xi})
+    &= \Tr(\mtx{D}^{\top} (\mtx{\Omega}^{\top} (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 \mtx{\Omega}) \mtx{D}) \notag \\
+    &= \Tr( g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega} \mtx{D} \mtx{D}^{\top} \mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A})) \notag \\
+    &= \mathbb{E}\bigg[\frac{1}{n_{\Psi}} \Tr( (\underbrace{\mtx{\Psi}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Omega}}_{=\mtx{L}_2(t)^{\top}})
+                                               (\mtx{D} \mtx{D}^{\top})
+                                               (\underbrace{\mtx{\Omega}^{\top} g_{\sigma}^m(t\mtx{I} - \mtx{A}) \mtx{\Psi}}_{=\mtx{L}_2(t)})) \bigg],
+    \label{equ:4-nystromchebyshev-generalized-eigenvector-trace}
+\end{align}
+which can be efficiently computed by using the result from \refalg{alg:3-nystrom-eigenvalue-problem}
+and is consistent with the trace approximation computed in this algorithm.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Theoretical analysis}
+\label{subsec:4-nystromchebyshev-analysis}
+
+\todo{delete}
+
 These results now allow us to state an error guarantee for the output of the
 \gls{NCPP} algorithm.
-\begin{theorem}{Final}{4-nystromchebyshev-spectral-density}
+\begin{theorem}{Convergence of Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-spectral-density}
     The \gls{NCPP} method with $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$
     \todo{condition on $m$} satisfies with probability $1 - \delta$
     \begin{equation}
-        (1 - \epsilon) \int_{a}^{b} \phi_{\sigma}(t) \mathrm{d}t \leq \int_{a}^{b} \widetilde{\phi}_{\sigma}(t) \mathrm{d}t \leq (1 + \epsilon) \int_{a}^{b} \phi_{\sigma}(t) \mathrm{d}t.
+        \lVert \phi_{\sigma}(t) - \breve{\phi}_{\sigma}^m(t) \rVert _1 \leq \todo{bound}.
     \end{equation}
 \end{theorem}
 
-\Refthm{thm:4-nystromchebyshev-trace-correction} allows us to almost immediately
-also conclude $1/\varepsilon$ result for the higher order approximations
-\refequ{equ:3-nystrom-trace-generalization}.
+%\Refthm{thm:4-nystromchebyshev-trace-correction} allows us to almost immediately
+%also conclude $1/\varepsilon$ result for the higher order approximations
+%\refequ{equ:3-nystrom-trace-generalization}.
+%
+%For RSVD ($k=2$), we use \cite[theorem~9.1]{halko2011finding}
+%\begin{equation}
+%    \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \leq \lVert \mtx{\Lambda}_2 \rVert _F + \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F.
+%\end{equation}
+%Result from parameter-dependent Nyström++ \todo{[cite preprint]}
+%\begin{equation}
+%    %\mathbb{E}^n_{\Omega}\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
+%    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{n_{\Omega}} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}
+%\end{equation}
+%where $n_{\Omega}$ hence
+%\begin{equation}
+%    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
+%    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}.
+%\end{equation}
+%By Markov's and Minkowski's inequalities we have for $n_{\Omega} \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
+%\begin{equation}
+%    \int_{a}^{b}\lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int_{a}^{b}\frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\Omega}}} \mathrm{d}t
+%\end{equation}
+%
+%For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[lemma~5.2]{tropp2023randomized}
+%to directly conclude from the RSVD case.
+%
+%Have result for all $k \geq 1$, but issue with implementation, since we do not
+%have access to column sketch (whose QR-factorization is crucial for stability).
 
-For RSVD ($k=2$), we use \cite[theorem~9.1]{halko2011finding}
-\begin{equation}
-    \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \leq \lVert \mtx{\Lambda}_2 \rVert _F + \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F.
-\end{equation}
-Result from parameter-dependent Nyström++ \todo{[cite preprint]}
-\begin{equation}
-    %\mathbb{E}^n_{\Omega}\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
-    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{n_{\Omega}} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}
-\end{equation}
-where $n_{\Omega}$ hence
-\begin{equation}
-    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
-    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}.
-\end{equation}
-By Markov's and Minkowski's inequalities we have for $n_{\Omega} \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
-\begin{equation}
-    \int_{a}^{b}\lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int_{a}^{b}\frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\Omega}}} \mathrm{d}t
-\end{equation}
+\begin{proof}
 
-For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[lemma~5.2]{tropp2023randomized}
-to directly conclude from the RSVD case.
+    \todo{Proof this}
 
-Have result for all $k \geq 1$, but issue with implementation, since we do not
-have access to column sketch (whose QR-factorization is crucial for stability).
-
-\todo{Put together all errors (Nyström, Chebyshev, Hutchinson)}
+\end{proof}

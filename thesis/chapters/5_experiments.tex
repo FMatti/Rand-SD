@@ -1,6 +1,8 @@
 \chapter{Numerical experiments}
 \label{chp:5-experiments}
 
+\todo{Discuss the results from the plot, precise all parameters...}
+
 In the previous chapters we have introduced multiple methods for approximating the
 spectral density of a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$. Now,
 our goal is to compare these methods with each other and with other related methods
@@ -10,7 +12,7 @@ in multiple scenarios. We consider a specific example from density functional th
 subsequently test the methods on various other matrices.\\
 
 The accuracy is measured in terms of the discrete relative $L^1$ error of the approximated
-spectral density $\tilde{\phi}_{\sigma}^m$ from the spectral density $\phi_{\sigma}$
+spectral density $\widetilde{\phi}_{\sigma}^m$ from the spectral density $\phi_{\sigma}$
 which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}.
 \begin{equation}
     \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^m(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^{n_t} |\phi_{\sigma}(t_i)|}.
@@ -138,14 +140,14 @@ accuracy, the behavior of the error for fixed $n_{\Omega} + n_{\Psi} = 80$ is pl
 Haydock's method \cite{haydock1972electronic,lin2016review} is a specialized technique for approximating \gls{smooth-spectral-density}
 in the case where a Lorentzian smoothing kernel
 \begin{equation}
-    g_{\sigma}(t) = \frac{1}{\pi} \frac{\sigma}{t^2 + \sigma^2} = -\frac{1}{\pi} \Imag\left\{ \frac{1}{t + i\sigma} \right\}
+    g_{\sigma}(t) = \frac{1}{\pi} \frac{\sigma}{t^2 + \sigma^2} = -\frac{1}{\pi} \Im\left\{ \frac{1}{t + i\sigma} \right\}
     \label{equ:5-experiments-cauchy-kernel}
 \end{equation}
 is used.
 %Estimating \gls{smooth-spectral-density} then becomes the
 %trace estimation problem
 %\begin{equation}
-%    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) = - \frac{1}{n \pi} \Imag \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
+%    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) = - \frac{1}{n \pi} \Im \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
 %    \label{equ:5-experiments-haydock-trace}
 %\end{equation}
 %Similarly to the \gls{DGC} method (see \refsec{sec:2-chebyshev-delta-gauss-chebyshev}),

@@ -30,6 +30,8 @@ which gives us an efficient method for approximating the spectral density.
 \section{Chebyshev interpolation}
 \label{sec:2-chebyshev-interpolation}
 
+\todo{plot of convergence}
+
 The Chebyshev interpolation framework is best known for its stability, beneficial
 convergence properties, and simple three-term recurrence relation
 \refequ{equ:2-chebyshev-chebyshev-recursion} which can
@@ -61,13 +63,14 @@ polynomials up to \gls{chebyshev-degree} \cite[chapter~3]{trefethen2019chebyshev
     \label{equ:2-chebyshev-chebyshev-expansion-general}
 \end{equation}
 For functions $f$ which can be analytically extended in a certain neighborhood
-of $[-1, 1]$ in the complex plane, Bernstein's theorem \cite[theorem~73]{meinardus1967approximation}
+of $[-1, 1]$ in the complex plane, Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}
 establishes that the convergence of this expansion in the supremum-norm is
 exponential.
+\todo{only for best approximation}
 \begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
     Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
     with foci $\pm 1$ and sum of half axes $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
-    Then
+    Then for any $m \geq 0$
     \begin{equation}
         \sup_{s \in [-1, 1]} |f(s) - f^m(s)| \leq \frac{2}{\chi^m(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
         \label{equ:2-chebyshev-bernstein-convergence-result}
@@ -361,7 +364,7 @@ Chebyshev expansion (\reflem{lem:2-chebyshev-error}) with the trace estimation
 error (\reflem{lem:2-chebyshev-parameter-hutchinson}) to get a theoretical
 result for the accuracy of the \gls{DGC} method.
 
-\begin{theorem}{Delta-Gauss-Chebyshev method}{2-delta-gauss-chebyshev}
+\begin{theorem}{Convergence of Delta-Gauss-Chebyshev method}{2-delta-gauss-chebyshev}
     Let $\widetilde{\phi}_{\sigma}^m(t)$ be the result from running \refalg{alg:2-chebyshev-DGC}
     on a matrix $\mtx{A}$ with its spectrum contained in $[-1, 1]$ using
     \glsfirst{smoothing-parameter}, \glsfirst{chebyshev-degree}, and
