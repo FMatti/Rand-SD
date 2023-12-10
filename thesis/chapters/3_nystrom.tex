@@ -189,13 +189,14 @@ This approximation is referred to as the Nystr\"om approximation \cite{gittens20
 It is shown in \cite[lemma~5.2]{tropp2023randomized} that the Nystr\"om approximation
 is at least as accurate as the approximation in \refequ{equ:3-nystrom-RSVD}
 for positive semi-definite matrices when measured in the spectral
-and Frobenius norms. From \\
+and Frobenius norms. The following theorem quantifies the accuracy of the
+Nystr\"om approximation in the Frobenius norm:
 
-\begin{equation}
-    \lVert \mtx{B} - \widehat{\mtx{B}} \rVert _F \leq \lVert \mtx{\Sigma}_2 \rVert _F + \lVert \mtx{\Sigma}_2 \rVert _F
-\end{equation}
-
-\todo{Give non-parametric results of Nystrom?}
+\begin{theorem}{Accuracy of Nystr\"om approximation}{3-nystrom-nystrom-constant}
+    \begin{equation}
+        \lVert \mtx{B} - \widehat{\mtx{B}} \rVert _F \leq \todo{?}%\lVert \mtx{\Sigma}_2 \rVert _F + \lVert \mtx{\Sigma}_2^{1/2} \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert ^2_F
+    \end{equation}
+\end{theorem}
 
 \subsection{Parameter-dependent matrices}
 \label{subsec:3-nystrom-factorization-parameter-matrices}
@@ -219,6 +220,7 @@ following theorem.
     holds with probability $1 - \gamma^{-p}$.
 \end{theorem}
 
+\todo{Probably need to remove this}
 \begin{proof}
     \todo{[Double-check this]} For every $t \in [a, b]$ we have
     \begin{align}
@@ -368,7 +370,8 @@ shown in \reffig{fig:3-nystrom-interpolation-issue}.\\
 \end{figure}
 
 In order to circumvent the above mentioned issue, we propose a way of computing
-a consistent expansion for \gls{smoothing-kernel}$^2$ which is even faster \todo{compare complexity (mention function evaluations saved, timing to compare with Lin Lin)} and simpler.
+a consistent expansion for \gls{smoothing-kernel}$^2$ which is just as fast.
+\todo{(compare timing with Lin Lin)}
 The relation of the Chebyshev expansion to the \gls{DCT} shown in \refequ{equ:2-chebyshev-chebyshev-DCT}
 can be exploited to design fast and exact multiplication algorithms between polynomials
 of the form \refequ{equ:2-chebyshev-chebyshev-expansion} \cite[proposition~3.1]{baszenski1997cosine}.
@@ -381,7 +384,7 @@ of the same expansion raised to the power $k \geq 2$ by first zero-padding
 $\widehat{\vct{\mu}} = [\vct{\mu}^{\top}, \vct{0}_{(k-1)m}^{\top}]^{\top} \in \mathbb{R}^{km+1}$
 and subsequently computing
 \begin{equation}
-    \vct{\nu} = (km + 1)^{k - 1} \DCT^{-1}\left\{ \DCT\left\{\widehat{\vct{\mu}}^{k}\right\} \right\}
+    \vct{\nu} = \DCT^{-1}\left\{ \DCT\left\{\widehat{\vct{\mu}}\right\}^{k} \right\}
     \label{equ:3-nystrom-chebyshev-potentiate-coefficients}
 \end{equation}
 where the exponentiation of a vector is understood elementwise.
@@ -389,13 +392,16 @@ The corresponding algorithm is presented hereafter.
 \begin{algo}{Exponentiation of Chebyshev polynomials}{3-nystrom-chebyshev-exponentiation}
     \input{algorithms/chebyshev_exponentiation.tex}
 \end{algo}
-This algorithm gives us the consistent expansion
+The complexity of this procedure is $\mathcal{O}(km \log(km))$ \cite{makhoul1980fct}.\\
+
+The algorithm gives us the consistent expansion
 \begin{equation}
     (g_{\sigma}^m(t\mtx{I} - \mtx{A}))^2 = \sum_{l=0}^{2m} \nu_l(t) T_l(A).
     \label{equ:3-nystrom-consistent-chebyshev-expansion}
 \end{equation}
-This approach is exactly equivalent to \cite[algorithm~5]{lin2017randomized}, but
-often orders of magnitude faster.\\
+The consistent interpolation of the squared Chebyshev expansion is
+is exactly equivalent to \cite[algorithm~5]{lin2017randomized}, but
+usually orders of magnitude faster.\\
 
 Putting all things together, we get the \gls{NC} method, whose pseudocode
 can be found in \refalg{alg:3-nystrom-nystrom-chebyshev}.
@@ -616,3 +622,5 @@ Generalizing \refalg{alg:3-nystrom-nystrom-chebyshev} is straight forward and
 due to the efficient exponentiation of Chebyshev polynomials using
 \refalg{alg:3-nystrom-chebyshev-exponentiation}, remains of the same
 computational and storage complexity.
+
+\todo{maybe add plots or comparison (or maybe only in chapter 5)}

@@ -30,8 +30,6 @@ which gives us an efficient method for approximating the spectral density.
 \section{Chebyshev interpolation}
 \label{sec:2-chebyshev-interpolation}
 
-\todo{plot of convergence}
-
 The Chebyshev interpolation framework is best known for its stability, beneficial
 convergence properties, and simple three-term recurrence relation
 \refequ{equ:2-chebyshev-chebyshev-recursion} which can
@@ -66,7 +64,6 @@ For functions $f$ which can be analytically extended in a certain neighborhood
 of $[-1, 1]$ in the complex plane, Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}
 establishes that the convergence of this expansion in the supremum-norm is
 exponential.
-\todo{only for best approximation}
 \begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
     Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
     with foci $\pm 1$ and sum of half axes $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).

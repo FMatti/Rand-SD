@@ -47,6 +47,6 @@ plt.xlim([0, 100])
 for i in range(100):
     plt.axvspan(i, i+1, color=colors(i/100))
 plt.xticks([0, 50, 100], [0.01, 0.5, 1])
-plt.xlabel("t")
+plt.xlabel("$\sigma$")
 plt.yticks([])
 plt.savefig("thesis/plots/chebyshev_convergence_colormap.pgf", bbox_inches="tight", transparent=True)
