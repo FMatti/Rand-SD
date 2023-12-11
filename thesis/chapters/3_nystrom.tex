@@ -220,23 +220,22 @@ following theorem.
     holds with probability $1 - \gamma^{-p}$.
 \end{theorem}
 
-\todo{Probably need to remove this}
-\begin{proof}
-    \todo{[Double-check this]} For every $t \in [a, b]$ we have
-    \begin{align}
-        |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))|
-            &= |\Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t))| && \text{(linearity of trace)} \notag \\ 
-            &= \Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t)) &&  \text{($\mtx{B}(t) - \widehat{\mtx{B}}(t) \succcurlyeq 0$ \cite[lemma~2.1]{frangella2023preconditioning})} \notag \\ 
-            &= \sum_{i=1}^n \lambda_i(\mtx{B}(t) - \widehat{\mtx{B}}(t)) &&  \text{(trace is sum of eigenvalues)} \notag \\
-            &= \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _{(1)} && \text{(definition of Schatten norm)} \notag \\
-            &= \lVert (\mtx{I} - \Pi_{\mtx{B}(t)^{1/2} \mtx{\Omega}})\mtx{B}(t)^{1/2} \rVert _F^2 && \text{(\cite[proof of corollary 8.8]{tropp2023randomized})}
-    \end{align}
-    Thus, we can apply \cite[theorem~9]{kressner2023randomized} to get
-    \begin{equation}
-        \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))| \mathrm{d}t
-            < \gamma \sqrt{1 + r} \int_{a}^{b} \sum_{i = r+1}^n \lambda_i(\mtx{B}(t)) \mathrm{d}t.
-    \end{equation}
-\end{proof}
+%\begin{proof}
+%    \todo{[Double-check this]} For every $t \in [a, b]$ we have
+%    \begin{align}
+%        |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))|
+%            &= |\Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t))| && \text{(linearity of trace)} \notag \\ 
+%            &= \Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t)) &&  \text{($\mtx{B}(t) - \widehat{\mtx{B}}(t) \succcurlyeq 0$ \cite[lemma~2.1]{frangella2023preconditioning})} \notag \\ 
+%            &= \sum_{i=1}^n \lambda_i(\mtx{B}(t) - \widehat{\mtx{B}}(t)) &&  \text{(trace is sum of eigenvalues)} \notag \\
+%            &= \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _{(1)} && \text{(definition of Schatten norm)} \notag \\
+%            &= \lVert (\mtx{I} - \Pi_{\mtx{B}(t)^{1/2} \mtx{\Omega}})\mtx{B}(t)^{1/2} \rVert _F^2 && \text{(\cite[proof of corollary 8.8]{tropp2023randomized})}
+%    \end{align}
+%    Thus, we can apply \cite[theorem~9]{kressner2023randomized} to get
+%    \begin{equation}
+%        \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))| \mathrm{d}t
+%            < \gamma \sqrt{1 + r} \int_{a}^{b} \sum_{i = r+1}^n \lambda_i(\mtx{B}(t)) \mathrm{d}t.
+%    \end{equation}
+%\end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -345,7 +344,6 @@ we may use the cyclic property of the trace to obtain
     \label{equ:3-nystrom-spectral-density}
 \end{equation}\\
 
-\todo{move to implementation details and compare using plot}
 The interpolation framework introducted in \refsec{sec:2-chebyshev-interpolation},
 allows us to interpolate the \glsfirst{smoothing-kernel}. Instead of performing the prohibitively
 expensive operation of squaring the matrix function in \refequ{equ:3-nystrom-spectral-density}

@@ -19,7 +19,7 @@ from src.kernel import gaussian_kernel
 def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_kernel, n_t=1000, add_baseline=False):
     parameters = deepcopy(parameters)
 
-    eigenvalues = np.linalg.eigvalsh(A.toarray())
+    eigenvalues = np.linalg.eigvalsh(A if isinstance(A, np.ndarray) else A.toarray())
     min_ev = np.min(eigenvalues)
     max_ev = np.max(eigenvalues)
     A_transformed = spectral_transformation(A, min_ev, max_ev)
@@ -87,7 +87,7 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
     parameters = deepcopy(parameters)
 
     # Spectral transform of matrix
-    eigenvalues = np.linalg.eigvalsh(A.toarray())
+    eigenvalues = np.linalg.eigvalsh(A if isinstance(A, np.ndarray) else A.toarray())
     min_ev = np.min(eigenvalues)
     max_ev = np.max(eigenvalues)
     A_transformed = spectral_transformation(A, min_ev, max_ev)
@@ -174,7 +174,7 @@ def compute_spectral_density_errors_heatmap(A, method, variable_parameters, para
     parameters = deepcopy(parameters)
 
     # Spectral transform of matrix
-    eigenvalues = np.linalg.eigvalsh(A.toarray())
+    eigenvalues = np.linalg.eigvalsh(A if isinstance(A, np.ndarray) else A.toarray())
     min_ev = np.min(eigenvalues)
     max_ev = np.max(eigenvalues)
     A_transformed = spectral_transformation(A, min_ev, max_ev)

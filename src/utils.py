@@ -267,7 +267,7 @@ def verify_parameters(n, sigma, m, n_v, n_v_tilde=None, epsilon=1e-16):
         print("Number of random vectors for low-rank approximation too low.")
 
 
-def generate_tex_tabular(values, filepath, headline=None, row_labels=None, errors=None, fmt=r"{:.2f}"):
+def generate_tex_tabular(values, filepath, headline=None, row_labels=None, errors=None, fmt=r"{:.3f}"):
     f = open(filepath, "w")
 
     num_rows = values.shape[0]

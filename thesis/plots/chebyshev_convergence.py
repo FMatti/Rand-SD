@@ -10,6 +10,7 @@ from src.metrics import p_norm
 import matplotlib
 colors = matplotlib.colormaps["magma_r"]
 matplotlib.rc("text", usetex=True)
+matplotlib.rcParams["pgf.texsystem"] = "pdflatex"
 matplotlib.rcParams["font.family"] = r"serif"
 matplotlib.rcParams["font.serif"] = r"Palatino"
 matplotlib.rcParams["font.size"] = 12

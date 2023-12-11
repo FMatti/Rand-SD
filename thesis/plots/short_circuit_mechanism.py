@@ -2,13 +2,14 @@ import __context__
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
 
 from src.algorithms import FastNyCheb
 from src.matrices import ModES3D
 from src.plots import compute_spectral_densities, plot_spectral_densities
 
+import matplotlib
 matplotlib.rc("text", usetex=True)
+matplotlib.rcParams["pgf.texsystem"] = "pdflatex"
 matplotlib.rcParams["font.family"] = r"serif"
 matplotlib.rcParams["font.serif"] = r"Palatino"
 matplotlib.rcParams["font.size"] = 12

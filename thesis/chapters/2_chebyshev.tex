@@ -23,7 +23,8 @@ This approach turns out to be particularly effective when we work with matrix
 functions which smoothly depend on a parameter within a bounded interval, if we
 want to evaluate the function at a large number of values of this parameter.
 In this chapter we will analyze one such expansion, the Chebyshev expansion,
-which gives us an efficient method for approximating the spectral density.
+which gives us an efficient method for approximating the spectral density,
+particularly when the \gls{num-evaluation-points} is large.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -138,6 +139,9 @@ queried with matrix-vector products \cite{ghorbani2019investigation,adepu2021hes
 Most algorithms for stochastic trace estimation are based on the Hutchinson's
 trace estimator, which we will discuss in the following paragraphs.\\
 
+\subsection{Constant matrices}
+\label{subsec:2-chebyshev-trace-constant}
+
 For a symmetric matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ and a standard Gaussian
 random vector $\vct{\psi} \in \mathbb{R}^n$, the quadratic form $\vct{\psi}^{\top} \mtx{B} \vct{\psi}$ 
 is an unbiased estimate of the trace:
@@ -178,6 +182,9 @@ the Hutchinson's trace estimator can then be written as
     \Hutch_{n_{\Psi}}(\mtx{B}) = \frac{1}{n_{\Psi}} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi}).
     \label{equ:2-chebyshev-DGC-hutchionson-estimator}
 \end{equation}\\
+
+\subsection{Parameter-dependent matrices}
+\label{subsec:2-chebyshev-trace-parametrized}
 
 In the case where the matrix continuously depends on a parameter in a bounded 
 interval, we can analogously define the Hutchinson's estimator for parameter-dependent
@@ -234,14 +241,33 @@ which approximates the \glsfirst{smooth-spectral-density} as
     \label{equ:2-chebyshev-DGC-final-estimator}
 \end{equation}\\
 
-An efficient implementation can be achieved thanks to the recurrence relation for the
-Chebyshev polynomials \refequ{equ:2-chebyshev-chebyshev-recursion}. The pseudocode
-for this method can be found in \refalg{alg:2-chebyshev-DGC}.
+An efficient implementation can be achieved thanks to the recurrence relation
+which the Chebyshev polynomials satisfy \refequ{equ:2-chebyshev-chebyshev-recursion}.
+However, it is usually prohibitively expensive to interpolate a big matrix
+$\mtx{A}$ as a whole, since alone the matrix-matrix multiplication in each step
+of the recurrence can cost up to $\mathcal{O}(n^3)$, and the evaluation at
+\gls{num-evaluation-points} values of \gls{spectral-parameter} could furthermore
+cost $mathcal{O}(n^2 m n_t)$ operations. Therefore, in case we are only interested
+in applying a linear mapping to the interpolant, a significant speed-up can be
+achieved by directly interpolating the result of this linear mapping applied to
+the interpolant. In \reffig{fig:2-chebyshev-sketched-interpolation} some examples
+of such linear mappings which we will make use of later on are schematically
+illustrated.\\
+\begin{figure}[ht]
+    \centering
+    \input{figures/sketched_interpolation.tex}
+    \caption{Schematic illustration of linear mappings which, applied to a large
+        matrix $\mtx{A}$, reduce the dimensionality of the interpolation problem.}
+    \label{fig:2-chebyshev-sketched-interpolation}
+\end{figure}
+
+Finally, we can give the pseudocode
+of this first method in \refalg{alg:2-chebyshev-DGC}.
 \begin{algo}{Delta-Gauss-Chebyshev method}{2-chebyshev-DGC}
     \input{algorithms/delta_gauss_chebyshev.tex}
 \end{algo}
 
-Thus, denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
+Denoting the cost of a matrix-vector product of $\mtx{A} \in \mathbb{R}^{n \times n}$
 with $c(n)$, e.g. $\mathcal{O}(c(n)) = n^2$ for dense and
 $\mathcal{O}(c(n)) = n$ for sparse matrices, we determine the computational
 complexity of the \gls{DGC} method to be $\mathcal{O}(m \log(m) n_t + m n_{\Psi} c(n))$,
