@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     env:
       DIR: ./thesis
@@ -17,18 +19,47 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v3
 
-      - name: Install TeXlive
-        run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science texlive-fonts-extra cm-super
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+          cache: "pip"
 
-      - name: Build thesis
-        working-directory: ${{ env.DIR }}
-        run: pdflatex ${{ env.FILE }}; bibtex ${{ env.FILE }}; makeglossaries ${{ env.FILE }}; pdflatex ${{ env.FILE }}; pdflatex ${{ env.FILE }};
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
 
-      - name: Move output PDF
-        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+      - name: Set up TeX environment
+        run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science texlive-fonts-extra cm-super dvipng
 
-      - name: Upload output PDF as artifact
+      - name: Generate matrices
+        run: python setup/generate_matrices.py
+
+      - name: Generate plots and tables
+        run: python setup/generate_results.py
+
+      - name: Obtain commit hash and time
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+          echo "build_time=$(date +'%Y-%m-%d at %H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Generate reproducibility badge
+        run: |
+          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.DIR }}/pro-re-state.tex"
+
+      - name: Generate thesis
+        run: python setup/generate_thesis.py
+
+      - name: Upload thesis as PDF artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.FILE }}.pdf
-          path: ./github_artifacts
+          name: ${{ env.FILE }}
+          path: ${{ env.DIR }}/${{ env.FILE }}.pdf
+
+      - name: Upload generated files to repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add thesis/plots/*.pgf thesis/tables/*.tex
+          git commit -m "build thesis"
+          git push

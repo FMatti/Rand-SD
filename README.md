@@ -84,7 +84,7 @@ cd Rand-SD
 Install all the requirements with
 ```[shell]
 python -m pip install --upgrade pip
-python -m install -r .requirements
+python -m install -r requirements.txt
 ```
 
 Reproduce the whole project with the following command
