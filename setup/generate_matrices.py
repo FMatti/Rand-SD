@@ -9,6 +9,9 @@ from src.matrices import ModES3D
 
 matrix_dir = "matrices"
 
+if not os.path.exists(matrix_dir):
+    os.makedirs(matrix_dir)
+
 matrix_urls = [
     "https://suitesparse-collection-website.herokuapp.com/MM/ND/nd3k.tar.gz",
     "https://suitesparse-collection-website.herokuapp.com/MM/MaxPlanck/shallow_water1.tar.gz",
