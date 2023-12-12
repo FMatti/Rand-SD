@@ -36,7 +36,7 @@ with open("thesis/plots/electronic_structure_convergence_nv_m800.pkl", "wb") as 
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
-plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega}$", ax=ax)
+plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega} + n_{\Psi}$", ax=ax)
 plt.savefig("thesis/plots/electronic_structure_convergence_nv_m800.pgf", bbox_inches="tight")
 
 ################################################################################
@@ -54,7 +54,7 @@ with open("thesis/plots/electronic_structure_convergence_nv_m2400.pkl", "wb") as
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
-plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega}$", ax=ax)
+plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega} + n_{\Psi}$", ax=ax)
 plt.savefig("thesis/plots/electronic_structure_convergence_nv_m2400.pgf", bbox_inches="tight")
 
 ################################################################################

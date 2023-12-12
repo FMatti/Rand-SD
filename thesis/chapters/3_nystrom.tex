@@ -223,7 +223,7 @@ following theorem.
 \end{theorem}
 
 %\begin{proof}
-%    \todo{[Double-check this]} For every $t \in [a, b]$ we have
+%    For every $t \in [a, b]$ we have
 %    \begin{align}
 %        |\Tr(\mtx{B}(t)) - \Tr(\widehat{\mtx{B}}(t))|
 %            &= |\Tr(\mtx{B}(t) - \widehat{\mtx{B}}(t))| && \text{(linearity of trace)} \notag \\ 
@@ -401,9 +401,9 @@ The complexity of this procedure is $\mathcal{O}(km \log(km))$ \cite{makhoul1980
     deviation which are given in the below table. We refer to the interpolation
     of \gls{smoothing-kernel}$^{2}$ with \cite[algorithm~1]{lin2017randomized} as \enquote{quadrature},
     to the interpolation of \gls{smoothing-kernel}$^{2}$ with \refalg{alg:2-chebyshev-chebyshev-expansion} as \enquote{DCT},
-    and finally to the fast squaring algorithm \refalg{alg:3-alg:3-nystrom-chebyshev-exponentiation} as \enquote{squaring}.
+    and finally to the fast squaring algorithm \refalg{alg:3-nystrom-chebyshev-exponentiation} as \enquote{squaring}.
     For each algorithm, we interpolate \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$,
-    at \gls{num-evaluation-points} $=1000$ points, for various values of \gls{chebyshev-degree}.}
+    at \gls{num-evaluation-points}$=1000$ points, for various values of \gls{chebyshev-degree}.}
     \label{tab:3-nystrom-timing-squared-interpolation}
     \input{tables/timing_squared_interpolation.tex}
 \end{table}
@@ -459,9 +459,9 @@ computes the $n_{\Omega}$-query Hutchinson's estimate \refequ{equ:2-chebyshev-DG
 \end{equation}
 of $\Tr(g_{\sigma}^m(t_i\mtx{I} - \mtx{A}))$
 before executing \reflin{lin:3-nystrom-pseudo-inverse} in \refalg{alg:3-nystrom-nystrom-chebyshev}.
-If the result is smaller than a threshold $\kappa > 0$, it immediately sets
+If the result is smaller than a \gls{short-circuit-threshold}$> 0$, it immediately sets
 $\widetilde{\phi}_{\sigma}^m(t_i)=0$ and skips \reflin{lin:3-nystrom-pseudo-inverse}.
-for this $t_i$. We usually use $\kappa = 10^{-5}$. The effect this short-circuit
+for this $t_i$. We usually use \gls{short-circuit-threshold}$= 10^{-5}$. The effect this short-circuit
 mechanism has on the approximation quality can be seen in \reffig{fig:3-nystrom-short-circuit-mechanism}.\\
 
 \begin{figure}[ht]
@@ -647,5 +647,3 @@ Generalizing \refalg{alg:3-nystrom-nystrom-chebyshev} is straight forward and
 due to the efficient exponentiation of Chebyshev polynomials using
 \refalg{alg:3-nystrom-chebyshev-exponentiation}, remains of the same
 computational and storage complexity.
-
-\todo{maybe add plots or comparison (or maybe only in chapter 5)}

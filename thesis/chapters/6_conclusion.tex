@@ -1,21 +1,37 @@
 \chapter{Conclusion}
 \label{chp:6-conclusion}
 
-\todo{flesh out}
-\begin{itemize}
-    \item We were able to significantly improve upon many parts in \cite{lin2017randomized}:
-    \begin{itemize}
-        \item Simple, accurate, and explainable interpolation framework
-        \item Multiple implementational improvements
-        \item Could verify these results numerically
-    \end{itemize}
-    \item Things still to be done
-    \begin{itemize}
-        \item Incorporate Chebyshev interpolation in error bounds
-        \item More efficient function evaluation/approximation than Chebyshev? (Lanczos)
-        \item 
-    \end{itemize}
-    \item Generalized eigenvalue problem not well
-    \item Interpolation degree required to be quite high, so not worth it
-    \item 
-\end{itemize}
+In our work we have concerned ourselves with a particular family of methods
+designed for the randomized computation of the spectral density of large matrices,
+which have initially been proposed in \cite{lin2017randomized}.\\
+
+We were able to
+significantly improve many algorithmic aspects of these methods. The development
+of an alternative expansion framework in \refsec{sec:2-chebyshev-interpolation}
+allowed us to vastly simplify the expansion stage, which is common to all the
+studied methods, while obtaining provable accuracy of the expansion, all this in
+addition to making this stage orders of magnitude faster in many cases. 
+The studied methods were made more robust through a series of well founded
+implementation strategies \refsec{subsec:3-nystrom-implementation-details}.
+Furthermore, we give theoretical error guarantees for all the encountered methods.
+All these developments are illustrated and verified in multiple numerical experiments
+which are all provably reproducible.\\
+
+What we have noticed is that the degree of the Chebyshev expansion usually needs
+to be quite high to achieve a decent interpolation accuracy, which slows down
+our methods considerably. Looking out into the future, alternative ways of
+computing products of matrix functions with random vectors should be taken into
+consideration \cite{cortinovis2023speeding,ubaru2017lanczos}. Also, different ways
+of evaluating \reflin{lin:3-nystrom-pseudo-inverse} in \refalg{alg:3-nystrom-nystrom-chebyshev}
+may still improve the accuracy and stability of our methods. For example
+\cite[algorithm~5.6]{tropp2023randomized} may help, but a way of making this
+compatible with the fast interpolation framework has not been found yet.\\
+
+On the theoretical side, the incorporation of the Chebyshev expansion in the
+error bound analogous to \refthm{thm:2-delta-gauss-chebyshev} is of high priority.
+What hinders such a unification for now is the fact that the Chebyshev expansion
+is not guaranteed to be non-negative, which in turns breaks the positive semi-definiteness,
+which is fundamental to most theoretical results on the Nystr\"om approximation.
+A fix could be achieved by finding a way of restricting the Chebyshev expansion
+to only positive values. Otherwise, the theory will have to be extended to
+indefinite matrices.
