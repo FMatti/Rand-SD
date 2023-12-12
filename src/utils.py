@@ -288,7 +288,7 @@ def generate_tex_tabular(values, filepath, headline=None, row_labels=None, error
             f.write(fmt.format(values[i, j]))
             if errors is not None:
                 f.write(r" $\pm$ " + fmt.format(errors[i, j]))
-            if j < num_rows:
+            if j < num_cols - 1:
                 f.write(r" & ")
         f.write(r" \\" + "\n")
 

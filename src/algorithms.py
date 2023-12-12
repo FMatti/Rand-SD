@@ -125,7 +125,7 @@ def KPM(A, t, m, n_v, seed=0, sigma=None):
     return phi_tilde
 
 
-def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -150,7 +150,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, epsilon=1e-1, ker
         The threshold on the Hutchinson estimate of g_sigma. If it is below this
         value, instead of solving the possibly ill-conditioned generalized
         eigenvalue problem, we set the spectral density at that point to zero.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma.
     kernel : function
@@ -217,23 +217,23 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, epsilon=1e-1, ker
             continue
         else:
             if eigenproblem == "kernelunion":
-                Xi = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
             elif eigenproblem == "pinv":
-                Xi = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
             elif eigenproblem == "dggev":
-                Xi = generalized_eigenproblem_dggev(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_dggev(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
             elif eigenproblem == "lstsq":
-                Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
             elif eigenproblem == "direct":
-                Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
             else:  # square_coefficients == "standard":
-                Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+                Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
             phi_tilde[i] = np.sum(Xi) - len(Xi) * (1e-3 if eigenproblem == "cholesky" else 0)
 
     return phi_tilde
 
 
-def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, epsilon=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Robust and efficient spectrum sweeping with Delta-Gauss-Chebyshev method
     for estimating the spectral density.
@@ -260,7 +260,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5,
         The threshold on the Hutchinson estimate of g_sigma. If it is below this
         value, instead of solving the possibly ill-conditioned generalized
         eigenvalue problem, we set the spectral density at that point to zero.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma.
     kernel : function
@@ -306,7 +306,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5,
         n_v_tilde = n_v // 2
         n_v = n_v // 2
     elif n_v_tilde == 0:
-        return FastNyCheb(A, t, m, sigma, n_v, k, tau, kappa, epsilon, kernel, square_coefficients, eigenproblem, seed)
+        return FastNyCheb(A, t, m, sigma, n_v, k, tau, kappa, eta, kernel, square_coefficients, eigenproblem, seed)
 
     # Chebyshev expansion
     g = lambda x: kernel(x, n=n, sigma=sigma)
@@ -340,15 +340,15 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5,
             continue
 
         if eigenproblem == "kernelunion":
-            xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
+            xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
         elif eigenproblem == "direct":
-            xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
+            xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
         elif eigenproblem == "test":
-            xi_tilde, C_tilde = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
+            xi_tilde, C_tilde = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
             T = np.trace(K_C[i] @ np.linalg.pinv(K_W[i], rcond=tau) @ K_D[i].T)
             #if i == 50: print(T)
         else:  # square_coefficients == "standard":
-            xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)
+            xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
             T = np.trace(K_C[i] @ C_tilde @ C_tilde.conjugate().T @ K_D[i].T)
         phi_tilde[i] = np.sum(xi_tilde) + (K_W_tilde[i] - T) / n_v_tilde
 
@@ -564,7 +564,7 @@ def _randomized_trace_estimation(A, n_v, n_v_tilde):
     return trace
 
 
-def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -583,7 +583,7 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kerne
         Number of random vectors.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma.
     kernel : function
@@ -632,21 +632,21 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kerne
     for i in range(t.shape[0]):
         phi_tilde[i] = np.trace(Z[i] @ np.linalg.pinv(Z[i].T @ Z[i]) @ Z[i].T @ Y[i])
         #if eigenproblem == "kernelunion":
-        #    Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         #elif eigenproblem == "pinv":
-        #    Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         #elif eigenproblem == "dggev":
-        #    Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         #elif eigenproblem == "lstsq":
-        #    Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         #else:
-        #    Xi = generalized_eigenproblem_standard(Y[i].T @ Y[i], Z[i].T @ Y[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+        #    Xi = generalized_eigenproblem_standard(Y[i].T @ Y[i], Z[i].T @ Y[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         #phi_tilde[i] = np.sum(Xi)
 
     return phi_tilde
 
 
-def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -665,7 +665,7 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel,
         Number of random vectors.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma.
     kernel : function
@@ -711,15 +711,15 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, epsilon=1e-1, kernel=gaussian_kernel,
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
         if eigenproblem == "kernelunion":
-            Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         elif eigenproblem == "pinv":
-            Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         elif eigenproblem == "dggev":
-            Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         elif eigenproblem == "lstsq":
-            Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         else:
-            Xi = generalized_eigenproblem_standard(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, epsilon=epsilon)[0]
+            Xi = generalized_eigenproblem_standard(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
         phi_tilde[i] = np.sum(Xi)
 
     return phi_tilde

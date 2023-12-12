@@ -19,8 +19,6 @@ def chebyshev_coefficients(t, m, function):
         Point(s) where the expansion should be evaluated.
     m : int > 0
         Degree of the Chebyshev polynomial.
-    N_theta : int > m
-        The (half) number of integration points.
     function : function
         The kernel used to regularize the spectral density.
 
@@ -28,12 +26,6 @@ def chebyshev_coefficients(t, m, function):
     -------
     mu : np.ndarray of shape (n_t, m + 1)
         The coefficients of the Chebyshev polynomials. Format: mu[t, l].
-
-    References
-    ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
-        made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 1.
-        DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
     # If t is a scalar, we convert it to a 1d array to make computation work
     if not isinstance(t, np.ndarray):
@@ -49,28 +41,6 @@ def chebyshev_coefficients(t, m, function):
     mu[:, 1:-1] *= 2
 
     return mu
-
-
-def squared_chebyshev_coefficients(t, m, function):
-    """
-    Determine the Che.
-
-    Parameters
-    ----------
-    mu : np.ndarray (n_t, M_mu + 1)
-        Chebyshev coefficients corresponding to an expansion of a function.
-    m : int > 0 or None
-        Degree of the squared Chebyshev polynomial.
-
-    Returns
-    -------
-    nu : np.ndarray of shape (n_t, m + 1)
-        Chebyshev coefficients for square of expansion defined by mu.
-    """
-    function_squared = lambda x: function(x) ** 2
-    nu = chebyshev_coefficients(t, m, function=function_squared)
-
-    return nu
 
 
 def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None):
@@ -161,6 +131,74 @@ def chebyshev_recurrence(mu, A, T_0=None, L=None, final_shape=()):
         T_curr = T_next.copy()
 
     return Z
+
+
+def _chebyshev_coefficients_quadrature(t, m, function, n_theta=None):
+    """
+    Delta-Gauss-Chebyshev polynomial expansion.
+
+    Parameters
+    ----------
+    t : int, float, list, or np.ndarray of shape (n,)
+        Point(s) where the expansion should be evaluated.
+    m : int > 0
+        Degree of the Chebyshev polynomial.
+    function : function
+        The kernel used to regularize the spectral density.
+    n_theta : int > M
+        The (half) number of integration points.
+
+    Returns
+    -------
+    mu : np.ndarray of shape (N_t, M + 1)
+        The coefficients of the Chebyshev polynomials. Format: mu[t, l].
+
+    References
+    ----------
+    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+        made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 1.
+        DOI: https://doi.org/10.1007/s00211-016-0837-7
+    """
+    # If t is a scalar, we convert it to a 1d array to make computation work
+    if not isinstance(t, np.ndarray):
+        t = np.array(t).reshape(-1)
+
+    # If not specified, take minimum number of quadrature nodes
+    if n_theta is None:
+        n_theta = 2*(m + 1)
+
+    theta = np.arange(2 * n_theta) * np.pi / n_theta
+
+    # Can be computed via Fourier transform:
+    t_minus_theta = np.subtract.outer(t, np.cos(theta))
+    mu = np.real(np.fft.fft(function(t_minus_theta), axis=1)[:, :m+1])
+
+    # Rescale the coefficients (as required by the definition)
+    mu[:, 0] /= 2 * n_theta
+    mu[:, 1:] /= n_theta
+    return mu
+
+
+def _squared_chebyshev_coefficients(t, m, function):
+    """
+    Determine the Che.
+
+    Parameters
+    ----------
+    mu : np.ndarray (n_t, M_mu + 1)
+        Chebyshev coefficients corresponding to an expansion of a function.
+    m : int > 0 or None
+        Degree of the squared Chebyshev polynomial.
+
+    Returns
+    -------
+    nu : np.ndarray of shape (n_t, m + 1)
+        Chebyshev coefficients for square of expansion defined by mu.
+    """
+    function_squared = lambda x: function(x) ** 2
+    nu = chebyshev_coefficients(t, m, function=function_squared)
+
+    return nu
 
 
 def _squared_chebyshev_coefficients_ifft(t, m, function, N_theta=None):

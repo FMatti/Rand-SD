@@ -11,7 +11,7 @@ import numpy as np
 import scipy as sp
 
 
-def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1):
+def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -25,7 +25,7 @@ def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=
         Smearing parameter.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma. 
 
@@ -53,7 +53,7 @@ def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=
     xi, X = np.linalg.eigh(A)
 
     # Increase maximum allowed value slightly to avoid unwanted filtering
-    max_val = (1 + epsilon) / (n * sigma * np.sqrt(2 * np.pi))
+    max_val = (1 + eta) / (n * sigma * np.sqrt(2 * np.pi))
 
     idx_tilde = np.where(np.logical_and(0 <= xi, xi <= max_val))[0].flatten()
     xi_tilde = xi[idx_tilde]
@@ -65,7 +65,7 @@ def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=
     return xi_tilde, C_tilde
 
 
-def generalied_eigenproblem_direct(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1):
+def generalied_eigenproblem_direct(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     xi, C_l, C_r = sp.linalg.eig(K_Z, K_W, left=True, right=True)
     conditioning = 1 / np.abs(np.diag(C_l.conjugate().T @ C_r))
     idx = conditioning > tau
@@ -73,7 +73,7 @@ def generalied_eigenproblem_direct(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-
     return xi, C_r #xi[idx], C_r[:, idx]
 
 
-def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1):
+def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -87,7 +87,7 @@ def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsil
         Smearing parameter.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma. 
 
@@ -120,7 +120,7 @@ def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsil
     xi, X = np.linalg.eigh(A)
 
     # Increase maximum allowed value slightly to avoid unwanted filtering
-    max_val = (1 + epsilon) / (n * np.sqrt(2 * np.pi * sigma**2))
+    max_val = (1 + eta) / (n * np.sqrt(2 * np.pi * sigma**2))
 
     idx_tilde = np.where(np.logical_and(0 <= xi, xi <= max_val))[0].flatten()
     xi_tilde = xi[idx_tilde]
@@ -129,7 +129,7 @@ def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsil
     return xi_tilde, C_tilde
 
 
-def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1):
+def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -143,7 +143,7 @@ def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1
         Smearing parameter.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma. 
 
@@ -166,7 +166,7 @@ def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1
     return np.diag(Xi), None
 
 
-def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1):
+def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -180,7 +180,7 @@ def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-
         Smearing parameter.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma. 
 
@@ -205,7 +205,7 @@ def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-
     return xi_tilde, None
 
 
-def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1):
+def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -219,7 +219,7 @@ def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-
         Smearing parameter.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma. 
 
@@ -242,7 +242,7 @@ def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-
     return np.diag(Xi), None
 
 
-def generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=1e-1):
+def generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -256,7 +256,7 @@ def generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, epsilon=
         Smearing parameter.
     tau : int or float in (0, 1]
         Truncation parameter.
-    epsilon : float > 0
+    eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
         g_sigma. 
 

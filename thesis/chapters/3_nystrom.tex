@@ -190,11 +190,13 @@ It is shown in \cite[lemma~5.2]{tropp2023randomized} that the Nystr\"om approxim
 is at least as accurate as the approximation in \refequ{equ:3-nystrom-RSVD}
 for positive semi-definite matrices when measured in the spectral
 and Frobenius norms. The following theorem quantifies the accuracy of the
-Nystr\"om approximation in the Frobenius norm:
+Nystr\"om approximation in the Frobenius norm \cite[lemma~3.2]{persson2022hutch}:
 
 \begin{theorem}{Accuracy of Nystr\"om approximation}{3-nystrom-nystrom-constant}
+    Let $\mtx{B}$ be a symmetric positive definite matrix. Its Nystr\"om approximation
+    of \gls{sketch-size} $\geq 10$ satisfies with probability at least $1-6e^{-n_{\Omega}/2}$
     \begin{equation}
-        \lVert \mtx{B} - \widehat{\mtx{B}} \rVert _F \leq \todo{?}%\lVert \mtx{\Sigma}_2 \rVert _F + \lVert \mtx{\Sigma}_2^{1/2} \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert ^2_F
+        \lVert \mtx{B} - \widehat{\mtx{B}} \rVert _F \leq 542\sqrt{\frac{2}{n_{\Omega}}} \Tr(\mtx{B}).
     \end{equation}
 \end{theorem}
 
@@ -368,8 +370,9 @@ shown in \reffig{fig:3-nystrom-interpolation-issue}.\\
 \end{figure}
 
 In order to circumvent the above mentioned issue, we propose a way of computing
-a consistent expansion for \gls{smoothing-kernel}$^2$ which is just as fast.
-\todo{(compare timing with Lin Lin)}
+a consistent expansion for \gls{smoothing-kernel}$^2$ which is more accurate
+(see \reffig{fig:3-nystrom-interpolation-issue}) and significantly faster
+(see \reftab{tab:3-nystrom-timing-squared-interpolation}).
 The relation of the Chebyshev expansion to the \gls{DCT} shown in \refequ{equ:2-chebyshev-chebyshev-DCT}
 can be exploited to design fast and exact multiplication algorithms between polynomials
 of the form \refequ{equ:2-chebyshev-chebyshev-expansion} \cite[proposition~3.1]{baszenski1997cosine}.
@@ -391,6 +394,19 @@ The corresponding algorithm is presented hereafter.
     \input{algorithms/chebyshev_exponentiation.tex}
 \end{algo}
 The complexity of this procedure is $\mathcal{O}(km \log(km))$ \cite{makhoul1980fct}.\\
+\begin{table}[ht]
+    \caption{Runtime comparison of the two approaches with which the coefficients
+    of the Chebyshev expansion of a function. We average over 7 runs of the
+    algorithms and repeat these runs 100 times to form the mean and standard
+    deviation which are given in the below table. We refer to the interpolation
+    of \gls{smoothing-kernel}$^{2}$ with \cite[algorithm~1]{lin2017randomized} as \enquote{quadrature},
+    to the interpolation of \gls{smoothing-kernel}$^{2}$ with \refalg{alg:2-chebyshev-chebyshev-expansion} as \enquote{DCT},
+    and finally to the fast squaring algorithm \refalg{alg:3-alg:3-nystrom-chebyshev-exponentiation} as \enquote{squaring}.
+    For each algorithm, we interpolate \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$,
+    at \gls{num-evaluation-points} $=1000$ points, for various values of \gls{chebyshev-degree}.}
+    \label{tab:3-nystrom-timing-squared-interpolation}
+    \input{tables/timing_squared_interpolation.tex}
+\end{table}
 
 The algorithm gives us the consistent expansion
 \begin{equation}
@@ -400,6 +416,8 @@ The algorithm gives us the consistent expansion
 The consistent interpolation of the squared Chebyshev expansion is
 is exactly equivalent to \cite[algorithm~5]{lin2017randomized}, but
 usually orders of magnitude faster.\\
+
+\todo{insert table or plot to justify this claim}
 
 Putting all things together, we get the \gls{NC} method, whose pseudocode
 can be found in \refalg{alg:3-nystrom-nystrom-chebyshev}.
@@ -556,7 +574,16 @@ all elements in $\mtx{\Xi}(t)$ which are outside of $[0, 1 / (n \sqrt{2 \pi \sig
 In this way, we can filter out computational artefacts which for example might result
 from an inaccurate Chebyshev expansion and furthermore 
 can enforce non-negativity of the resulting approximation of
-\gls{smooth-spectral-density}.\\
+\gls{smooth-spectral-density}. However, one needs to be careful not to accidentally
+remove a valid element from $\mtx{\Xi}(t)$. In the case where \gls{spectral-parameter}
+coincides with an eigenvalue of $\mtx{A}$, one of the elements in $\mtx{\Xi}(t)$
+should correctly assume the value $1 / (n \sqrt{2 \pi \sigma^2})$. Hence, if due to
+certain numerical inaccuracies this value slightly exceeds the above threshold,
+it will get falsely removed. Theis problematic case can be avoided by introducing a
+\gls{filter-tolerance}$>0$, such that only elements in $\mtx{\Xi}(t)$ which are
+outside of $[-\eta, 1 / (n \sqrt{2 \pi \sigma^2}) + \eta]$ will be filtered out. \\
+
+\todo{maybe add plot justifying the filtering tolerance}
 
 We can summarize this alternative way of treating
 \reflin{lin:3-nystrom-pseudo-inverse} of \refalg{alg:3-nystrom-nystrom-chebyshev}

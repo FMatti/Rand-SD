@@ -119,12 +119,22 @@ operations \cite{makhoul1980fct}.
     \input{algorithms/chebyshev_expansion.tex}
 \end{algo}
 
-\begin{figure}[ht]
-    \centering
-    \input{figures/chebyshev_convergence.tex}
-    \caption{Convergence of Chebyshev expansion.}
-    \label{fig:2-chebyshev-chebyshev-convergence}
-\end{figure}
+To demonstrate the higher efficiency of this \gls{DCT}-based method, we time it
+against the equivalent algorithm from \cite{lin2017randomized}. The results
+can be seen in \reftab{tab:2-chebyshev-timing-interpolation}.
+
+\begin{table}[ht]
+    \caption{Runtime comparison of the two approaches with which the coefficients
+        of the Chebyshev expansion of a function. We average over 7 runs of the
+        algorithms and repeat these runs 1000 times to form the mean and standard
+        deviation which are given in the below table. We refer to
+        \cite[algorithm~1]{lin2017randomized} with \enquote{quadrature}
+        and to \refalg{alg:2-chebyshev-chebyshev-expansion} with \enquote{DCT}.
+        For each algorithm, we interpolate \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$,
+        at \gls{num-evaluation-points} $=1000$ points, for various values of \gls{chebyshev-degree}.}
+    \label{tab:2-chebyshev-timing-interpolation}
+   \input{tables/timing_interpolation.tex}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -308,8 +318,18 @@ form are computed using this technique.
 \subsection{Theoretical analysis}
 \label{subsec:2-chebyshev-theoretical-analysis}
 
-The convergence of the expansion to the actual spectral density is exponential, 
-which is shown in the following lemma:
+The convergence of the expansion to the actual \gls{smoothing-kernel} is exponential
+and depends on \gls{smoothing-parameter}. This can be seen quite well
+in \reffig{fig:2-chebyshev-chebyshev-convergence}, and is proven in the following
+lemma.
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/chebyshev_convergence.tex}
+    \caption{Convergence of Chebyshev expansion.}
+    \label{fig:2-chebyshev-chebyshev-convergence}
+\end{figure}
+
 \begin{lemma}{Chebyshev interpolation error for Gaussian smoothing kernel}{2-chebyshev-error}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix whose spectrum
     is contained in $[-1, 1]$. For any $t \in \mathbb{R}$ it holds
