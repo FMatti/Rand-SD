@@ -1,5 +1,5 @@
 
-name: Build thesis
+name: Reproduce thesis
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
 
       - name: Generate reproducibility badge
         run: |
-          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.DIR }}/pro-re-state.tex"
+          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.DIR }}/re-pro-state.tex"
 
       - name: Generate thesis
         run: python setup/generate_thesis.py
@@ -60,6 +60,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add thesis/plots/*.pgf thesis/tables/*.tex
-          git commit -m "build thesis"
+          git add thesis/plots/*.pgf thesis/tables/*.tex thesis/ thesis/re-pro-state.tex
+          git commit -m "reproduce thesis"
           git push
