@@ -283,11 +283,60 @@ improved convergence order for the \gls{NCPP} method with respect to
 \section{Application to various matrices}
 \label{sec:5-experiments-various-matrices}
 
-\todo{[Same plots for multiple matrices]}
+We test the algorithms on various problems encountered in literature.
+We take from the matrix ModES3D\_8, an $8000 \times 8000$ matrix resulting
+from the same problem as in \refsec{sec:5-experiments-density-function} but with
+a larger computational domain \cite{lin2017randomized},
+%the matrix nd3k\footnote{\url{https://sparse.tamu.edu/ND/nd3k}},
+%an $9000 \times 9000$ matrix
+%which originates from modelling the vibrational modes of a polyethylene molecule
+%with 3000 atoms \cite{lin2016review},
+a synthetic matrix with $2000$ uniformly distributed eigenvalues in
+$[-1, 1]$ \cite{chen2021slq}, and Erdos992\footnote{\url{https://sparse.tamu.edu/Pajek/Erdos992}},
+an $6100 \times 6100$ matrix which representing the collaboration network of the
+Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}. All these
+matrices are sparse and symmetric. For all these matrices, we compute, for
+fixed \gls{chebyshev-degree}$=2400$ and increasing \gls{sketch-size}$+$\gls{num-hutchinson-queries},
+the relative $L^1$ approximation error
+of the spectral density for a Gaussian \glsfirst{smoothing-kernel} with
+\gls{smoothing-parameter}$=0.05$. The resulting plots are printed in 
+\reffig{fig:5-experiments-multi-matrix-convergence}.\\ 
 
-%\begin{figure}[ht]
-%    \centering
-%    \input{plots/multi_matrix_convergence_ModES3D_8.pgf}
-%    \caption{\gls{sketch-size}$+$\gls{num-hutchinson-queries}$=160$}
-%    \label{fig:5-experiments-multi-matrix-convergence}
-%\end{figure}
+We observe that for the two matrices which have an evenly distributed spectrum
+(\reffig{fig:5-experiments-multi-matrix-convergence-uniform}) or an approximately
+evenly distributed spectrum (\reffig{fig:5-experiments-multi-matrix-convergence-ModES3D}),
+the \gls{NC} method by itself can achieve a good approximation once \gls{sketch-size}
+exceeds the numerical rank of the matrix. On the other hand, for matrices where
+the spectrum is very concentrated around a certain point (\reffig{fig:5-experiments-multi-matrix-convergence-Erdos})
+or exhibits large gaps (\reffig{fig:5-experiments-multi-matrix-convergence-nd3k}),
+the \gls{NC} is not as effective, and the correction part in the \gls{NCPP} makes
+a significant difference.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.49\columnwidth}
+        \input{plots/multi_matrix_convergence_ModES3D_8.pgf}
+        \caption{ModES3D\_8}
+        \label{fig:5-experiments-multi-matrix-convergence-ModES3D}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\columnwidth}
+        \input{plots/multi_matrix_convergence_Erdos992.pgf}
+        \caption{Erdos992}
+        \label{fig:5-experiments-multi-matrix-convergence-Erdos}
+    \end{subfigure}
+    %\begin{subfigure}[b]{0.49\columnwidth}
+    %    \input{plots/multi_matrix_convergence_Erdos992.pgf}
+    %    \caption{nd3k}
+    %    \label{fig:5-experiments-multi-matrix-convergence-nd3k}
+    %\end{subfigure}
+    \begin{subfigure}[b]{0.49\columnwidth}
+        \input{plots/multi_matrix_convergence_uniform.pgf}
+        \caption{uniform}
+        \label{fig:5-experiments-multi-matrix-convergence-uniform}
+    \end{subfigure}
+    \caption{For increasing values of \gls{sketch-size}$+$\gls{num-hutchinson-queries}
+    but fixed \gls{chebyshev-degree}$=2400$ we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
+    for multiple different matrices and
+    Gaussian smoothing with \gls{smoothing-parameter}$=0.05$.}
+    \label{fig:5-experiments-multi-matrix-convergence}
+\end{figure}

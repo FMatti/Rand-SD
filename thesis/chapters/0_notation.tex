@@ -15,27 +15,34 @@ We try to follow the notation which is used in contemporary literature in this f
           $\mtx{I} = \diag(1, \dots, 1)$ which carries ones on its diagonal and 
           zeros everywhere else;
     \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$
-          are denoted with $\lambda_1(\mtx{A}) \geq \dots \geq \lambda_n(\mtx{A})$
+          are all scalars $\lambda$ which, together with some non-zero vectors
+          $\vct{v}$, satisfy the condition $\mtx{A} \vct{v} = \lambda \vct{v}$.
+          We denote them as $\lambda_1(\mtx{A}) \geq \dots \geq \lambda_n(\mtx{A})$
           or simply $\lambda_1 \geq \dots \geq \lambda_n$ if it is obvious from
           the context;
     \item the trace of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ is
           the sum of its diagonal elements $\Tr(\mtx{A}) = \sum_{i=1}^n a_{ii}$
           but also the sum of its eigenvalues $\Tr(\mtx{A}) = \sum_{i=1}^n \lambda_i$;
     \item the transpose of a matrix $\mtx{A}$ is denoted with $\mtx{A}^{\top}$.
-          We only consider symmetric matrices $\mtx{A}^{\top} = \mtx{A}$, which
-          allow a spectral decomposition $\mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$
+          Symmetric matrices satisfy $\mtx{A}^{\top} = \mtx{A}$ and
+          allow for a spectral decomposition $\mtx{A} = \mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$
           with $\mtx{\Lambda} = \diag(\lambda_1, \dots, \lambda_n) \in \mathbb{R}^{n \times n}$ and 
-          $\mtx{U} \in \mathbb{R}^{n \times n}$ such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$;
+          $\mtx{U} \in \mathbb{R}^{n \times n}$ such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$.
+          You may assume every symbol $\mtx{A}$ you encounter in this thesis to
+          represent a symmetric matrix;
     \item matrix norms are denoted with $\lVert \cdot \rVert _{\cdot}$.
           For symmetric matrices, the Schatten norm is
           $\lVert \mtx{A} \rVert _{(p)} = (\sum_{i=1}^n |\lambda_i|^p)^{1/p}$
           We refer to the spectral norm as
-          $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \lambda_1$, the Frobenius norm
+          $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \lambda_1$, while the Frobenius norm
           is $\lVert \mtx{A} \rVert _F = \lVert \mtx{A} \rVert _{(2)} = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
     \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$ \cite{penrose1955pseudo};
     \item a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ is said to be positive
-          semi-definite if its eigenvalues are all non-negative, and we denote
-          this property with $\mtx{B} \succcurlyeq 0$;
+          semi-definite if its eigenvalues are all non-negative. You may assume every
+          symbol $\mtx{B}$ you encounter in this thesis to denote a positive
+          semi-definite matrix;
+    \item closed interval are written as $[a, b] \subset \mathbb{R}$ and open
+          intervals as $(a, b) \subset \mathbb{R}$;
     \item the $p$-norm of a real-valued, measurable function $f$ on a
           domain $[a, b]$ is defined as
           $\lVert f \rVert _{p} = (\int_{a}^{b} |f|^p \mathrm{d}x)^{1/p}$;
@@ -44,8 +51,6 @@ We try to follow the notation which is used in contemporary literature in this f
           and the Kronecker delta $\delta_{ij}$;
     \item the cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
     \item the real part of a complex number $z$ is $\Re(z)$ while its imaginary part is $\Im(z)$;
-    \item closed interval are written as $[a, b] \subset \mathbb{R}$ and open
-          intervals as $(a, b) \subset \mathbb{R}$;
     \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
           on the complexity of a computation. For those more familiar with the
           Bachmann-Landau notation \cite[section~3.2]{cormen2009algorithms},

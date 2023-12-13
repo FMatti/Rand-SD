@@ -301,6 +301,39 @@ def laplace_finite_difference_eigvals(n=1, L=6, h=0.6, dim=3):
     return eigvals
 
 
+def uniform(n=5000, a=-1, b=1, density=0.0001, seed=0):
+    """
+    Generate a sparse matrix with uniformly spaced eigenvalues in [a, b].
+
+    Parameters
+    ----------
+    n : int > 0
+        The size of the matrix.
+    a : float
+        The smallest eigenvalue.
+    b : float
+        The largest eigenvalue.
+    density : float
+        The density of the resulting matrix.
+    seed : int
+        The seed used to generate the random matrix.
+
+    Returns
+    -------
+    np.ndarray of shape (n, n)
+        The matrix corresponding to the operator.
+    """
+    # Fix the seed
+    np.random.seed(seed)
+
+    D = sp.sparse.diags(np.linspace(a, b, n))
+    U = sp.sparse.random(n, n, density=density)
+    Q, _ = sp.linalg.qr(U.toarray())
+    Q = sp.sparse.csr_matrix(Q)
+
+    return Q @ D @ Q.T
+
+
 class WikiVoteGraph(object):
     def __init__(self, edges_filename="matrices/WikiVote.npz"):
         self.edges = np.load(edges_filename)["edges"]

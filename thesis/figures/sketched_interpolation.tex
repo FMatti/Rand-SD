@@ -1,45 +1,45 @@
 \begin{tikzpicture}
     \begin{scope}[shift={(0, 6)}]
-        \fill[lightblue] (2.75, -0.25) rectangle (5.25, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (2.75, -0.25) rectangle (5.25, 2.25);
         \node at (5.75, 1) {$=$};
         \node at (4, 1) {$\mtx{A}$};
-        \fill[lightblue] (6.25, -0.25) rectangle (8.75, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (6.25, -0.25) rectangle (8.75, 2.25);
         \node at (7.5, 1) {$\mtx{A}$};
     \end{scope}
 
     \begin{scope}[shift={(0, 3)}]
-        \fill[lightblue] (1, -0.25) rectangle (3.5, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (1, -0.25) rectangle (3.5, 2.25);
         \node at (2.25, 1) {$\mtx{A}$};
-        \fill[lightblue] (3.75, -0.25) rectangle (5.25, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (3.75, -0.25) rectangle (5.25, 2.25);
         \node at (4.5, 1) {$\mtx{\Psi}$};
         \node at (5.75, 1) {$=$};
-        \fill[lightblue] (6.25, -0.25) rectangle (7.75, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (6.25, -0.25) rectangle (7.75, 2.25);
         \node at (7, 1) {$\mtx{A} \mtx{\Psi}$};
     \end{scope}
 
     \begin{scope}
-        \fill[lightblue] (-1.75, 0.25) rectangle (0.75, 1.75);
+        \draw[darkblue, line width=1pt, fill=lightblue] (-1.75, 0.25) rectangle (0.75, 1.75);
         \node at (-0.5, 1) {$\mtx{\Psi}^{\top}$};
-        \fill[lightblue] (1, -0.25) rectangle (3.5, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (1, -0.25) rectangle (3.5, 2.25);
         \node at (2.25, 1) {$\mtx{A}$};
-        \fill[lightblue] (3.75, -0.25) rectangle (5.25, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (3.75, -0.25) rectangle (5.25, 2.25);
         \node at (4.5, 1) {$\mtx{\Psi}$};
         \node at (5.75, 1) {$=$};
-        \fill[lightblue] (6.25, 0.25) rectangle (7.75, 1.75);
+        \draw[darkblue, line width=1pt, fill=lightblue] (6.25, 0.25) rectangle (7.75, 1.75);
         \node at (7, 1) {$\mtx{\Psi}^{\top} \mtx{A} \mtx{\Psi}$};
     \end{scope}
 
     \begin{scope}[shift={(0, -3)}]
         \node at (-2.2, 1) {$\Tr\Bigg($};
-        \fill[lightblue] (-1.75, 0.25) rectangle (0.75, 1.75);
+        \draw[darkblue, line width=1pt, fill=lightblue] (-1.75, 0.25) rectangle (0.75, 1.75);
         \node at (-0.5, 1) {$\mtx{\Psi}^{\top}$};
-        \fill[lightblue] (1, -0.25) rectangle (3.5, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (1, -0.25) rectangle (3.5, 2.25);
         \node at (2.25, 1) {$\mtx{A}$};
-        \fill[lightblue] (3.75, -0.25) rectangle (5.25, 2.25);
+        \draw[darkblue, line width=1pt, fill=lightblue] (3.75, -0.25) rectangle (5.25, 2.25);
         \node at (4.5, 1) {$\mtx{\Psi}$};
         \node at (5.45, 1) {$\Bigg)$};
         \node at (5.75, 1) {$=$};
-        %\fill[lightblue] (6.25, 0.25) rectangle (7.75, 1.75);
+        %\draw[darkblue, line width=1pt, fill=lightblue] (6.25, 0.25) rectangle (7.75, 1.75);
         \node at (7.25, 1) {$\Tr(\mtx{\Psi}^{\top} \mtx{A} \mtx{\Psi})$};
     \end{scope}
 \end{tikzpicture}

@@ -4,7 +4,7 @@
 In \refsec{sec:2-chebyshev-stochastic-trace-estimation} we have introduced the
 classical approach for estimating the trace of a matrix using matrix-vector
 products. A drawback of this method is the rather slow, reciprocal decrease of
-the \gls{MSE} with \gls{num-hutchinson-queries}. Variance reduced trace estimators
+the variance with \gls{num-hutchinson-queries}. Variance reduced trace estimators
 try to improve on this. They usually take a \enquote{hybrid} approach, combining
 low-rank approximation with stochastic trace estimation.\\
 
@@ -18,9 +18,8 @@ we call the \glsfirst{NCPP} method.
 \label{sec:4-nystromchebyshev-hybrid}
 
 The initial idea from \cite{lin2017randomized} was to combine low-rank approximation
-with stochastic trace estimation to cause the \gls{MSE}, which -- for unbiased estimators
--- is synonymous with the variance, to decrease quadratically with the square
-of the reciprocal of the number of matrix-vector products.
+with stochastic trace estimation to cause the variance to decrease quadratically
+with the square of the reciprocal of the number of matrix-vector products.
 Recent theoretical developments confirm the
 efficacy of this approach \cite{meyer2021hutch,persson2022hutch}.
 We will first briefly discuss these results which are valid 
@@ -64,7 +63,7 @@ to compute. That is where randomized low-rank factorizations come into play.\\
 
 A first such algorithm is the Hutch++ algorithm \cite[algorithm~1]{meyer2021hutch}, which
 uses a low-rank factorization of the form \refequ{equ:3-nystrom-RSVD} for
-$\widehat{mtx{B}}$. For positive semi-definite matrices it was shown to give
+$\widehat{mtx{B}}$. For \gls{PSD} matrices it was shown to give
 an estimate whose relative deviation from the actual trace is at most
 $\epsilon$ by only using $\mathcal{O}(\epsilon^{-1})$ matrix-vector multiplications,
 with high probability \cite[theorem~1]{meyer2021hutch}. Similarly, \cite{lin2017randomized}

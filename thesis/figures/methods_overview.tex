@@ -1,0 +1,23 @@
+\begin{tikzpicture}
+    \fill[darkblue, opacity=0.15] (-1.9, 1.6) circle (2.2);
+    \fill[darkblue, opacity=0.15] (0.9, 1.6) circle (2.2);
+    \draw[rounded corners, line width=2, color=darkblue] (-5, -1.5) rectangle (4, 5);
+    \node[fill=white] at (-0.5, 5) {\bfseries \textcolor{darkblue}{Chebyshev expansion}};
+    \path[draw=darkblue, line width=2, 
+        postaction={decorate,decoration={text effects along path,
+          text={\ stochastic trace estimation \ }, text align=center, reverse path,
+          text effects/.cd, 
+            text along path, 
+            every character/.style={fill=white, yshift=-0.5ex, font=\bfseries, text=darkblue}}}]
+        (0, 0) arc [start angle=-40, end angle=320, radius=2.5];
+    \path[draw=darkblue, line width=2, 
+        postaction={decorate,decoration={text effects along path,
+          text={\ low-rank factorization \ }, text align=center, reverse path,
+          text effects/.cd,
+            text along path,
+            every character/.style={fill=white, yshift=-0.5ex, font=\bfseries, text=darkblue}}}]
+        (-1, 0) arc [start angle=-140, end angle=220, radius=2.5];
+    \node at (1.8, 1.6) {\bfseries \textcolor{darkblue}{\gls{DGC}}};
+    \node at (-2.8, 1.6) {\bfseries \textcolor{darkblue}{\gls{NC}}};
+    \node at (-0.5, 1.6) {\bfseries \textcolor{darkblue}{\gls{NCPP}}};
+\end{tikzpicture}

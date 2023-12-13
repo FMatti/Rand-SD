@@ -1,8 +1,8 @@
 \hspace*{\algorithmicindent} \textbf{Input:} Function $f:[-1, 1] \to \mathbb{R}$ \\%, evaluation points $\{t_i\}_{i=1}^{n_t}$ \\
-\hspace*{\algorithmicindent} \textbf{Parameters:} Expansion degree $m$ \\
-\hspace*{\algorithmicindent} \textbf{Output:} Coefficients $\{ \mu_l \}_{l=0}^m$ of expansion $f^m(s) = \sum_{l=0}^m \mu_l T_l(s)$
+\hspace*{\algorithmicindent} \textbf{Parameters:} \gls{chebyshev-degree} \\
+\hspace*{\algorithmicindent} \textbf{Output:} Coefficients $\{ \mu_l \}_{l=0}^m$ of the expansion $f^m(s) = \sum_{l=0}^m \mu_l T_l(s)$
 \begin{algorithmic}[1]
-    \State Evaluate $f$ at $\{\cos(2\pi i / m)\}_{i=0}^m$ and collect the results in $\vct{f}\in \mathbb{R}^{m+1}$
+    \State Evaluate $f$ at $\{\cos(\pi i / m)\}_{i=0}^m$ and collect the results in $\vct{f}\in \mathbb{R}^{m+1}$
     \State Compute $\vct{\mu} = \DCT^{-1}(\vct{f})$
     \State Let $\mu_l = (\vct{\mu})_l$ for $l=0,\dots,m$
 \end{algorithmic}

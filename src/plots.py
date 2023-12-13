@@ -83,11 +83,12 @@ def plot_spectral_densities(spectral_densities, parameters, variable_parameter=N
     return ax
 
 
-def compute_spectral_density_errors(A, methods, labels, variable_parameter, variable_parameter_values, parameters, kernel=gaussian_kernel, n_t=1000, error_metric=p_norm, correlated_parameter=None, correlated_parameter_values=None):
+def compute_spectral_density_errors(A, methods, labels, variable_parameter, variable_parameter_values, parameters, kernel=gaussian_kernel, n_t=1000, error_metric=p_norm, correlated_parameter=None, correlated_parameter_values=None, eigenvalues=None):
     parameters = deepcopy(parameters)
 
     # Spectral transform of matrix
-    eigenvalues = np.linalg.eigvalsh(A if isinstance(A, np.ndarray) else A.toarray())
+    if eigenvalues is None:
+        eigenvalues = np.linalg.eigvalsh(A if isinstance(A, np.ndarray) else A.toarray())
     min_ev = np.min(eigenvalues)
     max_ev = np.max(eigenvalues)
     A_transformed = spectral_transformation(A, min_ev, max_ev)

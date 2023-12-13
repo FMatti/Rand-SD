@@ -17,10 +17,10 @@
         \node[anchor=west] at (2.2, -0.85) {Lorentzian};
         
         \node[anchor=west] at (0.0, -1.35) {Expansion};
-        \node[anchor=west] at (2.2, -1.35) {None};
+        \node[anchor=west] at (2.2, -1.35) {Lanczos};
         
         \node[anchor=west] at (0.0, -1.85) {Trace};
-        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson's};
         
         \draw (2.25, -0.15) to (2.25, -2.05);
     \end{scope}
@@ -32,26 +32,31 @@
         \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
         
         \node[anchor=west] at (0.0, -0.35) {Origin};
-        \node[anchor=west] at (2.2, -0.35) {\cite{lin2016review} Lin et. al. (2016)};
+        \node[anchor=west] at (2.2, -0.35) {\cite{lin2016review} Lin et al. (2016)};
         
         \node[anchor=west] at (0.0, -0.85) {Smoothing};
         \node[anchor=west] at (2.2, -0.85) {None};
         
         \node[anchor=west] at (0.0, -1.35) {Expansion};
-        \node[anchor=west] at (2.2, -1.35) {None};
+        \node[anchor=west] at (2.2, -1.35) {Lanczos};
         
         \node[anchor=west] at (0.0, -1.85) {Trace};
-        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson's};
         
         \draw (2.25, -0.15) to (2.25, -2.05);
     \end{scope}
 
     % Expansion based
-    \draw[rounded corners, line width=2, color=darkblue] (-0.5, 1.55) rectangle (14, -8.75);
-    \node[fill=white] at (6.75, 1.55) {\bfseries \textcolor{darkblue}{Expansion based}};
+    \draw[rounded corners, line width=2, color=darkblue] (-0.5, 1.55) rectangle (14, -9.25);
+    \node[fill=white] at (6.75, 1.55) {\bfseries \textcolor{darkblue}{Polynomial expansion based}};
+
+    \draw[rounded corners, line width=2, color=darkblue] (6.75, -2.05) rectangle (13.75, -8.8);
+    \fill[white] (10.3, -1.95) rectangle (10.7, -2.15);
+    \node[fill=white] at (10.25, -8.75) {\bfseries \textcolor{darkblue}{This thesis}};
 
     \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (10, -0.5) -- (10.5, -0.5) -- (10.5, -2.25) node [midway, right] {\textcolor{darkblue}{$g_{\sigma}$}};
     \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (3.5, -0.5) -- (3, -0.5) -- (3, -2.25) node [midway, left] {\textcolor{darkblue}{$g_{\sigma}$}};
+    \draw[line width=1.5, color=darkblue, dashed, <->] (10.5, -5.05) -- (10.5, -5.6);
 
     % KPM
     \begin{scope}[shift={(3.5, 0.5)}]
@@ -60,7 +65,7 @@
         \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
         
         \node[anchor=west] at (0.0, -0.35) {Origin};
-        \node[anchor=west] at (2.2, -0.35) {\cite{silver1994kpm} Silver/Röder (1994)};
+        \node[anchor=west] at (2.2, -0.35) {\cite{silver1994kpm} Silver et al. (1994)};
         
         \node[anchor=west] at (0.0, -0.85) {Smoothing};
         \node[anchor=west] at (2.2, -0.85) {None};
@@ -69,7 +74,7 @@
         \node[anchor=west] at (2.2, -1.35) {Chebyshev/Legendre};
         
         \node[anchor=west] at (0.0, -1.85) {Trace};
-        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson's};
         
         \draw (2.25, -0.15) to (2.25, -2.05);
     \end{scope}
@@ -81,16 +86,16 @@
         \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
         
         \node[anchor=west] at (0.0, -0.35) {Origin};
-        \node[anchor=west] at (2.2, -0.35) {\cite{lin2016review} Lin et. al. (2016)};
+        \node[anchor=west] at (2.2, -0.35) {\cite{lin2016review} Lin et al. (2016)};
         
         \node[anchor=west] at (0.0, -0.85) {Smoothing};
-        \node[anchor=west] at (2.2, -0.85) {Gaussian};
+        \node[anchor=west] at (2.2, -0.85) {Usually Gaussian};
         
         \node[anchor=west] at (0.0, -1.35) {Expansion};
         \node[anchor=west] at (2.2, -1.35) {Legendre};
         
         \node[anchor=west] at (0.0, -1.85) {Trace};
-        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson's};
         
         \draw (2.25, -0.15) to (2.25, -2.05);
     \end{scope}
@@ -105,19 +110,19 @@
         \node[anchor=west] at (2.2, -0.35) {\cite{lin2017randomized} Lin (2017)};
         
         \node[anchor=west] at (0.0, -0.85) {Smoothing};
-        \node[anchor=west] at (2.2, -0.85) {Gaussian};
+        \node[anchor=west] at (2.2, -0.85) {Usually Gaussian};
         
         \node[anchor=west] at (0.0, -1.35) {Expansion};
         \node[anchor=west] at (2.2, -1.35) {Chebyshev};
         
         \node[anchor=west] at (0.0, -1.85) {Trace};
-        \node[anchor=west] at (2.2, -1.85) {Hutchinson};
+        \node[anchor=west] at (2.2, -1.85) {Hutchinson's};
         
         \draw (2.25, -0.15) to (2.25, -2.05);
     \end{scope}
 
     % SS
-    \begin{scope}[shift={(7, -6)}]
+    \begin{scope}[shift={(7, -6.1)}]
         \fill[darkblue] (0, 0) rectangle (6.5,  0.5);
         \node[anchor=west] at (0.0, 0.25) {\textcolor{white}{Spectrum sweeping}};
         \fill[lightblue] (0, 0) rectangle (6.5,  -2.25);
@@ -126,7 +131,7 @@
         \node[anchor=west] at (2.2, -0.35) {\cite{lin2017randomized} Lin (2017)};
         
         \node[anchor=west] at (0.0, -0.85) {Smoothing};
-        \node[anchor=west] at (2.2, -0.85) {Gaussian};
+        \node[anchor=west] at (2.2, -0.85) {Usually Gaussian};
         
         \node[anchor=west] at (0.0, -1.35) {Expansion};
         \node[anchor=west] at (2.2, -1.35) {Chebyshev};

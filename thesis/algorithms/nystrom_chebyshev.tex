@@ -11,7 +11,7 @@
     \For {$l = 0, \dots, 2m$}
       \State $\mtx{X} \gets \mtx{\Omega}^{\top} \mtx{V}_2$
       \For {$i = 1, \dots, n_t$}
-        \If {$l \leq 2m$}
+        \If {$l \leq m$}
             \State $\mtx{K}_1(t_i) \gets \mtx{K}_1(t_i) + \mu_l(t_i) \mtx{X}$
         \EndIf
         \State $\mtx{K}_2(t_i) \gets \mtx{K}_2(t_i) + \nu_l(t_i) \mtx{X}$

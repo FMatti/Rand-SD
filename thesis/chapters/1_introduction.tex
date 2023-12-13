@@ -11,55 +11,49 @@ and in graph processing they can uncover hidden graph motifs \cite{kruzick2018gr
 \section{Spectral density}
 \label{sec:1-introduction-spectral-density}
 
-The eigenvalues of a matrix $\mtx{A}$ are all scalars $\lambda$ which, together
-with some non-zero vectors $\vct{v}$, satisfy the equation
-\begin{equation}
-    \mtx{A} \vct{v} = \lambda \vct{v}.
-    \label{equ:1-introduction-eigenvalue}
-\end{equation}
 In most applications, the studied matrices are real,
 i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$, and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$,
 such that their eigenvalues $\lambda_1, \dots, \lambda_n$ are all real.
-This allows us to define their spectral density.
-
+This allows us to define their spectral density on the real line.
 \begin{definition}{Spectral density of a matrix}{spectral-density}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix with \glspl{eigenvalue}
     $\in \mathbb{R}, i=1, \dots, n$. We define the \gls{spectral-density} as
+    the functional
     \begin{equation}
         \phi(t) = \frac{1}{n} \sum_{i=1}^{n} \delta(t - \lambda_i),
         \label{equ:1-introduction-def-spectral-density}
     \end{equation}
-    where we used the \gls{dirac-delta}
-    and the \gls{spectral-parameter} $\in \mathbb{R}$.
+    involving the \gls{dirac-delta}
+    and a \gls{spectral-parameter} $\in \mathbb{R}$.
 \end{definition}
 
 \gls{spectral-density} is the probability density \cite{klenke2013probability}
 of the cumulative empirical spectral measure \cite{chen2021slq}. Knowing \gls{spectral-density}
-of a matrix would -- in theory -- allow us to determine its eigenvalues.
-Furthermore, the spectral density of a matrix can for example be used to count
-the number of eigenvalues which lie within an interval $[a, b]$
+of a matrix would -- in theory -- allow us to reconstruct its eigenvalues.
+Furthermore, \gls{spectral-density} can for example be used to count
+the number of eigenvalues of a matrix which lie within an interval $[a, b]$
 \begin{equation}
     \nu_{[a, b]} = n \int_{a}^{b} \phi(t) \mathrm{d}t,
     \label{equ:1-introduction-eigenvalue-counting}
 \end{equation}
 or to compute the trace of a matrix function \cite{lin2017randomized}
 \begin{equation}
-    \Tr(f(\mtx{A})) = \sum_{i=1}^n f(\lambda_i) = n \int_{a}^{b} f(t) \phi(t) \mathrm{d}t.
+    \Tr(f(\mtx{A})) = \sum_{i=1}^n f(\lambda_i) = n \int_{-\infty}^{\infty} f(t) \phi(t) \mathrm{d}t.
     \label{equ:1-introduction-matrix-trace}
 \end{equation}\\
 
 However, constructing the spectral density of a matrix amounts to knowing all
-the eigenvalues of this matrix, which are often prohibitively expensive to
+its eigenvalues, which are often prohibitively expensive to
 compute. But in many of the above mentioned applications, not the exact individual
 eigenvalues are of interest, but their approximate relative locations to each
-other. Hence, it is sufficient to find estimates of \refequ{equ:1-introduction-def-spectral-density}.
+other. Hence, it is sufficient to find coarse estimates of \refequ{equ:1-introduction-def-spectral-density}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Smoothened spectral density}
 \label{sec:1-introduction-properties}
 
-Since we cannot hope to measure the convergence of any smooth function to
+Since we cannot hope to measure the convergence of a smooth approximation to
 \gls{spectral-density} in any of the conventionally used $p$-norms,
 we first regularize \gls{spectral-density} with a suitable \gls{smoothing-kernel}
 to define the \gls{smooth-spectral-density} as the convolution
@@ -102,20 +96,21 @@ due to its rapidly decaying tail and desirable interpolation properties \cite{li
 There are many other choices possible for \gls{smoothing-kernel}. Ideally,
 \gls{smoothing-kernel} should be symmetric, non-negative, and tend -- in a weak sense --
 towards the Dirac delta function in the limit of \gls{smoothing-parameter} $\to 0$. Another
-commonly used kernel is the Lorentzian, which will be discussed in \refsec{sec:5-experiments-haydock-method}.\\
+commonly used kernel is the Lorentzian, which will be discussed in an example
+in \refsec{sec:5-experiments-haydock-method}.\\
 
 Because we only consider symmetric matrices, 
 we may represent $\mtx{A} \in \mathbb{R}^{n \times n}$ using its spectral
 decomposition $\mtx{A} = \mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$ where
 $\mtx{\Lambda} \in \mathbb{R}^{n \times n}$ is the diagonal matrix which carries
 the eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U} \in \mathbb{R}^{n \times n}$
-is orthogonal, i.e. $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[theorem~4.1.5]{horn1985matrix}.
+is orthonormal, i.e. $\mtx{U}^{\top} \mtx{U} = \mtx{I}$ \cite[theorem~4.1.5]{horn1985matrix}.
 Thus, if we absorb the factor in \refequ{equ:1-introduction-def-smooth-spectral-density}
 involving the \gls{matrix-size} in \gls{smoothing-kernel},
 use the definition of a smooth function $f$ applied to a symmetric matrix
 $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
 with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[definition~1.2]{higham2008functions},
-and finally use the invariance of the trace under orthogonal transformations, we may write
+and finally use the invariance of the trace under orthonormal transformations, we may write
 \begin{equation}
     \phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})).
     \label{equ:1-introduction-spectral-density-as-trace}
@@ -123,6 +118,42 @@ and finally use the invariance of the trace under orthogonal transformations, we
 In this way, we have just converted the problem of computing the eigenvalues of
 a matrix to computing the trace of a function applied to the same matrix,
 for which -- we will see -- exist many efficient algorithms.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Overview of the methods}
+\label{sec:1-introduction-overview}
+
+The three methods we will study in this thesis are based on \cite{lin2017randomized}.
+All of them are intimately related. In a first stage, they all expand the matrix
+function $g_{\sigma}(t\mtx{I} - \mtx{A})$ from
+\refequ{equ:1-introduction-spectral-density-as-trace} in a truncated basis of
+Chebyshev polynomials. The \gls{DGC} method then proceeds by approximating the
+trace in \refequ{equ:1-introduction-spectral-density-as-trace} with a stochastic
+trace estimator. The \gls{NC} method instead expresses the expanded matrix function
+as a product of smaller matrices, for which we can directly compute the trace.
+Finally, the \gls{NCPP} method combines the \gls{DGC} and \gls{NC} method
+by first factorizing the matrix and subsequently correcting for the approximation
+error by estimating the trace of the residual of this approximation with a stochastic trace estimator.
+In fact, if we denote with $\widetilde{\phi}_{\sigma}^m(t)$ the approximation
+of \gls{smooth-spectral-density} computed with the \gls{DGC} method, $\widehat{\phi}_{\sigma}^m(t)$ the
+one computed with the \gls{NC} method, and $\breve{\phi}_{\sigma}^m(t)$ the one
+with \gls{NCPP}, we can show that
+\begin{equation}
+    \breve{\phi}_{\sigma}^m(t) = \widetilde{\phi}_{\sigma}^m(t) + \widehat{\phi}_{\sigma}^m(t) - \text{correction term}
+    \label{equ:1-introduction-relation-methods}
+\end{equation}
+It will turn out that the correction term is determined by applying
+the \gls{DGC} method to the matrix factorization produced in the \gls{NC} method.
+A schematic overview of the relation between these methods can be found
+in \reffig{fig:1-introduction-methods-overview}.
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/methods_overview.tex}
+    \caption{Caption}
+    \label{fig:1-introduction-methods-overview}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -138,7 +169,7 @@ illustrated overview of the methods):
     \item Lanczos-based methods first partially tridiagonalize the matrix and
     subsequently either extract Ritz values or directly exploit properties of the
     \glsfirst{smoothing-kernel} to approximate \gls{spectral-density};
-    \item and expansion-based methods which either compute a truncated expansion of
+    \item and expansion-based methods, which either compute a truncated expansion of
     \gls{spectral-density} or \gls{smoothing-kernel} in a polynomial basis and subsequently
     make use of trace estimation to approximate \gls{spectral-density}.
 \end{enumerate}
@@ -146,7 +177,12 @@ illustrated overview of the methods):
 \begin{figure}[ht]
     \centering
     \input{figures/literature_overview.tex}
-    \caption{Overview of methods for approximating the spectral density.}
+    \caption{An overview of the most popular methods for approximating
+        spectral densities of large symmetric matrices. For each method, the publication
+        where it was originally introduced, the type of smoothing it applies,
+        what kind of expansion is used, and how the trace in
+        \refequ{equ:1-introduction-spectral-density-as-trace} is approximated.
+        Equivalences between the methods are indicated with dashed lines.}
     \label{fig:1-introduction-literature-overview}
 \end{figure}
 
@@ -161,7 +197,8 @@ The expansion-based methods encompass the kernel polynomial methods \cite{silver
 which involve the formal expansion of a suitable modification of \gls{spectral-density}
 in a basis of orthogonal polynomials. The Delta-Gauss-Legendre \cite{lin2016review}
 and Delta-Gauss-Chebyshev \cite{lin2017randomized} methods instead expand \gls{smoothing-kernel}
-and use this expansion to efficiently evaluate a stochastic trace estimator.
+and use this expansion to efficiently evaluate a stochastic trace estimator.\\
+
 It turns out that these two families are not distinct, and in fact some of these
 methods can be shown to be equivalent to each other: The Lanczos algorithm
 can be used as an engine for the kernel polynomial method \cite{chen2023kpm},
@@ -176,7 +213,7 @@ in the theory of stochastic trace estimation, which is the backbone of most
 expansion-based methods, has been made \cite{meyer2021hutch, persson2022hutch}.
 These developments involved demonstrating the reciprocal decrease
 of the approximation error with the number of matrix-vector multiplication
-queries used, which is a desirable algorithmic property.
+queries used, which is a highly desirable algorithmic property.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -213,12 +250,11 @@ from \cite{lin2017randomized}, we see our main contributions to be
 This paragraph finishes off the introductory \refchp{chp:1-introduction}.
 In \refchp{chp:2-chebyshev} we introduce the Chebyshev expansion, present an
 efficient method for computing it, and study its convergence. We also take a
-look at stochastic trace estimation to then construct a first algorithm.
-\Refchp{chp:3-nystrom} is dedicated to the use of randomized low-rank approximation
-for computing spectral densities, which gives rise to a second algorithm.
+look at stochastic trace estimation to then construct a first algorithm using these tools.
+\Refchp{chp:3-nystrom} is dedicated to the use of randomized low-rank factorization
+of matrices for computing spectral densities, which gives rise to a second algorithm.
 Putting the ideas from the two previously discussed algorithms together,
 we end up with a fast and general algorithm for computing spectral densities
 of large matrices in \refchp{chp:4-nystromchebyshev}. In \refchp{chp:5-experiments},
 we study the accuracy and computational time of these algorithms on numerous
-numerical experiments and compare them to other methods found in literature.
-We conclude the thesis in \refchp{chp:6-conclusion}.
+numerical experiments. We conclude the thesis in \refchp{chp:6-conclusion}.
