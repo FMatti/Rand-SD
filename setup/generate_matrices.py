@@ -16,7 +16,7 @@ matrix_urls = [
     #"https://suitesparse-collection-website.herokuapp.com/MM/ND/nd3k.tar.gz",
     #"https://suitesparse-collection-website.herokuapp.com/MM/MaxPlanck/shallow_water1.tar.gz",
     "https://suitesparse-collection-website.herokuapp.com/MM/Pajek/Erdos992.tar.gz",
-    "https://suitesparse-collection-website.herokuapp.com/MM/Pajek/California.tar.gz",
+    #"https://suitesparse-collection-website.herokuapp.com/MM/Pajek/California.tar.gz",
 ]
 
 print("\nDownloading matrices")
