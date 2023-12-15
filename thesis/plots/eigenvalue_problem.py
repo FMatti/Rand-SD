@@ -1,10 +1,10 @@
 import __context__
 
 import numpy as np
+import scipy as sp
 import matplotlib.pyplot as plt
 
 from src.algorithms import FastNyCheb
-from src.matrices import ModES3D
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 
 import matplotlib
@@ -23,8 +23,8 @@ fixed_parameters = [{"n_v": 80, "sigma": 0.05, "eigenproblem": "pinv"},
 variable_parameters = "m"
 variable_parameters_values = (np.logspace(2.3, 3.5, 7).astype(int) // 2) * 2
 
-A = ModES3D()
-colors = ["#7ab3f0", "#2F455C"]
+A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
+colors = ["#2F455C", "#F98125"]
 spectral_density_errors = compute_spectral_density_errors(A, methods, labels, variable_parameters, variable_parameters_values, fixed_parameters, n_t=100)
 
 fig, ax = plt.subplots(figsize=(4, 3))

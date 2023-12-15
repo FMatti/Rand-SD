@@ -20,8 +20,8 @@ h = lambda x: cauchy_kernel(x, n=n, sigma=sigma)
 
 plt.figure(figsize=(4, 1.5))
 
-plt.plot(s, g(s), label="Gaussian", color="#7ab3f0")
-plt.plot(s, h(s), label="Lorentzian", color="#2F455C")
+plt.plot(s, g(s), label="Gaussian", color="#2F455C")
+plt.plot(s, h(s), label="Lorentzian", color="#F98125")
 
 plt.ylim([0, 8.5])
 plt.xlim([-0.5, 0.5])

@@ -21,6 +21,7 @@ A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 
 methods = [Haydock, FastNyCheb, FastNyChebPP]
 labels = ["Haydock", "NC", "NC++"]
+colors = ["#89A5C2", "#2F455C", "#F98125"]
 
 ################################################################################
 
@@ -37,7 +38,7 @@ with open("thesis/plots/haydock_convergence_nv_m800.pkl", "wb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
-plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega} + n_{\Psi}$", ax=ax)
+plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega} + n_{\Psi}$", colors=colors, ax=ax)
 plt.savefig("thesis/plots/haydock_convergence_nv_m800.pgf", bbox_inches="tight")
 
 ################################################################################
@@ -55,8 +56,11 @@ with open("thesis/plots/haydock_convergence_nv_m2400.pkl", "wb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
-#ax.plot(variable_parameters_values, 0.5/variable_parameters_values, linestyle="dashed", color="#7a7a7a", alpha=0.5, label="$(n_{\Omega} + n_{\Psi})^{-2}$")
-plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega} + n_{\Psi}$", ax=ax)
+ax.plot(variable_parameters_values[1:-1], 0.65/variable_parameters_values[1:-1], linestyle="dashed", color="#7a7a7a", alpha=0.5)
+ax.text(8e+1, 9e-3, r"$\mathcal{O}(\varepsilon^{-1})$", color="#7a7a7a")
+ax.plot(variable_parameters_values[1:-1], 0.3/variable_parameters_values[1:-1]**(0.5), linestyle="dashed", color="#7a7a7a", alpha=0.5)
+ax.text(2.6e+1, 6.5e-2, r"$\mathcal{O}(\varepsilon^{-2})$", color="#7a7a7a")
+plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$n_{\Omega} + n_{\Psi}$", colors=colors, ax=ax)
 plt.savefig("thesis/plots/haydock_convergence_nv_m2400.pgf", bbox_inches="tight")
 
 ################################################################################
@@ -74,7 +78,7 @@ with open("thesis/plots/haydock_convergence_m_nv40.pkl", "wb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
-plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$m$", ax=ax)
+plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$m$", colors=colors, ax=ax)
 plt.savefig("thesis/plots/haydock_convergence_m_nv40.pgf", bbox_inches="tight")
 
 ################################################################################
@@ -92,5 +96,5 @@ with open("thesis/plots/haydock_convergence_m_nv160.pkl", "wb") as handle:
 #    spectral_density_errors = pickle.load(handle)
 
 fig, ax = plt.subplots(figsize=(2.5, 2.5))
-plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$m$", ax=ax)
+plot_spectral_density_errors(spectral_density_errors, fixed_parameters, variable_parameters, variable_parameters_values, ignored_parameters=["m", "n_v", "sigma", "kernel"], error_metric_name="$L^1$ relative error", x_label="$m$", colors=colors, ax=ax)
 plt.savefig("thesis/plots/haydock_convergence_m_nv160.pgf", bbox_inches="tight")

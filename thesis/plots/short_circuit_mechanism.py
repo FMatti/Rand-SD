@@ -1,10 +1,10 @@
 import __context__
 
 import numpy as np
+import scipy as sp
 import matplotlib.pyplot as plt
 
 from src.algorithms import FastNyCheb
-from src.matrices import ModES3D
 from src.plots import compute_spectral_densities, plot_spectral_densities
 
 import matplotlib
@@ -21,8 +21,8 @@ labels = ["no short-circuit", "short-circuit"]
 parameters = [{"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": -1},
               {"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": 1e-5}]
 
-A = ModES3D()
-colors = ["#1f1f1f", "#7ab3f0", "#2F455C"]
+A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
+colors = ["#89A5C2", "#2F455C", "#F98125"]
 spectral_densities = compute_spectral_densities(A, methods, labels, parameters, add_baseline=True, n_t=500)
 
 fig, ax = plt.subplots(figsize=(6, 3))

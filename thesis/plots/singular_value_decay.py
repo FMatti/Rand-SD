@@ -5,7 +5,6 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 from src.utils import spectral_transformation, theoretical_numerical_rank, form_spectral_density
-from src.matrices import ModES3D
 from src.kernel import gaussian_kernel
 
 import matplotlib
@@ -16,7 +15,7 @@ matplotlib.rcParams["font.family"] = r"serif"
 matplotlib.rcParams["font.serif"] = r"Palatino"
 matplotlib.rcParams["font.size"] = 12
 
-A = ModES3D()
+A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 min_ev = sp.sparse.linalg.eigsh(A, k=1, which="SA", return_eigenvectors=False)[0]
 max_ev = sp.sparse.linalg.eigsh(A, k=1, which="LA", return_eigenvectors=False)[0]
 A = spectral_transformation(A, min_ev, max_ev)

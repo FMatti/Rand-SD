@@ -24,7 +24,7 @@ variable_parameters = "m"
 variable_parameters_values = (np.logspace(2.3, 3.5, 7).astype(int) // 2) * 2
 
 A = ModES3D(dim=2)
-colors = ["#7ab3f0", "#2F455C"]
+colors = ["#2F455C", "#F98125"]
 spectral_density_errors = compute_spectral_density_errors(A, methods, labels, variable_parameters, variable_parameters_values, fixed_parameters, n_t=100)
 
 fig, ax = plt.subplots(figsize=(4, 3))
