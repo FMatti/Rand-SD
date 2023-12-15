@@ -10,15 +10,15 @@ in multiple scenarios. We consider a specific example from density functional th
 subsequently test the methods on various other matrices.\\
 
 The accuracy is measured in terms of the discrete relative $L^1$ error of the approximated
-spectral density $\widetilde{\phi}_{\sigma}^m$ from the spectral density $\phi_{\sigma}$
+spectral density $\widetilde{\phi}_{\sigma}^{(m)}$ from the spectral density $\phi_{\sigma}$
 which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}.
 \begin{equation}
-    \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^m(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^{n_t} |\phi_{\sigma}(t_i)|}.
+    \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^{(m)}(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^{n_t} |\phi_{\sigma}(t_i)|}.
     \label{equ:5-experiments-L1-error}
 \end{equation}
 We always use $n_t=100$ evenly spaced evaluation points which cover the whole spectrum of
 $\mtx{A}$. The choice of this metric can be justified by the fact that this
-error is the midpoint quadrature rule \cite[chapter~9.2.1]{quarteroni2007numerical}
+error roughly corresponds to the midpoint quadrature rule \cite[chapter~9.2.1]{quarteroni2007numerical}
 applied to the $L^1$-norm, for which our theoretical results hold.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,25 +69,25 @@ in two dimensions.\\
 For Gaussian \gls{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
 with \gls{smoothing-parameter} $=0.05$ we plot for two choices of \gls{chebyshev-degree}
 the convergence of the error with \gls{sketch-size} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}
-and equally for two choices of \gls{sketch-size}$+$\gls{num-hutchinson-queries} the convergence of the
+and equally for two choices of \gls{sketch-size} $+$ \gls{num-hutchinson-queries} the convergence of the
 error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}.
-In our experiments, we always use \gls{sketch-size}$=$\gls{num-hutchinson-queries} for
+In our experiments, we always use \gls{sketch-size} $=$ \gls{num-hutchinson-queries} for
 the \gls{NCPP} method.\\
 
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/electronic_structure_convergence_nv_m800.pgf}
-        \caption{\gls{chebyshev-degree}$=800$}
+        \caption{\gls{chebyshev-degree} $=800$}
         \label{fig:5-experiments-electronic-structure-convergence-nv-m800}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/electronic_structure_convergence_nv_m2400.pgf}
-        \caption{\gls{chebyshev-degree}$=2400$}
+        \caption{\gls{chebyshev-degree} $=2400$}
         \label{fig:5-experiments-electronic-structure-convergence-nv-m2400}
     \end{subfigure}
-    \caption{For increasing values of \gls{sketch-size}$+$\gls{num-hutchinson-queries}
+    \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
     but fixed \gls{chebyshev-degree} we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
-    for the model problem with \gls{smoothing-parameter}$=0.05$.}
+    for the model problem with \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-electronic-structure-convergence-nv}
 \end{figure}
 
@@ -95,25 +95,32 @@ the \gls{NCPP} method.\\
     \centering
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/electronic_structure_convergence_m_nv40.pgf}
-        \caption{\gls{sketch-size}$+$\gls{num-hutchinson-queries}$=40$}
+        \caption{\gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=40$}
         \label{fig:5-experiments-electronic-structure-convergence-m-nv40}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/electronic_structure_convergence_m_nv160.pgf}
-        \caption{\gls{sketch-size}$+$\gls{num-hutchinson-queries}$=160$}
+        \caption{\gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=160$}
         \label{fig:5-experiments-electronic-structure-convergence-m-nv160}
     \end{subfigure}
     \caption{For increasing values of \gls{chebyshev-degree} but fixed
-    \gls{sketch-size}$+$\gls{num-hutchinson-queries} we plot the $L^1$ relative
+    \gls{sketch-size} $+$ \gls{num-hutchinson-queries} we plot the $L^1$ relative
     approximation error \refequ{equ:5-experiments-L1-error}
-    for the model problem with \gls{smoothing-parameter}$=0.05$.}
+    for the model problem with \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-electronic-structure-convergence-m}
 \end{figure}
 
+In \reffig{fig:5-experiments-electronic-structure-convergence-nv-m800} the
+Chebyshev expansion is clearly not accurate enough for a good approximation
+of the spectral density. This is confirmed by \reffig{fig:5-experiments-electronic-structure-convergence-m}:
+unless a Chebyshev expansion of degree \gls{chebyshev-degree} $>1000$ is used,
+we cannot hope for high accuracy approximations.
 \Reffig{fig:5-experiments-electronic-structure-convergence-nv-m2400} allows us to
 make an interesting observation: the approximation error for the \gls{NCPP} method
-first decays quite slowly compared to the \gls{NC} method. However, 
-after \gls{sketch-size}$+$\gls{num-hutchinson-queries}
+first decays quite slowly compared to the \gls{NC} method.
+The convergence is approximately of order $\mathcal{\varepsilon^{-1}}$
+as suggested by \refthm{thm:4-nystromchebyshev-trace-correction-parameter-dependent}.
+However, after \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
 exceeds a certain value, the approximation error shoots down quickly to where it
 saturates. The reason is that at this point \gls{sketch-size} starts exceeding
 the \gls{numerical-rank} of the model matrix, which, as a consequence of
@@ -126,22 +133,22 @@ of the experiment, while the contribution from the Hutchinson's correction part
 in \refequ{equ:4-nystromchebyshev-hutch-pp} seems to be insignificant.\\
 
 In \reftab{tab:5-experiments-timing-DGC} we list the wall time each method
-takes to compute an approximate \gls{spectral-density} at \gls{num-evaluation-points}$=100$ points
+takes to compute an approximate \gls{spectral-density} at \gls{num-evaluation-points} $=100$ points
 for different values of \gls{sketch-size} and \gls{chebyshev-degree}.\\
 
 \begin{table}[ht]
     \caption{Runtime comparison of the algorithms applied to the model problem
         for approximating the \glsfirst{smooth-spectral-density} with 
-        \gls{smoothing-parameter}$=0.05$ at \gls{num-evaluation-points}$=100$
-        points for various choices of \gls{chebyshev-degree} and \gls{sketch-size}$+$\gls{num-hutchinson-queries}.
+        \gls{smoothing-parameter} $=0.05$ at \gls{num-evaluation-points} $=100$
+        points for various choices of \gls{chebyshev-degree} and \gls{sketch-size} $+$ \gls{num-hutchinson-queries}.
         The mean and standard deviation of 7 runs is given.}
     \label{tab:5-experiments-timing-DGC}
     \input{tables/timing_DGC.tex}
 \end{table}
 
 The \gls{NCPP} is a hybrid method between the \gls{DGC} and \gls{NC} methods.
-In fact, for \gls{sketch-size}$=0$, the \gls{NCPP} is equivalent to the \gls{DGC}
-method, while for \gls{num-hutchinson-queries}$=0$, it is equivalent to the \gls{NC} method.
+In fact, for \gls{sketch-size} $=0$, the \gls{NCPP} is equivalent to the \gls{DGC}
+method, while for \gls{num-hutchinson-queries} $=0$, it is equivalent to the \gls{NC} method.
 Back in \refchp{chp:3-nystrom} we already saw that for small values of \gls{smoothing-parameter}
 the Nystr\"om approximation will only need a small \gls{sketching-matrix} in order
 to achieve an accurate approximation. On the other hand, for large choices of
@@ -151,18 +158,18 @@ on one hand the low-rank approximation and on the other hand the
 trace estimation on the residual, is illustrated well in
 \reffig{fig:5-experiments-electronic-structure-matvec-mixture}.
 For various values of \gls{smoothing-parameter} and a simultaneously changing
-\gls{chebyshev-degree}$=120 / \sigma$ to keep an approximately equal interpolation
-accuracy, the behavior of the error for fixed \gls{sketch-size}$+$\gls{num-hutchinson-queries}$=80$ is plotted.
+\gls{chebyshev-degree} $=120 / \sigma$ to keep an approximately equal interpolation
+accuracy, the behavior of the error for fixed \gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=80$ is plotted.
 
 \begin{figure}[ht]
     \centering
     \input{plots/electronic_structure_matvec_mixture.pgf}
     \caption{The \gls{NCPP} method for different ways of allocations a 
-    total of \gls{sketch-size}$+$\gls{num-hutchinson-queries}$=80$ random vectors
+    total of \gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=80$ random vectors
     to either the Nystr\"om low-rank approximation or the Hutchinson's trace estimation
     for the Gaussian \gls{smoothing-kernel} with multiple different values of
     the \gls{smoothing-parameter}. We make the approximation error made in the
-    Chebyshev expansion negligible by rescaling \gls{chebyshev-degree}$=120 / \sigma$.}
+    Chebyshev expansion negligible by rescaling \gls{chebyshev-degree} $=120 / \sigma$.}
     \label{fig:5-experiments-electronic-structure-matvec-mixture}
 \end{figure}
 
@@ -184,7 +191,7 @@ is provided in \reffig{fig:5-experiments-haydock-kernel}.\\
     \centering
     \input{plots/haydock_kernel.pgf}
     \caption{Comparison of the Gaussian with the Lorentzian \glsfirst{smoothing-kernel}
-        for \gls{smoothing-parameter}$=0.05$.}
+        for \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-haydock-kernel}
 \end{figure}
 %Estimating \gls{smooth-spectral-density} then becomes the
@@ -219,18 +226,18 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.\\
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/haydock_convergence_nv_m800.pgf}
-        \caption{\gls{chebyshev-degree}$=800$}
+        \caption{\gls{chebyshev-degree} $=800$}
         \label{fig:5-experiments-haydock-convergence-nv-m800}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/haydock_convergence_nv_m2400.pgf}
-        \caption{\gls{chebyshev-degree}$=2400$}
+        \caption{\gls{chebyshev-degree} $=2400$}
         \label{fig:5-experiments-haydock-convergence-nv-m2400}
     \end{subfigure}
-    \caption{For increasing values of \gls{sketch-size}$+$\gls{num-hutchinson-queries}
+    \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
     but fixed \gls{chebyshev-degree} we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
     for the model problem from \refsec{sec:5-experiments-density-function} with
-    the Lorentzian kernel with \gls{smoothing-parameter}$=0.05$.}
+    the Lorentzian kernel with \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-haydock-convergence-nv}
 \end{figure}
 
@@ -238,19 +245,19 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.\\
     \centering
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/haydock_convergence_m_nv40.pgf}
-        \caption{\gls{sketch-size}$+$\gls{num-hutchinson-queries}$=40$}
+        \caption{\gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=40$}
         \label{fig:5-experiments-haydock-convergence-m-nv40}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/haydock_convergence_m_nv160.pgf}
-        \caption{\gls{sketch-size}$+$\gls{num-hutchinson-queries}$=160$}
+        \caption{\gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=160$}
         \label{fig:5-experiments-haydock-convergence-m-nv160}
     \end{subfigure}
     \caption{For increasing values of \gls{chebyshev-degree} but fixed
-    \gls{sketch-size}$+$\gls{num-hutchinson-queries} we plot the $L^1$ relative
+    \gls{sketch-size} $+$ \gls{num-hutchinson-queries} we plot the $L^1$ relative
     approximation error \refequ{equ:5-experiments-L1-error}
     for the model problem from \refsec{sec:5-experiments-density-function} with
-    the Lorentzian kernel with \gls{smoothing-parameter}$=0.05$.}
+    the Lorentzian kernel with \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-haydock-convergence-m}
 \end{figure}
 
@@ -263,15 +270,17 @@ as fast as it does in the Gaussian case according to \refthm{thm:2-chebyshev-ber
 Due to these reasons, the convergence of the \gls{NC} and \gls{NCPP} methods
 are slower than they used to be in \refsec{sec:5-experiments-density-function}.
 Nevertheless, this choice of \gls{smoothing-kernel} exhibits perfectly the 
-improved convergence order for the \gls{NCPP} method with respect to
-\gls{sketch-size}$+$\gls{num-hutchinson-queries} in \reffig{fig:5-experiments-haydock-convergence-nv-m2400}. \\
+$\mathcal{O}(\varepsilon^{-1})$ and $\mathcal{O}(\varepsilon^{-2})$ convergence
+orders of the $L^1$ approximation error, which the \gls{DGC} and \gls{NCPP}
+methods respectively guarantee with respect to
+\gls{sketch-size} $+$ \gls{num-hutchinson-queries} in \reffig{fig:5-experiments-haydock-convergence-nv-m2400}.\\
 
 \begin{table}[ht]
     \caption{Runtime comparison of the algorithms applied to the model problem
     from \refsec{sec:5-experiments-density-function}
     for approximating the \glsfirst{smooth-spectral-density} with a Lorentzian kernel with
-    \gls{smoothing-parameter}$=0.05$ at \gls{num-evaluation-points}$=100$
-    points for various choices of \gls{chebyshev-degree} and \gls{sketch-size}$+$\gls{num-hutchinson-queries}.
+    \gls{smoothing-parameter} $=0.05$ at \gls{num-evaluation-points} $=100$
+    points for various choices of \gls{chebyshev-degree} and \gls{sketch-size} $+$ \gls{num-hutchinson-queries}.
     The mean and standard deviation of 7 runs is given.}
     \label{tab:5-experiments-timing-haydock}
    \input{tables/timing_haydock.tex}
@@ -296,10 +305,10 @@ $[-1, 1]$ \cite{chen2021slq}, and Erdos992\footnote{\url{https://sparse.tamu.edu
 an $6100 \times 6100$ matrix which representing the collaboration network of the
 Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}. All these
 matrices are sparse and symmetric. For all these matrices, we compute, for
-fixed \gls{chebyshev-degree}$=2400$ and increasing \gls{sketch-size}$+$\gls{num-hutchinson-queries},
+fixed \gls{chebyshev-degree} $=2400$ and increasing \gls{sketch-size} $+$ \gls{num-hutchinson-queries},
 the relative $L^1$ approximation error
 of the spectral density for a Gaussian \glsfirst{smoothing-kernel} with
-\gls{smoothing-parameter}$=0.05$. The resulting plots are printed in 
+\gls{smoothing-parameter} $=0.05$. The resulting plots are printed in 
 \reffig{fig:5-experiments-multi-matrix-convergence}.\\ 
 
 We observe that for the two matrices which have an evenly distributed spectrum
@@ -307,8 +316,8 @@ We observe that for the two matrices which have an evenly distributed spectrum
 evenly distributed spectrum (\reffig{fig:5-experiments-multi-matrix-convergence-ModES3D}),
 the \gls{NC} method by itself can achieve a good approximation once \gls{sketch-size}
 exceeds the numerical rank of the matrix. On the other hand, for matrices where
-the spectrum is very concentrated around a certain point (\reffig{fig:5-experiments-multi-matrix-convergence-Erdos})
-or exhibits large gaps (\reffig{fig:5-experiments-multi-matrix-convergence-nd3k}),
+the spectrum is very concentrated around a certain point (\reffig{fig:5-experiments-multi-matrix-convergence-Erdos}),
+%or exhibits large gaps (\reffig{fig:5-experiments-multi-matrix-convergence-nd3k}),
 the \gls{NC} is not as effective, and the correction part in the \gls{NCPP} makes
 a significant difference.
 
@@ -325,7 +334,7 @@ a significant difference.
         \label{fig:5-experiments-multi-matrix-convergence-Erdos}
     \end{subfigure}
     %\begin{subfigure}[b]{0.49\columnwidth}
-    %    \input{plots/multi_matrix_convergence_Erdos992.pgf}
+    %    \input{plots/multi_matrix_convergence_nd3k.pgf}
     %    \caption{nd3k}
     %    \label{fig:5-experiments-multi-matrix-convergence-nd3k}
     %\end{subfigure}
@@ -334,9 +343,9 @@ a significant difference.
         \caption{uniform}
         \label{fig:5-experiments-multi-matrix-convergence-uniform}
     \end{subfigure}
-    \caption{For increasing values of \gls{sketch-size}$+$\gls{num-hutchinson-queries}
-    but fixed \gls{chebyshev-degree}$=2400$ we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
-    for multiple different matrices and
-    Gaussian smoothing with \gls{smoothing-parameter}$=0.05$.}
+    \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
+    but fixed \gls{chebyshev-degree} $=2400$ we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
+    for multiple different matrices. As usual, we use
+    Gaussian smoothing with \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-multi-matrix-convergence}
 \end{figure}

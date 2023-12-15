@@ -6,7 +6,17 @@ the eigenvalues of certain matrices help understand the nature of a system:
 In electronic structure calculations they represent the allowed energy levels 
 electrons can occupy \cite{ducastelle1970charge, haydock1972electronic, lin2017randomized};
 in neural network optimization they are indicative of the optimization speed \cite{ghorbani2019investigation,chen2021slq,adepu2021hessian};
-and in graph processing they can uncover hidden graph motifs \cite{kruzick2018graph,huang2021kernels,patane2022filter}.\\
+and in graph processing they can uncover hidden graph motifs \cite{kruzick2018graph,huang2021kernels,patane2022filter}.
+However, computing the eigenvalues of a matrix can be prohibitively expensive.
+Furthermore, when analyzing these systems, it is often not crucial to know the
+exact individual eigenvalues, but more so their approximate locations with respect
+to each other, such as eigenvalue clusters or spectral gaps.\\
+
+The goal of spectral density theory is to find the approximate distribution of
+the eigenvalues of large matrices. In this introductory chapter we define the
+spectral density of a matrix, give an overview of the most common ways of
+approximating it, and show how the work in this thesis is embedded in current
+research on spectral density approximations.
 
 \section{Spectral density}
 \label{sec:1-introduction-spectral-density}
@@ -15,7 +25,7 @@ In most applications, the studied matrices are real,
 i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$, and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$,
 such that their eigenvalues $\lambda_1, \dots, \lambda_n$ are all real.
 This allows us to define their spectral density on the real line.
-\begin{definition}{Spectral density of a matrix}{spectral-density}
+\begin{definition}{Spectral density of a matrix}{1-introduction-spectral-density}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix with \glspl{eigenvalue}
     $\in \mathbb{R}, i=1, \dots, n$. We define the \gls{spectral-density} as
     the functional
@@ -42,20 +52,20 @@ or to compute the trace of a matrix function \cite{lin2017randomized}
     \label{equ:1-introduction-matrix-trace}
 \end{equation}\\
 
-However, constructing the spectral density of a matrix amounts to knowing all
-its eigenvalues, which are often prohibitively expensive to
-compute. But in many of the above mentioned applications, not the exact individual
-eigenvalues are of interest, but their approximate relative locations to each
-other. Hence, it is sufficient to find coarse estimates of \refequ{equ:1-introduction-def-spectral-density}.
+Constructing the spectral density (\refdef{def:1-introduction-spectral-density})
+of a matrix amounts to knowing all its eigenvalues, which are often prohibitively
+expensive to compute. Furthermore, neither can we hope to measure the convergence
+of a smooth approximation to \gls{spectral-density} in any of the conventionally
+used $L^p$-norms, nor can we visualize the spectral density in a simple
+and easily interpretable plot. For these reasons, we proceed by working with a
+smoothened spectral density.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Smoothened spectral density}
+\section{Smooth spectral density}
 \label{sec:1-introduction-properties}
 
-Since we cannot hope to measure the convergence of a smooth approximation to
-\gls{spectral-density} in any of the conventionally used $p$-norms,
-we first regularize \gls{spectral-density} with a suitable \gls{smoothing-kernel}
+We regularize \gls{spectral-density} with a suitable \gls{smoothing-kernel}
 to define the \gls{smooth-spectral-density} as the convolution
 \begin{equation}
     \phi_{\sigma}(t) = (\phi \ast g_{\sigma})(t) = \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(t - s) \mathrm{d}s = \frac{1}{n} \sum_{i=1}^{n} g_{\sigma}(t - \lambda_i).
@@ -94,8 +104,8 @@ Commonly, \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smooth
 \end{equation}
 due to its rapidly decaying tail and desirable interpolation properties \cite{lin2017randomized}.
 There are many other choices possible for \gls{smoothing-kernel}. Ideally,
-\gls{smoothing-kernel} should be symmetric, non-negative, and tend -- in a weak sense --
-towards the Dirac delta function in the limit of \gls{smoothing-parameter} $\to 0$. Another
+\gls{smoothing-kernel} should be smooth, symmetric, non-negative, and tend -- in a weak sense --
+towards the \glsfirst{dirac-delta} in the limit of \gls{smoothing-parameter} $\to 0$. Another
 commonly used kernel is the Lorentzian, which will be discussed in an example
 in \refsec{sec:5-experiments-haydock-method}.\\
 
@@ -135,12 +145,12 @@ as a product of smaller matrices, for which we can directly compute the trace.
 Finally, the \gls{NCPP} method combines the \gls{DGC} and \gls{NC} method
 by first factorizing the matrix and subsequently correcting for the approximation
 error by estimating the trace of the residual of this approximation with a stochastic trace estimator.
-In fact, if we denote with $\widetilde{\phi}_{\sigma}^m(t)$ the approximation
-of \gls{smooth-spectral-density} computed with the \gls{DGC} method, $\widehat{\phi}_{\sigma}^m(t)$ the
-one computed with the \gls{NC} method, and $\breve{\phi}_{\sigma}^m(t)$ the one
+In fact, if we denote with $\widetilde{\phi}_{\sigma}^{(m)}(t)$ the approximation
+of \gls{smooth-spectral-density} computed with the \gls{DGC} method, $\widehat{\phi}_{\sigma}^{(m)}(t)$ the
+one computed with the \gls{NC} method, and $\breve{\phi}_{\sigma}^{(m)}(t)$ the one
 with \gls{NCPP}, we can show that
 \begin{equation}
-    \breve{\phi}_{\sigma}^m(t) = \widetilde{\phi}_{\sigma}^m(t) + \widehat{\phi}_{\sigma}^m(t) - \text{correction term}
+    \breve{\phi}_{\sigma}^{(m)}(t) = \widetilde{\phi}_{\sigma}^{(m)}(t) + \widehat{\phi}_{\sigma}^{(m)}(t) - \text{correction term}
     \label{equ:1-introduction-relation-methods}
 \end{equation}
 It will turn out that the correction term is determined by applying
@@ -151,7 +161,8 @@ in \reffig{fig:1-introduction-methods-overview}.
 \begin{figure}[ht]
     \centering
     \input{figures/methods_overview.tex}
-    \caption{Caption}
+    \caption{Overview of the techniques used in the three methods presented
+    in this thesis: the \glsfirst{DGC}, \glsfirst{NC}, and \glsfirst{NCPP} methods.}
     \label{fig:1-introduction-methods-overview}
 \end{figure}
 
@@ -182,7 +193,7 @@ illustrated overview of the methods):
         where it was originally introduced, the type of smoothing it applies,
         what kind of expansion is used, and how the trace in
         \refequ{equ:1-introduction-spectral-density-as-trace} is approximated.
-        Equivalences between the methods are indicated with dashed lines.}
+        Relations between the methods are indicated with dashed lines.}
     \label{fig:1-introduction-literature-overview}
 \end{figure}
 
@@ -210,7 +221,7 @@ Spectral densities of matrices have found use in priming the computation of matr
 functions \cite{fan2020spectrum} and in parallelized eigenvalue solvers
 \cite{polizzi2009density, li2019slicing}. In recent years, significant progress
 in the theory of stochastic trace estimation, which is the backbone of most
-expansion-based methods, has been made \cite{meyer2021hutch, persson2022hutch}.
+expansion-based methods for approximating spectral densities, has been made \cite{meyer2021hutch, persson2022hutch}.
 These developments involved demonstrating the reciprocal decrease
 of the approximation error with the number of matrix-vector multiplication
 queries used, which is a highly desirable algorithmic property.
@@ -224,9 +235,9 @@ Besides a couple of small clarifications and improvements to the algorithms
 from \cite{lin2017randomized}, we see our main contributions to be
 
 \begin{itemize}
-    \item the development of a consistent \gls{DCT}-based interpolation scheme which allows us
-          to speed up \cite[algorithm~5]{lin2017randomized} by orders of magnitude
-          at no loss of accuracy;
+    \item the development of a simple and consistent \gls{DCT}-based interpolation
+          scheme which allows us to speed up \cite[algorithm~5]{lin2017randomized}
+          by orders of magnitude at no loss of accuracy;
     \item the derivation of an a priori guarantee for the number of matrix-vector
           products needed to get an accurate approximation of the spectral
           density under certain assumptions on the matrix;

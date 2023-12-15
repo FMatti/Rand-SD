@@ -211,7 +211,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-1, kernel=
     # Trace computation
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
-        # Check if rank of if Hutchinson (k=1) for Tr(g^m(tI-A)) is almost zero
+        # Check if rank of if Hutchinson (k=1) for Tr(g^{(m)}(tI-A)) is almost zero
         if np.trace(K_W[i]) / n_v < kappa:
             phi_tilde[i] = 0
             continue
@@ -336,7 +336,7 @@ def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5,
 
     phi_tilde = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
-        if np.trace(K_W[i]) / n_v < kappa:  # Hutchinson for Tr(g^m(tI-A))
+        if np.trace(K_W[i]) / n_v < kappa:  # Hutchinson for Tr(g^{(m)}(tI-A))
             continue
 
         if eigenproblem == "kernelunion":

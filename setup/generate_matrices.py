@@ -15,7 +15,8 @@ if not os.path.exists(matrix_dir):
 matrix_urls = [
     #"https://suitesparse-collection-website.herokuapp.com/MM/ND/nd3k.tar.gz",
     #"https://suitesparse-collection-website.herokuapp.com/MM/MaxPlanck/shallow_water1.tar.gz",
-    "https://suitesparse-collection-website.herokuapp.com/MM/Pajek/Erdos992.tar.gz"
+    "https://suitesparse-collection-website.herokuapp.com/MM/Pajek/Erdos992.tar.gz",
+    "https://suitesparse-collection-website.herokuapp.com/MM/Pajek/California.tar.gz",
 ]
 
 print("\nDownloading matrices")
@@ -32,6 +33,6 @@ for i, n in enumerate(ns):
     print("\u2713 Generated matrix ({}/{})".format(i + 1, len(ns)))
 
 print("\nGenerating uniform matrix")
-matrix = uniform(5000, density=0.00015)
+matrix = uniform(2000, density=0.00015)
 sp.sparse.save_npz(os.path.join(matrix_dir, "uniform"), matrix)
 print("\u2713 Generated matrix")

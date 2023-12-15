@@ -45,18 +45,18 @@
         
         \draw (2.25, -0.15) to (2.25, -2.05);
     \end{scope}
-
+    
     % Expansion based
-    \draw[rounded corners, line width=2, color=darkblue] (-0.5, 1.55) rectangle (14, -9.25);
+    \draw[rounded corners, line width=2, color=darkblue] (-0.5, 1.55) rectangle (14, -9.05);
     \node[fill=white] at (6.75, 1.55) {\bfseries \textcolor{darkblue}{Polynomial expansion based}};
-
-    \draw[rounded corners, line width=2, color=darkblue] (6.75, -2.05) rectangle (13.75, -8.8);
+    
+    \draw[rounded corners, line width=2, color=darkorange] (6.75, -2.05) rectangle (13.75, -8.7);
     \fill[white] (10.3, -1.95) rectangle (10.7, -2.15);
-    \node[fill=white] at (10.25, -8.75) {\bfseries \textcolor{darkblue}{This thesis}};
+    \node[fill=white] at (10.25, -8.65) {\bfseries \textcolor{darkorange}{This thesis}};
 
-    \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (10, -0.5) -- (10.5, -0.5) -- (10.5, -2.25) node [midway, right] {\textcolor{darkblue}{$g_{\sigma}$}};
-    \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (3.5, -0.5) -- (3, -0.5) -- (3, -2.25) node [midway, left] {\textcolor{darkblue}{$g_{\sigma}$}};
-    \draw[line width=1.5, color=darkblue, dashed, <->] (10.5, -5.05) -- (10.5, -5.6);
+    \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (10, -0.5) -- (10.5, -0.5) -- (10.5, -2.25) node [midway, right] {\textcolor{darkblue}{$\phi \ast g_{\sigma}$}};
+    \draw[line width=1.5, color=darkblue, rounded corners, dashed, ->] (3.5, -0.5) -- (3, -0.5) -- (3, -2.25) node [midway, left] {\textcolor{darkblue}{$\phi \ast g_{\sigma}$}};
+    \draw[line width=1.5, color=darkblue, dashed, <-] (10.5, -5.05) -- (10.5, -5.6) node [midway, right] {\textcolor{darkblue}{$n_{\Omega} = 0$}};
 
     % KPM
     \begin{scope}[shift={(3.5, 0.5)}]
@@ -137,11 +137,11 @@
         \node[anchor=west] at (2.2, -1.35) {Chebyshev};
         
         \node[anchor=west] at (0.0, -1.85) {Trace};
-        \node[anchor=west] at (2.2, -1.85) {Nystr\"om++};
+        \node[anchor=west] at (2.2, -1.85) {Nystr\"om/Nystr\"om++};
         
         \draw (2.25, -0.15) to (2.25, -2.05);
     \end{scope}
 
-    %\node[anchor=west] at (0.0, -0.9) {$g_{\sigma}(t - s) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(t-s)^2}{2 \sigma^2}} \approx \sum_{l=0}^m \mu_l(t) T_l(s)$}; 
+    %\node[anchor=west] at (0.0, -0.9) {$g_{\sigma}(t - s) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(t-s)^2}{2 \sigma^2}} \approx \sum_{l=0}^{m} \mu_l(t) T_l(s)$}; 
     %\node[anchor=west] at (0.0, -1.75) {$\phi_{\sigma}(t) = \Tr()$}; 
 \end{tikzpicture}

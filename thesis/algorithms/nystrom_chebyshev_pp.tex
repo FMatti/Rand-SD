@@ -1,15 +1,15 @@
 \hspace*{\algorithmicindent} \textbf{Input:} Symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$, evaluation points $\{t_i\}_{i=1}^{n_t}$ \\
 \hspace*{\algorithmicindent} \textbf{Parameters:} \Glsfirst{sketch-size}, \glsfirst{num-hutchinson-queries}, \glsfirst{chebyshev-degree} \\
-\hspace*{\algorithmicindent} \textbf{Output:} Approximate evaluations of the spectral density $\{\breve{\phi}_{\sigma}^m(t_i)\}_{i=1}^{n_t}$
+\hspace*{\algorithmicindent} \textbf{Output:} Approximate evaluations of the spectral density $\{\breve{\phi}_{\sigma}^{(m)}(t_i)\}_{i=1}^{n_t}$
 \begin{algorithmic}[1]
-    \State Compute $\{\mu_l(t_i)\}_{l=0}^m$ for all $t_i$ using \refalg{alg:2-chebyshev-chebyshev-expansion}
+    \State Compute $\{\mu_l(t_i)\}_{l=0}^{m}$ for all $t_i$ using \refalg{alg:2-chebyshev-chebyshev-expansion}
     \State Compute $\{\nu_l(t_i)\}_{l=0}^{2m}$ for all $t_i$ using \refalg{alg:3-nystrom-chebyshev-exponentiation}
     \State Generate \glsfirst{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$ and \glsfirst{random-matrix} $\in \mathbb{R}^{n \times n_{\Psi}}$
     \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_{\Omega}}, \mtx{\mtx{\Omega}}, \mtx{0}_{n \times n_{\Omega}}]$
     \State Initialize $[\mtx{W}_1, \mtx{W}_2, \mtx{W}_3] \gets [\mtx{0}_{n \times n_{\Psi}}, \mtx{\Psi}, \mtx{0}_{n \times n_{\Psi}}]$
     \State Initialize $[\mtx{K}_1(t_i), \mtx{K}_2(t_i)] \gets [\mtx{0}_{n_{\Omega} \times n_{\Omega}}, \mtx{0}_{n_{\Omega} \times n_{\Omega}}]$ for all $t_i$
     \State Initialize $[l_1(t_i), \mtx{L}_2(t_i)] \gets [0, \mtx{0}_{n_{\Omega} \times n_{\Psi}}]$ for all $t_i$
-    \State Set $\breve{\phi}_{\sigma}^m(t_i) \gets 0$ for $i=1,\dots,n_t$
+    \State Set $\breve{\phi}_{\sigma}^{(m)}(t_i) \gets 0$ for $i=1,\dots,n_t$
     \For {$l = 0, \dots, 2m$}
       \State $\mtx{X} \gets \mtx{\mtx{\Omega}}^{\top} \mtx{V}_2$
       \State $\mtx{Y} \gets \mtx{\mtx{\Omega}}^{\top} \mtx{W}_2$
@@ -28,6 +28,6 @@
       \State $\mtx{W}_1 \gets \mtx{W}_2, \mtx{W}_2 \gets \mtx{W}_3$
     \EndFor
     \For {$i = 1, \dots, n_t$}
-      \State $\breve{\phi}_{\sigma}^m(t_i) \gets \Tr\left( \mtx{K}_1(t_i)^{\dagger}\mtx{K}_2(t_i) \right) + \frac{1}{n_{\Psi}} \left( l_1(t_i) + \Tr\left( \mtx{L}_2(t_i)^{\top} \mtx{K}_1(t_i)^{\dagger} \mtx{L}_2(t_i) \right)  \right) $ \label{lin:4-nystromchebyshev-nystrom-pp}
+      \State $\breve{\phi}_{\sigma}^{(m)}(t_i) \gets \Tr\left( \mtx{K}_1(t_i)^{\dagger}\mtx{K}_2(t_i) \right) + \frac{1}{n_{\Psi}} \left( l_1(t_i) + \Tr\left( \mtx{L}_2(t_i)^{\top} \mtx{K}_1(t_i)^{\dagger} \mtx{L}_2(t_i) \right)  \right) $ \label{lin:4-nystromchebyshev-nystrom-pp}
     \EndFor
 \end{algorithmic}
