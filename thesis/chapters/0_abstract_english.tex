@@ -9,12 +9,15 @@ a randomized low-rank approximation, or both simultaneously.\\
 Initially, we give an introduction and overview of procedures which are used
 to compute the spectral density of matrices. Then, we proceed to showing how
 some matrix functions can efficiently be computed based on
-their Chebyshev expansion -- the interpolation scheme of choice for our
-methods. A first algorithm is proposed based on the Hutchinson's stochastic
-trace estimator. Subsequently, the usage of a Nystr\"om low-rank approximation is
-motivated and a second algorithm based on it is presented. Finally, a hybrid
-method based on a combination of the two previously mentioned techniques is
-discussed.\\
+their Chebyshev expansion by computing discrete cosine transforms.
+The use of the Hutchinson's stochastic trace estimator leads to a first
+algorithm for approximating the spectral density, the Delta-Gauss-Chebyshev method.
+Subsequently, an analysis of the structure of the involved matrix function
+motivates the usage of a Nystr\"om low-rank factorization for reducing the
+dimensionality of the problem, which leads us to the Nystr\"om-Chebyshev method.
+To circumvent the inefficiency of one and the lack of robustness of the other
+method they are combined into a third algorithm called the
+Nystr\"om-Chebyshev++ method.\\
 
 The techniques employed in these methods are motivated and introduced in a
 rigorous manner. We present multiple implementation strategies for improved

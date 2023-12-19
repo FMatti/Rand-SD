@@ -5,6 +5,6 @@
     \State Compute spectral decomposition $\mtx{K}_1 = \mtx{W} \mtx{\Gamma} \mtx{W}^{\top}$
     \State Let $\mtx{\Gamma}_1$ only contain the eigenvalues $\gamma_1, \dots, \gamma_{n_{\Omega}}$ which are larger than $\zeta \max_{i=1, \dots, n_{\Omega}} \gamma_i$ and $\mtx{W}_1$ the corresponding eigenvectors
     \State Solve eigenvalue problem $\mtx{\Gamma}_1^{-1/2} \mtx{W}_1^{\top} \mtx{K}_2 \mtx{W}_1 \mtx{\Gamma}_1^{-1/2} \mtx{X} = \mtx{X} \mtx{\Xi}$
-    \State Set all values in $\mtx{\Xi}$ which are outside of $[-\eta, 1 / (n \sqrt{2 \pi \sigma^2}) + \eta]$ to zero
+    \State Set all values in $\mtx{\Xi}$ which are outside of $[0, (1 + \eta) / (n \sqrt{2 \pi \sigma^2}) + \eta]$ to zero
     \State Compute $\Tr(\mtx{\Xi})$
 \end{algorithmic}

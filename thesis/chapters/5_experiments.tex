@@ -9,7 +9,7 @@ in multiple scenarios. We consider a specific example from density functional th
 \cite{lin2017randomized} for two different \gls{smoothing-kernel}, and
 subsequently test the methods on various other matrices.\\
 
-The accuracy is measured in terms of the discrete relative $L^1$ error of the approximated
+The accuracy is measured in terms of the discrete relative $L^1$-error of the approximated
 spectral density $\widetilde{\phi}_{\sigma}^{(m)}$ from the spectral density $\phi_{\sigma}$
 which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}.
 \begin{equation}
@@ -182,7 +182,7 @@ accuracy, the behavior of the error for fixed \gls{sketch-size} $+$ \gls{num-hut
 Haydock's method \cite{haydock1972electronic,lin2016review} is a specialized technique for approximating \gls{smooth-spectral-density}
 in the case where a Lorentzian smoothing kernel
 \begin{equation}
-    g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2} = -\frac{1}{\pi} \Im\left\{ \frac{1}{s + i\sigma} \right\}
+    g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2} = -\frac{1}{\pi} \Im\left\{ \frac{1}{s + \iota \sigma} \right\}
     \label{equ:5-experiments-cauchy-kernel}
 \end{equation}
 is used. A comparison of this kernel with the Gaussian kernel \refequ{equ:1-introduction-def-gaussian-kernel}
@@ -264,7 +264,7 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.\\
 On one hand the low-rank factorization for the Lorentzian \gls{smoothing-kernel}
 is not as effective as it was for the Gaussian case, since the decay to zero
 is noticeably slower (see \reffig{fig:5-experiments-haydock-kernel}). On the
-other, the Lorentzian \gls{smoothing-kernel} has a pole at $s = \pm i$, which
+other, the Lorentzian \gls{smoothing-kernel} has a pole at $s = \pm \iota$, which
 has as a consequence that the Chebyshev expansion is not guaranteed to converge
 as fast as it does in the Gaussian case according to \refthm{thm:2-chebyshev-bernstein}.
 Due to these reasons, the convergence of the \gls{NC} and \gls{NCPP} methods
@@ -301,9 +301,11 @@ a larger computational domain \cite{lin2017randomized},
 %which originates from modelling the vibrational modes of a polyethylene molecule
 %with 3000 atoms \cite{lin2016review},
 a synthetic matrix with $2000$ uniformly distributed eigenvalues in
-$[-1, 1]$ \cite{chen2021slq}, and Erdos992\footnote{\url{https://sparse.tamu.edu/Pajek/Erdos992}},
+$[-1, 1]$ \cite{chen2021slq}, Erdos992\footnote{\url{https://sparse.tamu.edu/Pajek/Erdos992}},
 an $6100 \times 6100$ matrix which representing the collaboration network of the
-Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}. All these
+Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}, and
+GOE, a matrix $\mtx{A} = (\mtx{G} + \mtx{G}^{\top})/\sqrt{2}$ with standard
+normal $G \in \mathbb{R}^{1000 \times 1000}$ from the Gaussian Orthogonal Ensemble. All these
 matrices are sparse and symmetric. For all these matrices, we compute, for
 fixed \gls{chebyshev-degree} $=2400$ and increasing \gls{sketch-size} $+$ \gls{num-hutchinson-queries},
 the relative $L^1$ approximation error
@@ -316,7 +318,8 @@ We observe that for the two matrices which have an evenly distributed spectrum
 evenly distributed spectrum (\reffig{fig:5-experiments-multi-matrix-convergence-ModES3D}),
 the \gls{NC} method by itself can achieve a good approximation once \gls{sketch-size}
 exceeds the numerical rank of the matrix. On the other hand, for matrices where
-the spectrum is very concentrated around a certain point (\reffig{fig:5-experiments-multi-matrix-convergence-Erdos}),
+the spectrum is very concentrated around a certain point (\reffig{fig:5-experiments-multi-matrix-convergence-Erdos})
+or approximately describes a semi-circle (\reffig{fig:5-experiments-multi-matrix-convergence-goe}) \cite{wigner1958distribution},
 %or exhibits large gaps (\reffig{fig:5-experiments-multi-matrix-convergence-nd3k}),
 the \gls{NC} is not as effective, and the correction part in the \gls{NCPP} makes
 a significant difference.
@@ -333,15 +336,15 @@ a significant difference.
         \caption{Erdos992}
         \label{fig:5-experiments-multi-matrix-convergence-Erdos}
     \end{subfigure}
-    %\begin{subfigure}[b]{0.49\columnwidth}
-    %    \input{plots/multi_matrix_convergence_nd3k.pgf}
-    %    \caption{nd3k}
-    %    \label{fig:5-experiments-multi-matrix-convergence-nd3k}
-    %\end{subfigure}
     \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/multi_matrix_convergence_uniform.pgf}
         \caption{uniform}
         \label{fig:5-experiments-multi-matrix-convergence-uniform}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\columnwidth}
+        \input{plots/multi_matrix_convergence_goe.pgf}
+        \caption{GOE}
+        \label{fig:5-experiments-multi-matrix-convergence-goe}
     \end{subfigure}
     \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
     but fixed \gls{chebyshev-degree} $=2400$ we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}

@@ -6,15 +6,18 @@ la densité spectrale de grandes matrices symétriques. Ces méthodes sont basé
 sur l'expansion polynomiale d'une fonction lisse en combinaison avec une estimation randomisé
 de la trace, une approximation randomisé de bas rang, ou les deux simultanément.\\
 
-D'abord, nous présentons une introduction et un aperçu des procédures
+D'abord, nous présentons une introduction et une vue d'ensemble des procédures
 utilisées pour calculer la densité spectrale des matrices. Ensuite, nous montrons
 comment certaines fonctions matricielles peuvent être calculées efficacement sur
-la base de leur expansion de Chebyshev -- le schéma d'interpolation de choix pour
-nos méthodes. Un premier algorithme est proposé, basé sur l'estimateur stochastique
-de trace de Hutchinson. Ensuite, l'utilisation d'une approximation de bas rang
-est motivée et un second algorithme basé sur l'approximationde Nystr\"om est présenté.
-Enfin, une méthode hybride basée sur une combinaison des deux techniques mentionnées
-précédemment est discutée.\\
+la base de leur expansion de Chebyshev en calculant les transformées en cosinus
+discrètes. L'utilisation de l'estimateur stochastique de trace de Hutchinson
+mène à un premier algorithme d'approximation de la densité spectrale, la
+méthode Delta-Gauss-Chebyshev. Ensuite, une analyse de la structure de la
+fonction matricielle impliquée motive l'utilisation d'une factorisation de
+Nystr\"om de bas rang pour réduire la dimensionnalité du problème, ce qui
+nous conduit à la méthode de Nystr\"om-Chebychev. Pour contourner l'inefficacité
+de l'une et le manque de robustesse de l'autre méthode, elles sont combinées en
+un troisième algorithme appelé méthode Nystr\"om-Chebychev++.\\
 
 Les techniques employées dans ces méthodes sont motivées et introduites de manière
 rigoureuse. Nous présentons plusieurs stratégies d'implémentation pour améliorer

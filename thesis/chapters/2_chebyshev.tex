@@ -68,7 +68,7 @@ exponential.
 \begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
     Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
     with foci $\pm 1$ and sum of half axis lengths $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
-    Then for any $m \geq 0$
+    Then its Chebyshev expansion $f^{(m)}$ with \glsfirst{chebyshev-degree} $\geq 0$ satisfies
     \begin{equation}
         \sup_{s \in [-1, 1]} |f(s) - f^{(m)}(s)| \leq \frac{2}{\chi^{(m)}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
         \label{equ:2-chebyshev-bernstein-convergence-result}
@@ -88,11 +88,11 @@ could be computed using the orthogonality of the Chebyshev polynomials with resp
 to a certain inner product, and some authors indeed suggest approximating the
 involved integral using a quadrature rule \cite[algorithm~1]{lin2017randomized}.
 However, there is no good theoretical guarantee that this will be accurate. Instead, we
-have found a significantly simpler, faster method, and provably accurate method:
+have found a significantly simpler, faster, and provably accurate method:
 Note that polynomials of degree $m$ are uniquely defined by $m+1$
 evaluations of the polynomial at distinct points \cite{gauss1799demonstratio}.
 Hence, if we know the values $f^{(m)}(s_i)$ at some $m+1$ distinct points 
-$\{s_i\}_{i=0}^{(m)}$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^{m}$
+$\{s_i\}_{i=0}^(m)$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^{m}$
 of this polynomial. For convenience, we may choose $s_i = \cos(\pi i/m), i=0,\dots,m$.
 In that case,
 \begin{equation}
@@ -203,6 +203,7 @@ the Hutchinson's trace estimator can then be written as
 In the case where the matrix continuously depends on a parameter in a bounded 
 interval, we can analogously define the Hutchinson's estimator for parameter-dependent
 matrices
+\todo{define these matrices and give examples (Hysan paper)}
 \begin{equation}
     \Hutch_{n_{\Psi}}(\mtx{B}(t)) = \frac{1}{n_{\Psi}} \Tr(\mtx{\Psi}^{\top} \mtx{B}(t) \mtx{\Psi}).
     \label{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}
@@ -210,7 +211,7 @@ matrices
 As the counterpart of the variance in the parametrized case, we measure the
 error of this estimate in the $1$-norm, for which we can use a result
 from \cite{he2023parameter}, which we will state in the following lemma:
-\begin{lemma}{$L^1$ error of parameter-dependent Hutchinson's estimator}{2-chebyshev-parameter-hutchinson}
+\begin{lemma}{$L^1$-error of parameter-dependent Hutchinson's estimator}{2-chebyshev-parameter-hutchinson}
     Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
     $t \in [a, b]$, $\delta \in (0, e^{-1})$, and $n_{\Psi} \in \mathbb{N}$.
     Let $\Hutch_{n_{\Psi}}(\mtx{B}(t))$ be the $n_{\Psi}$-query
@@ -264,7 +265,8 @@ of the expansion at \gls{num-evaluation-points} values of \gls{spectral-paramete
 cost a further $\mathcal{O}(n^2 m n_t)$ operations. Therefore, in case we are only interested
 in evaluating a linear mapping applied to the interpolant, a significant speed-up can be
 achieved by directly interpolating the result of this linear mapping applied to
-the interpolant. In \reffig{fig:2-chebyshev-sketched-interpolation} some examples
+the interpolant (\reflin{lin:2-chebyshev-linear-mapping} in \refalg{alg:2-chebyshev-DGC}).
+In \reffig{fig:2-chebyshev-sketched-interpolation} some examples
 of such linear mappings -- which we will make use of later on -- are schematically
 illustrated.\\
 \begin{figure}[ht]
@@ -330,11 +332,11 @@ and depends on \gls{smoothing-parameter}. This can be seen quite well
 in \reffig{fig:2-chebyshev-chebyshev-convergence}, and is proven in the following
 lemma.
 
-\begin{lemma}{$L^1$ error of Chebyshev expansion for Gaussian smoothing}{2-chebyshev-error}
+\begin{lemma}{$L^1$-error of Chebyshev expansion for Gaussian smoothing}{2-chebyshev-error}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix whose spectrum
     is contained in $[-1, 1]$. For any $t \in \mathbb{R}$ it holds
     \begin{equation}
-        \int_{-1}^{1} \left|  \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right| \mathrm{d}t \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
+        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
         \label{equ:2-chebyshev-interpolation-error}
     \end{equation}
     with constants $C_1, C_2 > 0$ independent of \gls{smoothing-parameter} and \gls{chebyshev-degree}.
@@ -364,7 +366,7 @@ work, we chose to reproduce it hereafter.
         && \text{(pessimistic upper bound)} \notag \\
         &\leq n \sup_{s \in [-1, 1]} \left| g_{\sigma}(t - s) - g_{\sigma}^{(m)}(t - s) \right|
         && \text{(extension of domain)} \notag \\
-        &\leq n \frac{2}{\chi^{(m)}(\chi - 1)} \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
+        &\leq n \frac{2}{\chi^{m}(\chi - 1)} \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
         && \text{(Bernstein \cite[theorem~73]{meinardus1967approximation})}
         \label{equ:2-chebyshev-proof-bernstein-general-expression}
     \end{align}
@@ -374,9 +376,9 @@ work, we chose to reproduce it hereafter.
     Since $g_{\sigma}(t - \cdot)$ of the form \refequ{equ:1-introduction-def-gaussian-kernel}
     is holomorphic, $\chi$ may be chosen arbitrarily.
 
-    Writing $z = x + iy$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Real(z)}$)
+    Writing $z = x + \iota y$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Real(z)}$)
     \begin{equation}
-        |g_{\sigma}(t - (x + iy))| %&= \frac{1}{n \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
+        |g_{\sigma}(t - (x + \iota y))| %&= \frac{1}{n \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
         = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{- \frac{(t - x)^2 - y^2}{2 \sigma^2}}
         \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}.
     \end{equation}
@@ -389,7 +391,7 @@ work, we chose to reproduce it hereafter.
     Furthermore, because $z$ is
     contained in $\mathcal{E}_{\chi}$ we know that the absolute value of its
     imaginary part is upper bound by the imaginary half axis $b$, which can be
-    express in terms of $\chi$ to get
+    expressed in terms of $\chi$ to get
     \begin{equation}
         |y| \leq b = \frac{\chi - \chi^{-1}}{2} \leq \alpha\sigma.
     \end{equation}
@@ -403,7 +405,7 @@ work, we chose to reproduce it hereafter.
     Plugging this estimate into \refequ{equ:2-chebyshev-proof-bernstein-general-expression}, we get
     \begin{equation}
         \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right|
-        \leq n \frac{2}{(1 + \alpha\sigma)^{(m)}\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+        \leq n \frac{2}{(1 + \alpha\sigma)^{m}\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
         = \frac{C_1}{2 \sigma^2} (1 + C_2 \sigma)^{-m},
         \label{equ:2-chebyshev-uniform-bound}
     \end{equation}
@@ -412,7 +414,7 @@ work, we chose to reproduce it hereafter.
     Finally, Hölder's inequality \cite{klenke2013probability} and 
     \refequ{equ:2-chebyshev-uniform-bound} allow us to show
     \begin{equation}
-        \int_{-1}^{1} \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right| \mathrm{d}t
+        \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1
             \leq 2 \sup_{t \in [-1, 1]} \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right|
             \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}.
     \end{equation}
@@ -423,7 +425,7 @@ Chebyshev expansion (\reflem{lem:2-chebyshev-error}) with the trace estimation
 error (\reflem{lem:2-chebyshev-parameter-hutchinson}) to get a theoretical
 result for the accuracy of the \gls{DGC} method.
 
-\begin{theorem}{$L^1$ error of Delta-Gauss-Chebyshev method}{2-delta-gauss-chebyshev}
+\begin{theorem}{$L^1$-error of Delta-Gauss-Chebyshev method}{2-delta-gauss-chebyshev}
     Let $\widetilde{\phi}_{\sigma}^{(m)}(t)$ be the result from running \refalg{alg:2-chebyshev-DGC}
     on a matrix $\mtx{A}$ with its spectrum contained in $[-1, 1]$ using
     \glsfirst{smoothing-parameter}, \glsfirst{chebyshev-degree}, and
