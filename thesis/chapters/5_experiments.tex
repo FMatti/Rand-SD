@@ -40,7 +40,7 @@ charge
     \label{equ:5-experiments-gaussian-cell}
 \end{equation}
 with $\alpha = 4$, $\beta = 2$ is located. The computational domain is chosen
-to span $c$ primitive cells in every spatial dimension, hence, yielding
+to span $c \in \mathbb{N}$ primitive cells in every spatial dimension, hence, yielding
 discretization matrices which are growing in size with $c$. In our experiments
 we consider the three-dimensional case, but for visualization purposes, we
 illustrate the potential in \reffig{fig:5-experiments-periodic-gaussian-well}
@@ -197,7 +197,7 @@ is provided in \reffig{fig:5-experiments-haydock-kernel}.\\
 %Estimating \gls{smooth-spectral-density} then becomes the
 %trace estimation problem
 %\begin{equation}
-%    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I} - \mtx{A})) = - \frac{1}{n \pi} \Im \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
+%    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) = - \frac{1}{n \pi} \Im \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
 %    \label{equ:5-experiments-haydock-trace}
 %\end{equation}
 %Similarly to the \gls{DGC} method (see \refsec{sec:2-chebyshev-delta-gauss-chebyshev}),
@@ -205,14 +205,14 @@ is provided in \reffig{fig:5-experiments-haydock-kernel}.\\
 %$\vct{\psi} \in \mathbb{R}^n$ is used to
 %approximate the trace
 %\begin{equation}
-%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_{\Omega}} \sum_{j=1}^{n_{\Omega}} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j.
+%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_{\Omega}} \sum_{j=1}^{n_{\Omega}} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{A})^{-1} \vct{\psi}_j.
 %    \label{equ:5-experiments-haydock-hutchinson}
 %\end{equation}
 %It turns out that each summand in \refequ{5-experiments-haydock-hutchinson} can
 %be efficiently evaluated for multiple $t$ by running Lanczos
 %on $\mtx{A}$ with starting vector $\vct{\psi}_j$
 %\begin{equation}
-%    \vct{\psi}_j^{\top} ((t - i\sigma)\mtx{I} - \mtx{A})^{-1} \vct{\psi}_j% &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I} - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
+%    \vct{\psi}_j^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{A})^{-1} \vct{\psi}_j% &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I} - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
 %    \approx \cfrac{1}{(t - i\sigma) - \alpha_1 - \cfrac{\beta_2^2}{(t - i\sigma) - \alpha_2 - \dots}}
 %    \label{equ:5-experiments-haydock-recursion}
 %\end{equation}

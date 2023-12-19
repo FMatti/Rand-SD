@@ -4,14 +4,15 @@
 We try to follow the notation which is used in contemporary literature in this field:
 
 \begin{itemize}
-    \item we only work with objects over the real numbers $\mathbb{R}$;
+    \item we exclusively work with objects over the real numbers $\mathbb{R}$ and non-zero integers $\mathbb{N}$;
     \item scalar are represented by lower case Greek or Latin letters ($s$, $\varepsilon$, \dots),
           vectors are additionally printed in bold ($\vct{v}$, $\vct{\mu}$, \dots),
           and matrices are additionally capitalized ($\mtx{A}$, $\mtx{\Omega}$, \dots);
     \item the components of a vector $\vct{v} \in \mathbb{R}^{n}$ are $v_i \in \mathbb{R}, i = 1, \dots, n$,
           and the elements of a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ are $a_{ij} \in \mathbb{R}, i, j = 1, \dots, n$;
-    \item the identity matrix $\mtx{I} = \diag(1, \dots, 1)$ carries ones on its
-          diagonal and zeros everywhere else;
+    \item the identity matrix $\mtx{I}_n = \diag(1, \dots, 1) \in \mathbb{R}^{n \times n}$
+          carries ones on its diagonal and zeros everywhere else. The zero matrix
+          $\mtx{0}_{n \times m} \in \mathbb{R}^{n \times m}$ consists of only zero entries;
     \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$
           are all scalars $\lambda$ which, together with some non-zero vectors
           $\vct{v}$, satisfy the condition $\mtx{A} \vct{v} = \lambda \vct{v}$.
@@ -24,7 +25,7 @@ We try to follow the notation which is used in contemporary literature in this f
           Symmetric matrices satisfy $\mtx{A}^{\top} = \mtx{A}$ and
           allow for a spectral decomposition $\mtx{A} = \mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$
           with $\mtx{\Lambda} = \diag(\lambda_1, \dots, \lambda_n) \in \mathbb{R}^{n \times n}$ and 
-          $\mtx{U} \in \mathbb{R}^{n \times n}$ such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}$.
+          $\mtx{U} \in \mathbb{R}^{n \times n}$ such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}_n$.
           You may assume every symbol $\mtx{A}$ you encounter in this thesis to
           represent a symmetric matrix;
     \item matrix norms are denoted with $\lVert \cdot \rVert _{\cdot}$.
@@ -36,7 +37,7 @@ We try to follow the notation which is used in contemporary literature in this f
     \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$. It
           satisfies $\mtx{A}^{\dagger}=(\mtx{A}^{\top} \mtx{A})^{\dagger} \mtx{A}^{\top}$,
           and if $\mtx{A}$ has linealry independent columns, it acts as a left inverse
-          in the sense that $\mtx{A}^{\dagger} \mtx{A} = \mtx{I}$ \cite{penrose1955pseudo};
+          in the sense that $\mtx{A}^{\dagger} \mtx{A} = \mtx{I}_n$ \cite{penrose1955pseudo};
     \item a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ is said to be positive
           semi-definite if its eigenvalues are all non-negative. You may assume every
           symbol $\mtx{B}$ you encounter in this thesis to denote a positive
