@@ -16,7 +16,7 @@ from src.metrics import p_norm
 from src.kernel import gaussian_kernel
 
 
-def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_kernel, n_t=1000, add_baseline=False):
+def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_kernel, n_t=1000, t=None, add_baseline=False):
     parameters = deepcopy(parameters)
 
     eigenvalues = np.linalg.eigvalsh(A if isinstance(A, np.ndarray) else A.toarray())
@@ -35,7 +35,8 @@ def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_k
         else:
             labels = [labels]
 
-    t = np.linspace(-1, 1, n_t)
+    if t is None:
+        t = np.linspace(-1, 1, n_t)
     for parameter in parameters:
         parameter["sigma"] /= (max_ev - min_ev) / 2
 
@@ -46,7 +47,7 @@ def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_k
 
     spectral_densities = {}
     if add_baseline:
-        spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, n=A_transformed.shape[0], a=-1, b=1, n_t=n_t, sigma=parameters[0]["sigma"])
+        spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, n=A_transformed.shape[0], grid_points=t, sigma=parameters[0]["sigma"])
         spectral_densities["baseline"] = spectral_density_baseline
 
     for method, parameter, label in zip(methods, parameters, labels):
@@ -56,7 +57,7 @@ def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_k
     return spectral_densities
 
 
-def plot_spectral_densities(spectral_densities, parameters, variable_parameter=None, ignored_parameters=[], ax=None, colors=None):
+def plot_spectral_densities(spectral_densities, parameters, variable_parameter=None, ignored_parameters=[], ax=None, colors=None, t=None):
     title = ""
     if isinstance(parameters, list):
         parameters = parameters[0]
@@ -77,7 +78,8 @@ def plot_spectral_densities(spectral_densities, parameters, variable_parameter=N
         colors = [matplotlib.colormaps["magma"](i / len(spectral_densities)) for i in range(len(spectral_densities))]
 
     for i, (label, spectral_density) in enumerate(spectral_densities.items()):
-        t = np.linspace(-1, 1, len(spectral_density))
+        if t is None:
+            t = np.linspace(-1, 1, len(spectral_density))
         plt.plot(t, spectral_density, linewidth=1, color=colors[i], label=label)
     plt.legend()
     return ax

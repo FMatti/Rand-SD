@@ -61,7 +61,7 @@ def download_matrix(url, save_path="matrices", save_name=None):
         shutil.rmtree(temp_dir)
 
 
-def form_spectral_density(eigenvalues, kernel=gaussian_kernel, n=None, a=-1, b=1, n_t=100, sigma=0.1):
+def form_spectral_density(eigenvalues, kernel=gaussian_kernel, n=None, a=-1, b=1, n_t=100, grid_points=None, sigma=0.1):
     """
     Compute the (regularized) spectral density of a (small) matrix A at n_t
     evenly spaced grid-points within the interval [a, b].
@@ -87,8 +87,9 @@ def form_spectral_density(eigenvalues, kernel=gaussian_kernel, n=None, a=-1, b=1
     spectral_density : np.ndarray of shape (n_t,)
         The value of the spectral density evaluated at the grid points.
     """
-    spectral_density = np.zeros(n_t)
-    grid_points = np.linspace(a, b, n_t)
+    if grid_points is None:
+        grid_points = np.linspace(a, b, n_t)
+    spectral_density = np.zeros(len(grid_points))
 
     for eigenvalue in eigenvalues:
         spectral_density += kernel(
