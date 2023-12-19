@@ -850,8 +850,8 @@
 \definecolor{currentstroke}{rgb}{0.537255,0.647059,0.760784}%
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{0.809982in}{1.384000in}}%
-\pgfpathlineto{\pgfqpoint{1.164146in}{1.353765in}}%
+\pgfpathmoveto{\pgfqpoint{0.809982in}{1.383622in}}%
+\pgfpathlineto{\pgfqpoint{1.164146in}{1.353766in}}%
 \pgfpathlineto{\pgfqpoint{1.516678in}{1.353840in}}%
 \pgfpathlineto{\pgfqpoint{1.868568in}{1.353840in}}%
 \pgfpathlineto{\pgfqpoint{2.219628in}{1.353840in}}%
@@ -884,11 +884,11 @@
 \pgfusepath{stroke,fill}%
 }%
 \begin{pgfscope}%
-\pgfsys@transformshift{0.809982in}{1.384000in}%
+\pgfsys@transformshift{0.809982in}{1.383622in}%
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgfsys@transformshift{1.164146in}{1.353765in}%
+\pgfsys@transformshift{1.164146in}{1.353766in}%
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%
