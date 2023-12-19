@@ -334,6 +334,14 @@ def uniform(n=5000, a=-1, b=1, density=0.0001, seed=0):
     return Q @ D @ Q.T
 
 
+def gaussian_orthogonal_ensemble(n=5000, seed=0):
+    # Fix the seed
+    np.random.seed(seed)
+    
+    A = np.random.randn(n, n)
+    return (A + A.T) / np.sqrt(2)
+
+
 class WikiVoteGraph(object):
     def __init__(self, edges_filename="matrices/WikiVote.npz"):
         self.edges = np.load(edges_filename)["edges"]

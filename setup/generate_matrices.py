@@ -3,9 +3,10 @@ import __context__
 import os
 
 import scipy as sp
+import numpy as np
 
 from src.utils import download_matrix
-from src.matrices import ModES3D, uniform
+from src.matrices import ModES3D, uniform, gaussian_orthogonal_ensemble
 
 matrix_dir = "matrices"
 
@@ -35,4 +36,9 @@ for i, n in enumerate(ns):
 print("\nGenerating uniform matrix")
 matrix = uniform(2000, density=0.00015)
 sp.sparse.save_npz(os.path.join(matrix_dir, "uniform"), matrix)
+print("\u2713 Generated matrix")
+
+print("\nGenerating Gaussian orthogonal ensemble")
+matrix = gaussian_orthogonal_ensemble(1000)
+np.savez(os.path.join(matrix_dir, "goe"), matrix)
 print("\u2713 Generated matrix")
