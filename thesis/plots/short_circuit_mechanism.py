@@ -22,8 +22,8 @@ parameters = [{"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": -1},
               {"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": 1e-5}]
 
 A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
-colors = ["#89A5C2", "#2F455C", "#F98125"]
-spectral_densities = compute_spectral_densities(A, methods, labels, parameters, add_baseline=True, n_t=500)
+colors = ["#2F455C", "#F98125"]
+spectral_densities = compute_spectral_densities(A, methods, labels, parameters, add_baseline=False, n_t=500)
 
 fig, ax = plt.subplots(figsize=(6, 3))
 plot_spectral_densities(spectral_densities, parameters, variable_parameter="kappa", ignored_parameters=["m", "sigma", "n_v", "kappa"], colors=colors, ax=ax)
