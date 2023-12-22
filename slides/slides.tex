@@ -1,0 +1,421 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\title{Randomized Estimation of Spectral Densities of Large Matrices}
+\date{February 6, 2024}
+\author{Fabio Matti}
+
+%%% TEMPORARY PREAMBLE (to be replaced when beamer-compatible bibliography was found)
+
+% Fix undefined contorl sequence issue with pyplot pgf exports
+\def\mathdefault#1{#1}
+
+% Custom commands
+\newcommand{\pp}{\text{\raisebox{0.3ex}{\relscale{0.9}++}}}
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+\newcommand{\mtx}[1]{\boldsymbol{#1}}
+\newcommand{\vct}[1]{\boldsymbol{#1}}
+
+% Custom opertators
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\dimension}{dim}
+\DeclareMathOperator{\DCT}{DCT}
+\DeclareMathOperator{\Hutch}{H}
+\DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator{\range}{range}
+
+\usepackage{glossaries}
+\makeglossaries
+\input{../thesis/glossary.tex}
+
+\usepackage{beamertheme}
+%\usepackage{../thesis/stylesheet}
+
+\begin{document}
+
+\begin{frame}[noframenumbering]
+
+    \titlepage
+
+\end{frame}
+
+\begin{frame}{Outline}
+
+    \tableofcontents
+
+    \begin{tikzpicture}
+        \begin{scope}[scale=0.13]
+            % Background
+            \fill[black] (0, 0) circle (7);
+    
+            % Foundation
+            %\fill[white] (-3.2, -5.3) rectangle (3.2, -4.7);
+    
+            % Logo
+            \fill[white] (1.7, -7.3) -- (-1.7, -7.3) to[out=90, in=270] (-1.675, -4.05)
+                                                     to[out=190, in=330] (-3.6, -3.8)
+                                                     to[out=150, in=330] (-4.6, -2.35) % Tail
+                                                     to[out=150, in=280] (-5.0, -1.9) % Tail
+                                                     to[out=20, in=140] (-4.0, -2.1) % Tail
+                                                     to[out=320, in=160] (-3.0, -3.2) % Tail
+                                                     to[out=340, in=210] (-1.7, -3.1) % Tail
+                                                     to[out=80, in=230] (-1.25, -2.2) % Shoulder (left)
+                                                     to[out=180, in=230, looseness=1.15] (-3.6, 3.1) % Cheek (left)
+                                                     to[out=110, in=250] (-3.5, 4.9) % Ear (left)
+                                                     to[out=340, in=130] (-1.8, 4.1) % Ear (left)
+                                                     to[out=15, in=165] (1.8, 4.1) % Top
+                                                     to[out=50, in=200] (3.5, 4.9) % Ear (right)
+                                                     to[out=290, in=70] (3.6, 3.1) % Ear (right)
+                                                     to[out=310, in=0, looseness=1.15] (1.25, -2.2) % Cheek (right)
+                                                     to[out=310, in=100] (1.7, -3.1) % Shoulder (right)
+                                                     -- cycle;
+        \end{scope}
+        \draw[black, line width=3] (0, 1.1) to (12, 1.1) arc (90:-90:1.1) to (0, -1.1) arc (270:90:1.1);
+        \fill[white] (3.1, 1.0) rectangle (8.9, 1.2);
+        \node at (6, 1.1) {\bfseries \large Provable reproducibility};
+        \node[anchor=west] at (0.9, 0.55) {\small This document, including all its content, is provably reproducible.};
+        \node[anchor=west] at (1.2, 0.12) {\footnotesize \texttt{> hosted at \url{https://github.com/FMatti/Rand-SD}}};
+        \node[anchor=west] at (1.2, -0.22) {\footnotesize \texttt{> \input{re-pro-state.tex}}};
+        \node[anchor=west] at (0.9, -0.65) {\small Learn more about Re-Pro at \url{https://github.com/FMatti/Re-Pro}.};
+    \end{tikzpicture}
+
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{Spectral density}
+    \begin{columns}
+        \begin{column}{0.7\textwidth}
+            \begin{itemize}
+                \item \Gls{spectral-density} of symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$
+                \begin{equation}
+                    \phi(t) = \frac{1}{n} \sum_{i=1}^n \delta(t - \lambda_i)
+                \end{equation}
+                \item \Gls{smooth-spectral-density}
+                \begin{equation}
+                    \phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i)
+                \end{equation}
+                \item \Gls{smoothing-kernel}
+                \begin{equation}
+                    g_{\sigma}(s) = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{-\frac{s^2}{2\sigma^2}}
+                \end{equation}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.3\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \node at (0, 0) {\scalebox{0.7}{\input{../thesis/plots/spectral_density_example_0.05.pgf}}};
+                \node at (0, 2) {\scalebox{0.7}{\input{../thesis/plots/spectral_density_example_0.02.pgf}}};
+                \node at (0, 4) {\scalebox{0.7}{\input{../thesis/plots/spectral_density_example_0.01.pgf}}};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Implementation}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            \begin{itemize}
+                \item Conversion to trace estimation
+                \begin{equation}
+                    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t \mtx{I}_n - \mtx{A}))
+                \end{equation}
+                \item Chebyshev expansion of matrix function
+                \begin{equation}
+                    g_{\sigma}^{(m)}(t \mtx{I}_n - \mtx{A}) = \sum_{l=0}^m \mu_l(t) T_l(\mtx{A})
+                \end{equation}
+                \item Expanded spectral density
+                \begin{equation}
+                    \phi_{\sigma}^{(m)}(t) = \Tr(g_{\sigma}^{(m)}(t \mtx{I}_n - \mtx{A}))
+                \end{equation}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \scalebox{0.65}{\input{../thesis/figures/chebyshev_convergence.tex}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Methods}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            Improvements to \cite{lin2017randomized}
+            \begin{itemize}
+                \item \gls{DGC}
+                \begin{equation}
+                    \widetilde{\phi}_{\sigma}^{(m)}(t) = \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))
+                \end{equation}
+                \item \gls{NC}
+                \begin{equation}
+                    \widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))
+                \end{equation}
+                \item \gls{NCPP}
+                \begin{align}
+                    \breve{\phi}_{\sigma}^{(m)}(t) &= \widetilde{\phi}_{\sigma}^{(m)}(t) + \widehat{\phi}_{\sigma}^{(m)}(t) \notag \\
+                    &\hspace{10pt}- \Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))
+                \end{align}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \scalebox{0.7}{\input{../thesis/figures/methods_overview.tex}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\section{Theoretical analysis}
+
+\begin{frame}{Delta-Gauss-Chebyshev (ingredients)}
+    \begin{block}{Lemma: Chebyshev expansion (based on \cite{trefethen2008gauss})}
+        $\mtx{A} \in \mathbb{R}^{n \times n}$ symmetric with spectrum
+        in $[-1, 1]$. Then
+        \begin{equation}
+            \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}.
+        \end{equation}
+    \end{block}
+    \begin{block}{Lemma: Parameter-dependent Hutchinson \cite{he2023parameter}}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
+        $t \in [a, b]$. With high probability
+        \begin{equation}
+            \int_{a}^{b} \left| \Hutch_{n_{\Psi}}(\mtx{B}(t))  - \Tr(\mtx{B}(t)) \right| \mathrm{d}t \leq C_{\Psi} \frac{1}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
+        \end{equation}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Delta-Gauss-Chebyshev (error guarantee)}
+    \begin{block}{Theorem: Delta-Gauss-Chebyshev}
+        $\widetilde{\phi}_{\sigma}^{(m)}(t)$ result from \gls{DGC} method
+        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$.
+        With high probability
+        \begin{equation}
+            \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
+            \leq \underbrace{\frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \frac{n}{\sqrt{n_{\Psi}}} \right)}_{\text{interpolation error and bias}} + \underbrace{C_{\Psi} \frac{1}{\sqrt{n_{\Psi}}}}_{\text{trace estimation}}.
+        \end{equation}
+    \end{block}
+    \begin{itemize}
+        \item Even for \enquote{good} Chebyshev expansion, only $\mathcal{O}(\varepsilon^{-2})$ approximation
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Numerical rank}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            Numerical rank
+            \begin{equation}
+                r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \leq \#\{i: |t - \lambda_{(i)}| \leq C_{\varepsilon, \cdot}(\sigma)\}
+            \end{equation}
+            with constant (e.g. for spectral norm)
+            \begin{equation}
+                C_{\varepsilon, 2}(\sigma) = \sigma \sqrt{-2 \log(n \sqrt{2 \pi} \sigma \varepsilon)}
+            \end{equation}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \scalebox{0.6}{\input{../thesis/figures/singular_value_decay.tex}}
+        \end{column}
+    \end{columns}
+    \centering
+    \scalebox{1.0}{\input{../thesis/figures/numerical_rank.tex}}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev (error guarantee)}
+    \begin{itemize}
+        \item Parameter-dependent Nystr\"om approximation
+        \begin{equation}
+            \widehat{f}(\mtx{A}, t) = (f(\mtx{A}, t) \mtx{\Omega}) (\mtx{\Omega}^{\top} f(\mtx{A}, t) \mtx{\Omega})^{\dagger} (f(\mtx{A}, t) \mtx{\Omega})^{\top}
+        \end{equation}
+    \end{itemize}
+    \begin{block}{Theorem: Parameter-dependent Nystr\"om \cite{he2023parameter}}
+        $f(\mtx{A}, t)$ function of symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ which
+        continuously depends on $t \in [a,b]$. 
+        Standard Gaussian $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\Omega}}$
+        with $n_{\Omega} > r + 3$. With high probability
+        \begin{equation}
+            \int_{a}^{b} | \Tr(f(\mtx{A}, t)) - \Tr(\widehat{f}(\mtx{A}, t))| \mathrm{d}t
+                < C (1 + r) \int_{a}^{b} \sum_{i = r+1}^n \sigma_i(t) \mathrm{d}t
+        \end{equation}
+        where $\sigma_i(t)$ are the (ordered) eigenvalues of $f(\mtx{A}, t)$ at $t$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev++ (ingredients)}
+    \begin{itemize}
+        \item Goal: prove $\mathcal{O}(\varepsilon^{-1})$ result for Nystr\"om-Chebyshev++ method
+    \end{itemize}
+    \begin{block}{Lemma: Parameter-dependent Nystr\"om 2.0 \cite{he2023parameter}}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric \gls{PSD} and
+        continuous in $t \in [a, b]$. With high probability
+        \begin{equation}
+            \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \end{equation}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev++ (main theorem)}
+    \begin{itemize}
+        \item Parameter-dependent result for \cite{meyer2021hutch}
+        \begin{equation}
+            \Tr^{++}(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Hutch_{n_{\Psi}}(\mtx{\Delta}(t))
+        \end{equation}
+    \end{itemize}
+    \begin{block}{Theorem: Parmeter-dependent trace estimation}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
+        and continuous in $t \in [a, b]$, and
+        \begin{equation}
+            \Tr(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}(t)) \text{ and } \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \end{equation}
+        With high probability
+        \begin{equation}
+            \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq C \frac{1}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \end{equation}
+        %In particular, if \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $=\mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$,
+        %then $\Tr^{++}(\mtx{B}(t))$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev++ (error guarantee)}
+    \begin{block}{Corollary: Parameter dependent Nystr\"om++}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
+        and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
+        then with high probability
+        \begin{equation}
+            \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+        \end{equation}
+    \end{block}
+    \begin{itemize}
+        \item Caveat: only applies to NC++ if we assume Chebyshev expansion to be exact
+        \item Loss of positive semi-definiteness in expansion is the problem
+    \end{itemize}
+\end{frame}
+
+\section{Algorithmic improvements}
+
+\begin{frame}{Discrete cosine transform}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            \begin{itemize}
+                \item Fast interpolation in \gls{NC} for
+                \begin{equation}
+                    \widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\mtx{K}_1(t)^{\dagger} \mtx{K}_2(t))
+                \end{equation}
+                with
+                \begin{align}
+                    \mtx{K}_1(t) = \mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \mtx{\Omega} \\
+                    \mtx{K}_2(t) = \mtx{\Omega}^{\top} (g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))^2 \mtx{\Omega}
+                \end{align}
+                \item \Gls{DCT}
+                \begin{equation}
+                    \vct{\mu} \stackrel{\DCT}{\longleftrightarrow} \vct{g}
+                \end{equation}
+                with $\{g_i = g_{\sigma}(t - \cos(\pi i / m))\}_{i=0}^m$.
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \scalebox{0.65}{\input{../thesis/plots/interpolation_issue.pgf}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Short-circuit mechanism}
+    \begin{itemize}
+        \item Problem: If $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \approx \mtx{0}$, pseudo-inverse $\mtx{K}_1(t)^{\dagger}$ bad idea
+        \item Solution: If $\frac{1}{n_{\Omega}} \Tr(\mtx{K}_1(t)) < \kappa$ $\implies$ set $\widehat{\phi}_{\sigma}^{(m)}(t) = 0$
+    \end{itemize}
+    \centering
+    \scalebox{0.8}{\input{../thesis/plots/short_circuit_mechanism.pgf}}
+\end{frame}
+
+\begin{frame}{Filter tolerance}
+    \begin{itemize}
+        \item Problem: Filter \enquote{unrealistic} values outside range of \gls{smoothing-kernel} $[0, 1/n\sqrt{2\pi\sigma^2}]$
+        \item Solution: Add tolerance $\eta$ to range $[0, (1 + \eta)/n\sqrt{2\pi\sigma^2}]$
+    \end{itemize}
+    \centering
+    \scalebox{0.8}{\input{../thesis/plots/filter_tolerance.pgf}}
+\end{frame}
+
+\section{Numerical results}
+
+\begin{frame}{Model Problem}
+    \begin{itemize}
+        \item Three-dimensional finite difference discretization \cite{lin2017randomized}
+        \begin{equation}
+            \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V(\vct{x}) u(\vct{x})
+        \end{equation}
+        \item Periodic Gaussian wells
+        \begin{equation}
+            \alpha \exp(-\frac{\lVert \vct{x} \rVert _2^2}{ 2 \beta^2 })
+        \end{equation}
+    \end{itemize}
+    \scalebox{0.85}{\input{../thesis/plots/periodic_gaussian_well_1.pgf}}
+    \scalebox{0.85}{\input{../thesis/plots/periodic_gaussian_well_2.pgf}}
+    \scalebox{0.85}{\input{../thesis/plots/periodic_gaussian_well_5.pgf}}
+\end{frame}
+
+\begin{frame}{Convergence (Gaussian smoothing)}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Fix $n_{\Omega} + n_{\Psi}$, vary $m$
+            \end{itemize}
+            \scalebox{1.0}{\input{../thesis/plots/electronic_structure_convergence_m_nv160.pgf}}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Fix $m$, vary $n_{\Omega} + n_{\Psi}$
+            \end{itemize}
+            \scalebox{1.0}{\input{../thesis/plots/electronic_structure_convergence_nv_m2400.pgf}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Allocation of matrix-vector products}
+    \input{../thesis/plots/electronic_structure_matvec_mixture.pgf}
+\end{frame}
+
+\begin{frame}{Haydock method}
+    \begin{itemize}
+        \item Lorentzian smoothing kernel $\implies$ Haydock method \cite{lin2016review}
+    \begin{equation}
+        g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2} = -\frac{1}{\pi} \Im\left\{ \frac{1}{s + \iota \sigma} \right\}
+    \end{equation}
+    \end{itemize}
+    \centering
+    \input{../thesis/plots/haydock_kernel.pgf}
+\end{frame}
+ 
+\begin{frame}{Convergence (Lorentzian smoothing)}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Fix $n_{\Omega} + n_{\Psi}$, vary $m$
+            \end{itemize}
+            \scalebox{1.0}{\input{../thesis/plots/haydock_convergence_m_nv160.pgf}}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Fix $m$, vary $n_{\Omega} + n_{\Psi}$
+            \end{itemize}
+            \scalebox{1.0}{\input{../thesis/plots/haydock_convergence_nv_m2400.pgf}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Conclusion}
+    Main contributions
+    \begin{itemize}
+        \item Improved and simplified algorithms from \cite{lin2017randomized}
+        \item Theoretical guarantees for methods
+    \end{itemize}
+    Outlook
+    \begin{itemize}
+        \item Incorporate Chebyshev expansion in analysis
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Bibliography}
+    \bibliographystyle{apalike}\bibliography{../thesis/bibliography.bib}
+\end{frame}
+
+\end{document}
