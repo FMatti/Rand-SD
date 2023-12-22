@@ -1,0 +1,455 @@
+\documentclass[final, 12pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[orientation=portrait,size=a0, scale=1.2]{beamerposter}
+\usetheme{minimal}
+\usecolortheme{minimal}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+
+%%% TEMPORARY PREAMBLE (to be replaced when beamer-compatible bibliography was found)
+
+% Fix undefined contorl sequence issue with pyplot pgf exports
+\def\mathdefault#1{#1}
+
+% Custom commands
+\newcommand{\pp}{\text{\raisebox{0.3ex}{\relscale{0.9}++}}}
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+\newcommand{\mtx}[1]{\boldsymbol{#1}}
+\newcommand{\vct}[1]{\boldsymbol{#1}}
+
+% Custom opertators
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\dimension}{dim}
+\DeclareMathOperator{\DCT}{DCT}
+\DeclareMathOperator{\Hutch}{H}
+\DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator{\range}{range}
+
+\usepackage{glossaries}
+\makeglossaries
+\input{../thesis/glossary.tex}
+
+%%% COLOR THEME
+
+% Color package
+\usepackage{xcolor}
+
+% Color definitions
+\definecolor{darkblue}{HTML}{2F455C}
+\definecolor{mainblue}{HTML}{0e437c}
+\definecolor{darkorange}{HTML}{F98125}
+\colorlet{lightishblue}{darkblue!20!white}
+\colorlet{lightblue}{darkblue!10!white}
+\colorlet{linkcolor}{mainblue}
+
+% Reference commands
+\newcommand{\reffig}[1]{\hyperref[#1]{\textcolor{linkcolor}{figure \ref*{#1}}}}
+\newcommand{\Reffig}[1]{\hyperref[#1]{\textcolor{linkcolor}{Figure \ref*{#1}}}}
+\newcommand{\reftab}[1]{\hyperref[#1]{\textcolor{linkcolor}{table \ref*{#1}}}}
+\newcommand{\Reftab}[1]{\hyperref[#1]{\textcolor{linkcolor}{Table \ref*{#1}}}}
+\newcommand{\refdef}[1]{\hyperref[#1]{\textcolor{linkcolor}{definition \ref*{#1}}}}
+\newcommand{\Refdef}[1]{\hyperref[#1]{\textcolor{linkcolor}{Definition \ref*{#1}}}}
+\newcommand{\reflem}[1]{\hyperref[#1]{\textcolor{linkcolor}{lemma \ref*{#1}}}}
+\newcommand{\Reflem}[1]{\hyperref[#1]{\textcolor{linkcolor}{Lemma \ref*{#1}}}}
+\newcommand{\refthm}[1]{\hyperref[#1]{\textcolor{linkcolor}{theorem \ref*{#1}}}}
+\newcommand{\Refthm}[1]{\hyperref[#1]{\textcolor{linkcolor}{Theorem \ref*{#1}}}}
+\newcommand{\refalg}[1]{\hyperref[#1]{\textcolor{linkcolor}{algorithm \ref*{#1}}}}
+\newcommand{\Refalg}[1]{\hyperref[#1]{\textcolor{linkcolor}{Algorithm \ref*{#1}}}}
+\newcommand{\refsec}[1]{\hyperref[#1]{\textcolor{linkcolor}{section \ref*{#1}}}}
+\newcommand{\Refsec}[1]{\hyperref[#1]{\textcolor{linkcolor}{Section \ref*{#1}}}}
+\newcommand{\refchp}[1]{\hyperref[#1]{\textcolor{linkcolor}{chapter \ref*{#1}}}}
+\newcommand{\Refchp}[1]{\hyperref[#1]{\textcolor{linkcolor}{Chapter \ref*{#1}}}}
+\newcommand{\reflin}[1]{\hyperref[#1]{\textcolor{linkcolor}{line \ref*{#1}}}}
+\newcommand{\Reflin}[1]{\hyperref[#1]{\textcolor{linkcolor}{Line \ref*{#1}}}}
+\newcommand{\refequ}[1]{\hyperref[#1]{\textcolor{linkcolor}{(\ref*{#1})}}}
+
+% Colorboxes
+\usepackage[many]{tcolorbox}
+\tcbset{breakable}
+%\newtcolorbox{block}[2][]
+%{
+%  colframe = darkblue,
+%  colback  = lightblue,
+%  coltitle = white,
+%  title    = {#2},
+%  sharp corners,
+%  before skip=10pt,
+%  after skip=10pt,
+%  left=3pt,
+%  right=3pt,
+%  boxrule=0pt,
+%  #1,
+%}
+%
+\tcbuselibrary{theorems}
+
+\newtcbtheorem[]{thm}{Theorem}%
+{
+  colframe = darkblue,
+  colback  = lightishblue,
+  coltitle = white,
+  sharp corners,
+  before skip=10pt,
+  after skip=10pt,
+  left=3pt,
+  right=3pt,
+  boxrule=0pt,
+}{thm}
+
+% ADDITIONAL
+
+\setlength\fboxsep{0.75cm}
+
+
+\title{Randomized Estimation of Spectral Densities of Large Matrices}
+
+\author{Fabio Matti \and Haoze He \and Daniel Kressner}
+
+\institute[shortinst]{ANCHP, École polytechnique fédérale de Lausanne (EPFL), Lausanne, Switzerland}
+
+\footercontent{
+    \begin{tikzpicture}
+        \begin{scope}[scale=0.17]
+            % Background
+            \draw[white, line width=3] (0, 0) circle (7);
+    
+            % Foundation
+            %\fill[white] (-3.2, -5.3) rectangle (3.2, -4.7);
+    
+            % Logo
+            \fill[white] (1.7, -7.3) -- (-1.7, -7.3) to[out=90, in=270] (-1.675, -4.05)
+                                                     to[out=190, in=330] (-3.6, -3.8)
+                                                     to[out=150, in=330] (-4.6, -2.35) % Tail
+                                                     to[out=150, in=280] (-5.0, -1.9) % Tail
+                                                     to[out=20, in=140] (-4.0, -2.1) % Tail
+                                                     to[out=320, in=160] (-3.0, -3.2) % Tail
+                                                     to[out=340, in=210] (-1.7, -3.1) % Tail
+                                                     to[out=80, in=230] (-1.25, -2.2) % Shoulder (left)
+                                                     to[out=180, in=230, looseness=1.15] (-3.6, 3.1) % Cheek (left)
+                                                     to[out=110, in=250] (-3.5, 4.9) % Ear (left)
+                                                     to[out=340, in=130] (-1.8, 4.1) % Ear (left)
+                                                     to[out=15, in=165] (1.8, 4.1) % Top
+                                                     to[out=50, in=200] (3.5, 4.9) % Ear (right)
+                                                     to[out=290, in=70] (3.6, 3.1) % Ear (right)
+                                                     to[out=310, in=0, looseness=1.15] (1.25, -2.2) % Cheek (right)
+                                                     to[out=310, in=100] (1.7, -3.1) % Shoulder (right)
+                                                     -- cycle;
+        \end{scope}
+        %\draw[black, line width=3] (0, 1.1) to (12, 1.1) arc (90:-90:1.1) to (0, -1.1) arc (270:90:1.1);
+        %\fill[white] (3.1, 1.0) rectangle (8.9, 1.2);
+        %\node at (8, 0.2) {\bfseries Provable reproducibility};
+        \node[anchor=west] at (1.4, 0.85) {\footnotesize This document, including all its content, is provably reproducible.};
+        \node[anchor=west] at (1.8, 0.15) {\scriptsize \texttt{> hosted at \url{https://github.com/FMatti/Rand-SD}}};
+        \node[anchor=west] at (1.8, -0.35) {\scriptsize \texttt{> \input{re-pro-state.tex}}};
+        \node[anchor=west] at (1.4, -1.05) {\footnotesize Learn more about Re-Pro at \url{https://github.com/FMatti/Re-Pro}.};
+        \node[anchor=east] at (77, 0.5) {Master's thesis};
+        \node[anchor=east] at (77, -0.5) {Lausanne, 02/02/2024};
+    \end{tikzpicture}} %\begin{tabular}{@{}c@{}} Master's thesis \\ Lausanne, 02/02/2024 \end{tabular}}
+
+\begin{document}
+
+
+%%% ABSTRACT
+
+\begin{frame}[t]
+\vspace{-20pt}
+\begin{tikzpicture}[remember picture, overlay]
+\draw[white,line width=0pt] (current page.south east) rectangle (current page.north west);
+\fill[shadecolor] (-10, -5.5) rectangle (100, 0.75);
+\fill[shadecolor] (-10, -61.5) rectangle (100, -32.5);
+\fill[shadecolor] (-10, -110) rectangle (100, -93);
+\end{tikzpicture}
+\begin{columns}[t]
+\begin{column}{0.85\paperwidth}
+\vspace{-35pt}
+    \justify
+    In many problems in physics, engineering, and computer science, 
+    the eigenvalues of certain matrices help understand the nature of a system.
+    However, computing the eigenvalues of a matrix can be prohibitively expensive.
+    Furthermore, it is often not crucial to know the exact individual eigenvalues,
+    but more so their approximate locations with respect to each other.
+    The goal of spectral density theory is to find the approximate distribution of
+    the eigenvalues of large matrices.
+\vspace{20pt}
+\end{column}
+\end{columns}
+
+%%% INTRODUCTION
+
+\begin{columns}[t]
+
+    \begin{column}{0.45\paperwidth}
+
+        \begin{block}{Spectral density}
+            The \gls{spectral-density} of symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$
+            with eigenvalues $\lambda_1, \dots, \lambda_n \in \mathbb{R}$, which
+            we assume to be contained in $[-1, 1]$,
+            is defined as
+            \begin{equation}
+                \phi(t) = \frac{1}{n} \sum_{i=1}^n \delta(t - \lambda_i).
+            \end{equation}
+            Since the \gls{dirac-delta} cannot be approximated using smooth functions,
+            and because we do not care about exact locations of the eigenvalues anyway,
+            we work with the \gls{smooth-spectral-density} defined as
+            \begin{equation}
+                \phi_{\sigma}(t) = \sum_{i=1}^n g_{\sigma}(t - \lambda_i)
+            \end{equation}
+            with a \gls{smoothing-kernel}, which is parametrized by a \gls{smoothing-parameter}.
+            Usually, \gls{smoothing-kernel} is a Gaussian of width \gls{smoothing-parameter}
+            \begin{equation}
+                g_{\sigma}(s) = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{-\frac{s^2}{2\sigma^2}}.
+            \end{equation}
+            We may then convert the problem of computing \gls{smooth-spectral-density}
+            to the trace estimation problem
+            \begin{equation}
+                \phi_{\sigma}(t) = \Tr(g_{\sigma}(t \mtx{I}_n - \mtx{A})).
+            \end{equation}
+            %\begin{figure}
+            %    \scalebox{2.0}{\input{../thesis/plots/spectral_density_example_0.01.pgf}}
+            %    \scalebox{2.0}{\input{../thesis/plots/spectral_density_example_0.02.pgf}}
+            %    \scalebox{2.0}{\input{../thesis/plots/spectral_density_example_0.05.pgf}}
+            %\end{figure}
+        \end{block}
+
+    \end{column}
+
+    \begin{column}{0.45\paperwidth}
+
+        \begin{block}{Chebyshev expansion}
+            It is often prohibitively expensive to directly
+            evaluate the matrix function $g_{\sigma}(t\mtx{I}_n - \mtx{A})$.
+            For this and other reasons, a Chebyshev expansion with \gls{chebyshev-degree}
+            \begin{equation}
+                g_{\sigma}^{(m)}(t \mtx{I}_n - \mtx{A}) = \sum_{l=0}^{m} \mu_l(t) T_l(\mtx{A})
+            \end{equation}
+            is first computed instead. For a fixed $t$, the coefficients $\{\mu_l\}_{l=0}^m$ can
+            efficiently be computed using \gls{DCT}.
+            When defining the vector of coefficients $\vct{\mu} \in \mathbb{R}^{m+1}$
+            and the vector $\vct{g} \in \mathbb{R}^{m+1}$
+            with $\{g_l = g_{\sigma}(t - \cos(\pi l / m))\}_{l=0}^m$, we can
+            switch between the two in $\mathcal{O}(m \log(m))$ complexity using
+            \begin{equation}
+                \vct{\mu} = \DCT^{-1}(\vct{g}) \iff \vct{g} = \DCT(\vct{\mu}).
+                \label{equ:DCT}
+            \end{equation}
+            This way of computing the Chebyshev expansion of a function
+            can also be used to efficiently square Chebyshev polynomials,
+            which will be useful for our implementation
+            \begin{equation}
+                (\sum_{l=0}^{m} \mu_l T_l(\mtx{A}))^2 = \sum_{l=0}^{m} \nu_l T_l(\mtx{A}) \implies \vct{\nu} = \DCT^{-1}(\DCT(\vct{\mu})^2).
+                \label{equ:DCT-squaring}
+            \end{equation}
+            Finally, the starting point for all our methods will be the expanded spectral density
+            \begin{equation}
+                \phi_{\sigma}^{(m)}(t) = \Tr(g_{\sigma}^{(m)}(t \mtx{I}_n - \mtx{A})).
+                \label{equ:expanded-spectral-density}
+            \end{equation}
+            %\begin{figure}
+            %    \scalebox{2.0}{\input{../thesis/figures/chebyshev_convergence.tex}}
+            %\end{figure}
+        \end{block}
+
+    \end{column}
+\end{columns}
+
+%%% METHODS
+
+\vspace{15pt}
+\begin{columns}[t]
+    \setbeamercolor{block title}{fg=maincolor,bg=shadecolor}
+    \setbeamercolor{block separator}{bg=maincolor}
+    \setbeamercolor{block body}{fg=black,bg=shadecolor}
+
+    \begin{column}{0.3\paperwidth}
+
+        \begin{block}{Delta-Gauss-Chebyshev}
+            Stochastic trace estimation is usually based on the fact that
+            for a standard Gaussian random vector $\vct{\psi} \in \mathbb{R}^n$
+            \begin{equation}
+                \Tr(\mtx{B}) = \mathbb{E}\left[\vct{\psi}^{\top} \mtx{B} \vct{\psi}\right].
+            \end{equation}
+            The Hutchinson's trace estimator averages over multiple independent
+            realizations of this estimate to construct
+            \begin{equation}
+                \Hutch_{n_{\Psi}}(\mtx{B}) = \frac{1}{n_{\Psi}} \sum_{i=1}^{n_{\Psi}} \vct{\psi}_i^{\top} \mtx{B} \vct{\psi}_i.
+            \end{equation}
+            The \gls{DGC} method \cite{lin2017randomized} applies this
+            estimator to \refequ{equ:expanded-spectral-density} to obtain
+            \begin{equation}
+                \boxed{\widetilde{\phi}_{\sigma}^{(m)}(t) = \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})).}
+            \end{equation}
+            We can show the following result for the \gls{DGC} method:
+            \begin{thm}{Delta-Gauss-Chebyshev method}{delta-gauss-chebyshev}
+                $\mtx{A} \in \mathbb{R}^{n \times n}$ symmetric, then with high probability
+                \begin{equation}
+                    \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
+                    \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \frac{n}{\sqrt{n_{\Psi}}} \right) + C_{\Psi} \frac{1}{\sqrt{n_{\Psi}}}.
+                \end{equation}
+            \end{thm}
+        \end{block}
+
+    \end{column}
+
+    \begin{column}{0.3\paperwidth}
+
+        \begin{block}{Nystr\"om-Chebyshev}
+            The Nystr\"om approximation offers a way to compress a symmetric
+            \gls{PSD} matrix which has low rank by multiplying it with
+            a small \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$, where
+            $n_{\Omega} \ll n$, and forming
+            \begin{equation}
+                \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{B} \mtx{\Omega})^{\top}.
+            \end{equation}
+            Since $g_{\sigma}(t\mtx{I} - \mtx{A})$ exhibits a low rank structrue,
+            particularly for small \gls{smoothing-parameter}, the \gls{NC}
+            method computes
+            %Error goes down like $\mathcal{O}(\varepsilon^{-2})$ or much faster if $\mtx{B}$ low-rank.
+            \begin{equation}
+                \boxed{\widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})).}
+            \end{equation}
+            An efficient implementation can be achieved due to the cyclic property
+            of the trace. Then
+            \begin{equation}
+                \widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\mtx{K}_1(t)^{\dagger} \mtx{K}_2(t))
+            \end{equation}
+            for the matrices 
+            \begin{align}
+                \mtx{K}_1(t) = \mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \mtx{\Omega} \in \mathbb{R}^{n_{\Omega} \times n_{\Omega}} \\
+                \mtx{K}_2(t) = \mtx{\Omega}^{\top} (g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))^2 \mtx{\Omega} \in \mathbb{R}^{n_{\Omega} \times n_{\Omega}}
+            \end{align}
+            which can be computed very efficiently with \refequ{equ:DCT} and \refequ{equ:DCT-squaring}.
+        \end{block}
+
+    \end{column}
+
+    \begin{column}{0.3\paperwidth}
+
+        \begin{block}{Nystr\"om-Chebyshev++}
+            The Nystr\"om++ is a variance reduced version
+            of the Hutchinson's estimator. It is defined as
+            \begin{equation}
+                \Tr^{++}(\mtx{B}) = \Tr(\widehat{\mtx{B}}) + \Hutch_{n_{\Psi}}(\mtx{\Delta})
+            \end{equation}
+            with the residual $\mtx{\Delta} = \mtx{B} - \widehat{\mtx{B}}$.
+            The straight-forward extension of this method to the
+            parameter-dependent case may be computed by combining the \gls{NC} with the \gls{DGC} method
+            \begin{equation}
+                \boxed{\breve{\phi}_{\sigma}^{(m)}(t) = \widehat{\phi}_{\sigma}^{(m)}(t) + \widetilde{\phi}_{\sigma}^{(m)}(t) - \Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})).}
+            \end{equation}
+        \end{block}
+        In the case where the Chebyshev expansion is exact,
+        we are able to show the following guarantee \cite{he2023parameter}:
+        \begin{thm}{Parameter-dependent Nystr\"om++}{parameter-dependent-nystrom-pp}
+            $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
+            and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
+            then with high probability
+            \begin{equation}
+                \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+            \end{equation}
+        \end{thm}
+
+    \end{column}
+
+\end{columns}
+
+%%% NUMERICAL RESULTS
+
+\vspace{5pt}
+\begin{columns}[t]
+
+    \begin{column}{0.45\paperwidth}
+
+        \begin{block}{Model problem}
+            We consider the three-dimensional finite difference discretization matrix
+            $\mtx{A} \in \mathbb{R}^{1000 \times 1000}$ of
+            the Laplace operator in a periodic Gaussian well potential \cite{lin2017randomized}.
+            %\begin{equation}
+            %    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V(\vct{x}) u(\vct{x}).
+            %\end{equation}
+            
+            \begin{figure}
+                \scalebox{1.6}{\input{../thesis/plots/periodic_gaussian_well_1.pgf}}
+                \scalebox{1.6}{\input{../thesis/plots/periodic_gaussian_well_2.pgf}}
+                \scalebox{1.6}{\input{../thesis/plots/periodic_gaussian_well_5.pgf}}
+            \end{figure}
+        %\end{block}
+
+        %\begin{block}{Allocation of matrix-vector products}
+            For small \gls{smoothing-parameter}, the
+            matrix function in \refequ{equ:expanded-spectral-density} has low rank,
+            so the \gls{NC} performs well. For large \gls{smoothing-parameter}
+            the low rank approximation alone is not sufficient.%, and hence, the \gls{DGC}
+            %part is more relevant.
+            \begin{figure}
+                \scalebox{1.6}{\input{../thesis/plots/electronic_structure_matvec_mixture.pgf}}
+            \end{figure}
+            \vspace{-30pt}
+        \end{block}
+
+    \end{column}
+
+    \begin{column}{0.45\paperwidth}
+
+        \begin{block}{Convergence study}
+            For fixed $m$ but varying $n_{\Omega} + n_{\Psi}$, and vice versa,
+            we plot the $L^1$ approximation error of all three methods on the
+            model problem.
+            \begin{figure}
+                \scalebox{1.6}{\input{../thesis/plots/electronic_structure_convergence_m_nv160.pgf}}
+                \scalebox{1.6}{\input{../thesis/plots/electronic_structure_convergence_nv_m2400.pgf}}
+            \end{figure}
+            \vspace{-30pt}
+            If instead of a Gaussian \gls{smoothing-kernel} we use a Lorentzian
+            $g_{\sigma}(s) \propto \sigma / (s^2 + \sigma^2)$,
+            %\begin{equation}
+            %    g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2},
+            %\end{equation}
+            there exists a specialized method called the Haydock method. We repeat 
+            the same plots as before.%, and also give the run time (s) for approximating $n_t=100$ values of $t$.
+            \begin{figure}
+                \scalebox{1.6}{\input{../thesis/plots/haydock_convergence_m_nv160.pgf}}
+                \scalebox{1.6}{\input{../thesis/plots/haydock_convergence_nv_m2400.pgf}}
+            \end{figure}
+            \vspace{-30pt}
+            %\centering
+            %\scalebox{0.6}{\input{../thesis/tables/timing_haydock.tex}}
+        \end{block}
+
+    \end{column}
+
+\end{columns}
+
+\begin{columns}[t]
+    \setbeamercolor{block title}{fg=maincolor,bg=shadecolor}
+    \setbeamercolor{block separator}{bg=maincolor}
+    \setbeamercolor{block body}{fg=black,bg=shadecolor}
+    \begin{column}{0.45\paperwidth}
+        \begin{block}{Conclusion}
+            We were able to significantly improve many algorithmic aspects of these
+            methods. The development of an alternative expansion framework based on
+            the \gls{DCT} allowed us to vastly simplify the Chebyshev expansion,
+            while obtaining provable accuracy, all
+            this in addition to making this stage orders of magnitude faster in many cases.
+            Furthermore, we derived theoretical error guarantees for all the encountered methods.
+        \end{block}
+    \end{column}
+    \begin{column}{0.45\paperwidth}
+        \begin{block}{References}
+            \vspace{-10pt}
+            \bibliographystyle{ieeetr}\bibliography{../thesis/bibliography.bib}
+        
+        \end{block}
+    \end{column}
+\end{columns}
+
+\end{frame}
+
+\end{document}
