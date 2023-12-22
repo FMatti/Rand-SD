@@ -12,8 +12,12 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     env:
-      DIR: ./thesis
-      FILE: thesis
+      THESIS_DIR: ./thesis
+      THESIS_FILE: thesis
+      SLIDES_DIR: ./slides
+      SLIDES_FILE: slides
+      POSTER_DIR: ./poster
+      POSTER_FILE: poster
 
     steps:
       - name: Set up Git repository
@@ -29,7 +33,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Set up TeX environment
-        run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science texlive-fonts-extra cm-super dvipng
+        run: sudo apt-get update && sudo apt-get install texlive texlive-xetex texlive-publishers texlive-science texlive-fonts-extra cm-super dvipng
 
       - name: Generate matrices
         run: python setup/generate_matrices.py
@@ -43,23 +47,34 @@ jobs:
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
           echo "build_time=$(date +'%Y-%m-%d at %H:%M:%S')" >> $GITHUB_ENV
 
-      - name: Generate reproducibility badge
-        run: |
-          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.DIR }}/re-pro-state.tex"
-
       - name: Generate thesis
-        run: python setup/generate_thesis.py
-
+        run: |
+          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.THESIS_DIR }}/re-pro-state.tex"
+          python setup/generate_thesis.py
+      
+      - name: Generate slides
+        run: |
+          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.SLIDES_DIR }}/re-pro-state.tex"
+          python setup/generate_slides.py
+        
+      - name: Generate poster
+        run: |
+          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.POSTER_DIR }}/re-pro-state.tex"
+          python setup/generate_poster.py
+    
       - name: Upload thesis as PDF artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.FILE }}
-          path: ${{ env.DIR }}/${{ env.FILE }}.pdf
+          name: outcomes
+          path: |
+            ${{ env.THESIS_DIR }}/${{ env.THESIS_FILE }}.pdf
+            ${{ env.SLIDES_DIR }}/${{ env.SLIDES_FILE }}.pdf
+            ${{ env.POSTER_DIR }}/${{ env.POSTER_FILE }}.pdf
 
       - name: Upload generated files to repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add thesis/plots/*.pgf thesis/tables/*.tex thesis/ thesis/re-pro-state.tex
+          git add thesis/plots/*.pgf thesis/tables/*.tex thesis/ thesis/re-pro-state.tex slides/re-pro-state.tex poster/re-pro-state.tex
           git commit -m "reproduce thesis"
           git push
