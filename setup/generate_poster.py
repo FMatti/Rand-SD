@@ -11,7 +11,7 @@ def send_command(command, file="", args=""):
 
 pdflatex_args = ["-synctex=1", "-interaction=nonstopmode", "-file-line-error"]
 
-send_command("xelatex", project_name, pdflatex_args)
+send_command("lualatex", project_name, pdflatex_args)
 send_command("bibtex", project_name)
-send_command("xelatex", project_name, pdflatex_args)
-send_command("xelatex", project_name, pdflatex_args)
+send_command("lualatex", project_name, pdflatex_args)
+send_command("lualatex", project_name, pdflatex_args)
