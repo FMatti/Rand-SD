@@ -250,9 +250,13 @@ with stochastic trace estimation
 we end up with the \glsfirst{DGC} method \cite[algorithm~2]{lin2017randomized},
 which approximates the \glsfirst{smooth-spectral-density} as
 \begin{equation}
-    \widetilde{\phi}_{\sigma}^{(m)}(t) = H_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})).
+    \widetilde{\phi}_{\sigma}^{(m)}(t) = H_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) = \frac{1}{n_{\Psi}} \sum_{l=0}^m \mu_l(t) \Tr(\mtx{\Psi}^{\top} T_l(\mtx{A}) \mtx{\Psi}).
     \label{equ:2-chebyshev-DGC-final-estimator}
-\end{equation}\\
+\end{equation}
+Apparently, it is rather cheap to evaluate $\widetilde{\phi}_{\sigma}^{(m)}(t)$
+at multiple values of \gls{spectral-parameter}, since only the coefficients
+of the linear combination of $\{\Tr(\mtx{\Psi}^{\top} T_l(\mtx{A}) \mtx{\Psi})\}_{l=0}^m$
+change, which can be efficiently computed using \refalg{alg:2-chebyshev-chebyshev-expansion}.\\
 
 An efficient implementation can be achieved thanks to the recurrence relation
 which the Chebyshev polynomials satisfy \refequ{equ:2-chebyshev-chebyshev-recursion}.
@@ -332,7 +336,7 @@ lemma.
 
 \begin{lemma}{$L^1$-error of Chebyshev expansion for Gaussian smoothing}{2-chebyshev-error}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix whose spectrum
-    is contained in $[-1, 1]$. For any $t \in \mathbb{R}$ it holds
+    is contained in $[-1, 1]$. Then
     \begin{equation}
         \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
         \label{equ:2-chebyshev-interpolation-error}
@@ -354,7 +358,7 @@ However, since our result and more so the proof deviate from the aforementioned
 work, we chose to reproduce it hereafter.
 \begin{proof}
     Using basic properties of matrix functions, we obtain
-    \begin{align*}
+    \begin{align}
         \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right|
         &= \left| \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) - \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right|
         && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-chebyshev-expansion})} \notag \\
@@ -367,7 +371,7 @@ work, we chose to reproduce it hereafter.
         &\leq n \frac{2}{\chi^{m}(\chi - 1)} \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
         && \text{(Bernstein \cite[theorem~73]{meinardus1967approximation})}
         \label{equ:2-chebyshev-proof-bernstein-general-expression}
-    \end{align*}
+    \end{align}
     where in the last step we define the ellipse $\mathcal{E}_{\chi}$
     with foci $\{-1, 1\}$ and with sum of half-axes $\chi = a + b > 1$
     (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
@@ -437,7 +441,7 @@ result for the accuracy of the \gls{DGC} method.
     %\int_{-1}^{1} \left| \phi_{\sigma}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t \notag \\
     \begin{equation}
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-        \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \sqrt{\frac{n \log(2/\delta)}{n_{\Psi}}} \right) + C_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}}
+        \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \frac{n \log(1/\delta)}{\sqrt{n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
     \end{equation}
     for some constants $C_1$, $C_2$, and $C_{\Psi}$.
     %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
@@ -462,7 +466,7 @@ result for the accuracy of the \gls{DGC} method.
     \begin{align*}
         \lVert \phi_{\sigma}^{(m)}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \rVert _1
             &= \lVert \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) - \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \rVert _1 && \text{(definitions)} \notag \\
-            &\leq C_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{-1}^{1} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t && \text{(\reflem{lem:2-chebyshev-parameter-hutchinson})}
+            &\leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{-1}^{1} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t && \text{(\reflem{lem:2-chebyshev-parameter-hutchinson})}
     \end{align*}
     %\begin{align}
     %    \int_{a}^{b} \left| \phi_{\sigma}^{(m)}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t
@@ -484,8 +488,8 @@ result for the accuracy of the \gls{DGC} method.
     we end up with the desired result:
     \begin{align*}
         \lVert \phi_{\sigma}(t)  - \widetilde{\phi}_{\sigma}^{(m)}(t) \rVert _1
-        &\leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + C_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \left( 1 + 2 \sqrt{n} \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \right) \notag \\
-        &= \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \sqrt{\frac{n \log(2/\delta)}{n_{\Psi}}} \right) + C_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}}.
+        &\leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \left( 1 + 2 \sqrt{n} \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \right) \notag \\
+        &= \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \frac{n \log(1/\delta)}{\sqrt{n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}.
     \end{align*}
 \end{proof}
 

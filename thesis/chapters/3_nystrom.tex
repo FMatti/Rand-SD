@@ -485,6 +485,12 @@ $\mathcal{O}(n n_{\Omega} + n_{\Omega}^2 n_t + m n_t)$ required additional stora
 \subsection{Implementation details}
 \label{subsec:3-nystrom-implementation-details}
 
+In this section, we propose a sequence of algorithmic improvements to
+\refalg{alg:3-nystrom-nystrom-chebyshev}, which make the said algorithm more
+robust and accurate.
+
+\paragraph{Short-circuiting}
+
 In \refalg{alg:3-nystrom-nystrom-chebyshev}, we have that
 \begin{equation}
     \mtx{K}_1(t_i) = \mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t_i\mtx{I}_n - \mtx{A}) \mtx{\Omega}.
@@ -528,6 +534,8 @@ mechanism has on the approximation quality can be seen in \reffig{fig:3-nystrom-
         Gaussian \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$.}
     \label{fig:3-nystrom-short-circuit-mechanism}
 \end{figure}
+
+\paragraph{Pseudo-inverse via eigenvalue problem}
 
 There exists an alternative way of computing the result of \reflin{lin:3-nystrom-pseudo-inverse}
 in \refalg{alg:3-nystrom-nystrom-chebyshev}, namely traces of the form
@@ -636,6 +644,8 @@ $\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}$.\\
 %    \label{equ:3-nystrom-generalized-eigenvector}
 %\end{equation}\\
 
+\paragraph{Filter tolerance}
+
 Since by \refthm{thm:3-nystrom-eigenvalue-problem} the diagonal of $\mtx{\Xi}(t)$
 should merely be a permutation of the eigenvalues of $g_{\sigma}(tI - A)$,
 we expect its elements to be within the range of \gls{smoothing-kernel}. Hence, we may remove
@@ -679,7 +689,7 @@ in the following algorithm.
 
 In the end, this procedure slightly improves the accuracy
 and only for small \gls{chebyshev-degree}, i.e. when the Chebyshev expansion has
-not converged yet. This is shown with an example in \reffig{fig:3-nystrom-eigenvalue-problem}.
+not converged yet. This is shown with an example in \reffig{fig:3-nystrom-eigenvalue-problem}.\\
 
 \begin{figure}[ht]
     \centering
@@ -693,6 +703,25 @@ not converged yet. This is shown with an example in \reffig{fig:3-nystrom-eigenv
     \label{fig:3-nystrom-eigenvalue-problem}
 \end{figure}
 
+\paragraph{Combination of all improvements}
+
+In the end, we want to see the combined effect the above proposed algorithmic
+improvements have. To do so, we observe the accuracy in terms of the $L^1$-error
+of the approximated spectral density for changing \gls{chebyshev-degree}. Once
+for the raw \refalg{alg:3-nystrom-nystrom-chebyshev}, and once for \refalg{alg:3-nystrom-nystrom-chebyshev}
+with the short-circuit mechanism, computation of the pseudo-inverse through
+an eigenvalue problem, and added filter tolerance.
+
+\begin{figure}[ht]
+    \centering
+    \input{plots/algorithmic_improvements.pgf}
+    \caption{The effect the algorithmic improvements have on the accuracy when
+        computing the spectral density.
+        The model problem from \refsec{sec:5-experiments-density-function}
+        is used for a Gaussian \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$
+        and we fix \gls{sketch-size} $=80$.}
+    \label{fig:3-nystrom-improved-algorithm}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -5,13 +5,18 @@ In the previous chapters we have introduced multiple methods for approximating t
 spectral density of a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$. Now,
 our goal is to compare these methods with each other and with other related methods
 in terms of their accuracy and speed. In order to do so, we apply these algorithms
-in multiple scenarios. We consider a specific example from density functional theory
-\cite{lin2017randomized} for two different \gls{smoothing-kernel}, and
-subsequently test the methods on various other matrices.\\
+in multiple scenarios. We first consider a model problem from density functional theory
+\cite{lin2017randomized} and discuss the convergence properties of our algorithms
+in this setting (\refsec{sec:5-experiments-density-function}). Subsequently,
+we show that the developed methods are also effective for other choices of
+kernels, for example the Lorentzian kernel (\refsec{sec:5-experiments-haydock-method}).
+Finally, we test the methods on various other matrices which we have found to
+be commonly used in literature (\refsec{sec:5-experiments-various-matrices}).\\
 
 The accuracy is measured in terms of the discrete relative $L^1$-error of the approximated
-spectral density $\widetilde{\phi}_{\sigma}^{(m)}$ from the spectral density $\phi_{\sigma}$
-which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}.
+spectral density $\widetilde{\phi}_{\sigma}^{(m)}$ (also denoted $\widehat{\phi}_{\sigma}^{(m)}$ and
+$\breve{\phi}_{\sigma}^{(m)}$) from the spectral density $\phi_{\sigma}$
+which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}:
 \begin{equation}
     \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^{(m)}(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^{n_t} |\phi_{\sigma}(t_i)|}.
     \label{equ:5-experiments-L1-error}
@@ -293,20 +298,22 @@ methods respectively guarantee with respect to
 \label{sec:5-experiments-various-matrices}
 
 We test the algorithms on various problems encountered in literature.
-We take from the matrix ModES3D\_8, an $8000 \times 8000$ matrix resulting
+We take a synthetic sparse matrix with $2000$ uniformly distributed eigenvalues
+in $[-1, 1]$ \cite{chen2021slq};
+GOE, a matrix $\mtx{A} = (\mtx{G} + \mtx{G}^{\top})/\sqrt{2}$ with standard
+normal $\mtx{G} \in \mathbb{R}^{1000 \times 1000}$ from the Gaussian Orthogonal Ensemble;
+the matrix ModES3D\_8, an $8000 \times 8000$ sparse matrix resulting
 from the same problem as in \refsec{sec:5-experiments-density-function} but with
-a larger computational domain \cite{lin2017randomized},
+a larger computational domain \cite{lin2017randomized}; and
+Erdos992\footnote{\url{https://sparse.tamu.edu/Pajek/Erdos992}},
+an $6100 \times 6100$ sparse matrix representing the collaboration network of the
+Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}.
 %the matrix nd3k\footnote{\url{https://sparse.tamu.edu/ND/nd3k}},
 %an $9000 \times 9000$ matrix
 %which originates from modelling the vibrational modes of a polyethylene molecule
 %with 3000 atoms \cite{lin2016review},
-a synthetic matrix with $2000$ uniformly distributed eigenvalues in
-$[-1, 1]$ \cite{chen2021slq}, Erdos992\footnote{\url{https://sparse.tamu.edu/Pajek/Erdos992}},
-an $6100 \times 6100$ matrix which representing the collaboration network of the
-Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}, and
-GOE, a matrix $\mtx{A} = (\mtx{G} + \mtx{G}^{\top})/\sqrt{2}$ with standard
-normal $G \in \mathbb{R}^{1000 \times 1000}$ from the Gaussian Orthogonal Ensemble. All these
-matrices are sparse and symmetric. For all these matrices, we compute, for
+All these
+matrices are symmetric. For all these matrices, we compute, for
 fixed \gls{chebyshev-degree} $=2400$ and increasing \gls{sketch-size} $+$ \gls{num-hutchinson-queries},
 the relative $L^1$ approximation error
 of the spectral density for a Gaussian \glsfirst{smoothing-kernel} with
@@ -327,16 +334,6 @@ a significant difference.
 \begin{figure}[ht]
     \centering
     \begin{subfigure}[b]{0.49\columnwidth}
-        \input{plots/multi_matrix_convergence_ModES3D_8.pgf}
-        \caption{ModES3D\_8}
-        \label{fig:5-experiments-multi-matrix-convergence-ModES3D}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\columnwidth}
-        \input{plots/multi_matrix_convergence_Erdos992.pgf}
-        \caption{Erdos992}
-        \label{fig:5-experiments-multi-matrix-convergence-Erdos}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\columnwidth}
         \input{plots/multi_matrix_convergence_uniform.pgf}
         \caption{uniform}
         \label{fig:5-experiments-multi-matrix-convergence-uniform}
@@ -345,6 +342,16 @@ a significant difference.
         \input{plots/multi_matrix_convergence_goe.pgf}
         \caption{GOE}
         \label{fig:5-experiments-multi-matrix-convergence-goe}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\columnwidth}
+        \input{plots/multi_matrix_convergence_ModES3D_8.pgf}
+        \caption{ModES3D\_8}
+        \label{fig:5-experiments-multi-matrix-convergence-ModES3D}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\columnwidth}
+        \input{plots/multi_matrix_convergence_Erdos992.pgf}
+        \caption{Erdos992}
+        \label{fig:5-experiments-multi-matrix-convergence-Erdos}
     \end{subfigure}
     \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
     but fixed \gls{chebyshev-degree} $=2400$ we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}

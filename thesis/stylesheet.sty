@@ -82,6 +82,7 @@
 \usepackage[square, numbers]{natbib}
 \bibliographystyle{plainnat}
 \newcommand*{\doi}[1]{\href{https://doi.org/#1}{doi: #1}}
+\bibpunct{\color{linkcolor}[}{\color{linkcolor}]}{,}{n}{}{;}
 
 % Links
 \usepackage{url}
@@ -90,7 +91,6 @@
 % Clickable references
 \usepackage[linktoc=all]{hyperref}
 \hypersetup{citecolor=linkcolor}
-\bibpunct{\color{linkcolor}[}{\color{linkcolor}]}{,}{n}{}{;}
 
 % Enumerations within section (Figure 3.4 instead of maybe Figure 42)
 \counterwithin{figure}{chapter}
@@ -253,8 +253,6 @@
 \usepackage{glossaries}
 
 \makeglossaries
-
-\input{glossary.tex}
 
 
 %%% TITLEPAGE LAYOUT
