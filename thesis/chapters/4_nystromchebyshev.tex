@@ -81,7 +81,7 @@ with high probability. The key to this conclusion is the following theorem \cite
     where $\mtx{B}_k$ is the best rank-k approximation to $\mtx{B}$.
     For fixed constants $c, C$, if \gls{num-hutchinson-queries} $> c\log(1/\delta)$, then with probability $\geq 1 - \delta$,
     \begin{equation}
-        |\Tr^{++}(\mtx{B}) - \Tr(\mtx{B})| \leq 2 C \sqrt{\frac{\log(1/\delta)}{n_{\Psi} n_{\Omega}}} \Tr(\mtx{B}).
+        |\Tr(\mtx{B}) - \Tr^{++}(\mtx{B})| \leq 2 C \sqrt{\frac{\log(1/\delta)}{n_{\Psi} n_{\Omega}}} \Tr(\mtx{B}).
     \end{equation}
     In particular, if $n_{\Omega}=n_{\Psi}=\mathcal{O}\left( \sqrt{\log(1/\delta)}/ \varepsilon + \log(1/\delta) \right)$, $\Tr^{++}(\mtx{B})$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B})$.
 \end{theorem}
@@ -99,7 +99,7 @@ it is shown that similarly to the Hutch++ algorithm, the following result holds:
     with \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $= \mathcal{O}(\sqrt{\log(1/\delta)}/\varepsilon + \log(1/\delta))$
     and $\delta \in (0, 1/2)$, then
     \begin{equation}
-        |\Tr^{++}(\mtx{B}) - \Tr(\mtx{B})| \leq \varepsilon |\Tr(\mtx{B})|
+        |\Tr(\mtx{B}) - \Tr^{++}(\mtx{B})| \leq \varepsilon |\Tr(\mtx{B})|
     \end{equation}
     holds with probability at least $1-\delta$.
 \end{theorem}
@@ -140,7 +140,7 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
     \end{equation}
     Then, for a fixed constant $C$ and $\delta \in (0, e^{-1})$, with probability $\geq 1 - \delta$,
     \begin{equation}
-        \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq C \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq C \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
     In particular, if \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $=\mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$,
     then $\Tr^{++}(\mtx{B}(t))$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
@@ -149,8 +149,8 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
 \begin{proof}
     We may directly evaluate
     \begin{align*}
-        \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t
-        &= \int_{a}^{b} |\Hutch_{n_{\Psi}}(\mtx{\Delta}(t)) - \Tr(\mtx{\Delta}(t))| \mathrm{d}t && \text{(definition $\Tr^{++}$)}  \notag \\
+        \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t
+        &= \int_{a}^{b} |\Tr(\mtx{\Delta}(t)) - \Hutch_{n_{\Psi}}(\mtx{\Delta}(t))| \mathrm{d}t && \text{(definition $\Tr^{++}$)}  \notag \\
         &= C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \notag \\
         &= C_{\Psi} C_{\Omega} \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption $\mtx{\Delta}(t)$)} \notag \\
     \end{align*}
@@ -180,7 +180,7 @@ convergence property of the parameter-dependent Nystr\"om approximation.
     depends on $t \in [a, b]$, and $\delta \in (0, e^{-1})$, with probability
     $1 - \delta$
     \begin{equation}
-        \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+        \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
     \end{equation}
 \end{theorem}
 

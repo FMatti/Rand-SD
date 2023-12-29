@@ -70,7 +70,7 @@ exponential.
     with foci $\pm 1$ and sum of half axis lengths $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
     Then its Chebyshev expansion $f^{(m)}$ with \glsfirst{chebyshev-degree} $\geq 0$ satisfies
     \begin{equation}
-        \sup_{s \in [-1, 1]} |f(s) - f^{(m)}(s)| \leq \frac{2}{\chi^{(m)}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
+        \sup_{s \in [-1, 1]} |f(s) - f^{(m)}(s)| \leq \frac{2}{\chi^{m}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
         \label{equ:2-chebyshev-bernstein-convergence-result}
     \end{equation}
 \end{theorem}
@@ -216,7 +216,7 @@ from \cite{he2023parameter}, which we will state in the following lemma:
     Hutchinson's estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}.
     For a constant $C_{\Psi}$, it holds with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \left| \Hutch_{n_{\Psi}}(\mtx{B}(t))  - \Tr(\mtx{B}(t)) \right| \mathrm{d}t \leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
+        \int_{a}^{b} \left| \Tr(\mtx{B}(t)) - \Hutch_{n_{\Psi}}(\mtx{B}(t)) \right| \mathrm{d}t \leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
     \end{equation}
     %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
     %\begin{equation}
