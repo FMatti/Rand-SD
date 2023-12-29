@@ -19,7 +19,7 @@ np.random.seed(0)
 methods = FastNyCheb
 labels = ["raw algorithm", "improved algorithm"]
 fixed_parameters = [{"n_v": 80, "sigma": 0.05, "eigenproblem": "pinv", "eta": 0, "kappa": 0},
-                    {"n_v": 80, "sigma": 0.05, "eigenproblem": "standard", "eta": 1e-7, "kappa": 1e-5}]
+                    {"n_v": 80, "sigma": 0.05, "eigenproblem": "standard", "eta": 1e-3, "kappa": 1e-5}]
 variable_parameters = "m"
 variable_parameters_values = (np.logspace(2.3, 3.5, 7).astype(int) // 2) * 2
 

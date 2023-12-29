@@ -11,7 +11,7 @@ import numpy as np
 import scipy as sp
 
 
-def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
+def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -65,7 +65,7 @@ def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1
     return xi_tilde, C_tilde
 
 
-def generalied_eigenproblem_direct(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
+def generalied_eigenproblem_direct(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     xi, C_l, C_r = sp.linalg.eig(K_Z, K_W, left=True, right=True)
     conditioning = 1 / np.abs(np.diag(C_l.conjugate().T @ C_r))
     idx = conditioning > tau
@@ -73,7 +73,7 @@ def generalied_eigenproblem_direct(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     return xi, C_r #xi[idx], C_r[:, idx]
 
 
-def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
+def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -129,7 +129,7 @@ def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1
     return xi_tilde, C_tilde
 
 
-def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
+def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -166,7 +166,7 @@ def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     return np.diag(Xi), None
 
 
-def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
+def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -205,7 +205,7 @@ def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     return xi_tilde, None
 
 
-def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
+def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -242,7 +242,7 @@ def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
     return np.diag(Xi), None
 
 
-def generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-1):
+def generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 

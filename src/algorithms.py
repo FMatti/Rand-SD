@@ -125,7 +125,7 @@ def KPM(A, t, m, n_v, seed=0, sigma=None):
     return phi_tilde
 
 
-def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -233,7 +233,7 @@ def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-1, kernel=
     return phi_tilde
 
 
-def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-1, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Robust and efficient spectrum sweeping with Delta-Gauss-Chebyshev method
     for estimating the spectral density.
@@ -564,7 +564,7 @@ def _randomized_trace_estimation(A, n_v, n_v_tilde):
     return trace
 
 
-def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -646,7 +646,7 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-1, kernel=gaussian_kernel, e
     return phi_tilde
 
 
-def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-1, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.

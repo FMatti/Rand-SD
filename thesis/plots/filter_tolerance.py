@@ -20,7 +20,7 @@ np.random.seed(0)
 methods = FastNyCheb
 labels = ["no filter tolerance", "filter tolerance"]
 parameters = [{"m": 2000, "sigma": 0.05, "n_v": 80, "eta": 0},
-              {"m": 2000, "sigma": 0.05, "n_v": 80, "eta": 1e-7}]
+              {"m": 2000, "sigma": 0.05, "n_v": 80, "eta": 1e-3}]
 
 A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 colors = ["#2F455C", "#F98125"]

@@ -662,7 +662,8 @@ should correctly assume the value $1 / (n \sqrt{2 \pi \sigma^2})$. Hence, if due
 certain numerical inaccuracies this value slightly exceeds the above threshold,
 it will get falsely removed. This problematic case can be avoided by introducing a
 \gls{filter-tolerance} $>0$, such that only elements in $\mtx{\Xi}(t)$ which are
-exceed $ (1 + \eta) / (n \sqrt{2 \pi \sigma^2})$ will be filtered out. To ensure
+exceed $ (1 + \eta) / (n \sqrt{2 \pi \sigma^2})$ will be filtered out. Usually,
+we choose \gls{filter-tolerance} $=10^{-3}$. To ensure
 non-negativity, the filter tolerance is only applied from above. \Reffig{fig:3-nystrom-filter-tolerance}
 shows the improvement this filter tolerance gives over the standard approach.
 Close to the edges of the spectrum, there are particularly many inappropriate
