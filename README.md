@@ -1,6 +1,6 @@
-# Rand-SD
+![Rand-SD Logo](thesis/plots/icon_github.png "Rand-SD")
 
-Randomized estimation of spectral densities.
+# Rand-SD
 
 ![](https://img.shields.io/badge/-Compatibility-gray?style=flat-square) &ensp;
 ![](https://img.shields.io/badge/Python_3.8+-white?style=flat-square&logo=python&color=white&logoColor=white&labelColor=gray)
