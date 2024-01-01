@@ -29,9 +29,9 @@ for i in range(len(methods)):
         else:
             param = parameters[j]
         mean, error = time_method(methods[i], param, num_times=100, num_repeats=7)
-        means[i, j] = mean
-        errors[i, j] = error
+        means[i, j] = 1e3 * mean
+        errors[i, j] = 1e3 * error
 
 headline = ["", r"$m=800$", r"$m=1600$", r"$m=2400$", r"$m=3200$"]
 
-generate_tex_tabular(means, "thesis/tables/timing_squared_interpolation.tex", headline, labels, errors)
+generate_tex_tabular(means, "thesis/tables/timing_squared_interpolation.tex", headline, labels, errors, fmt=r"${:.1f}$")

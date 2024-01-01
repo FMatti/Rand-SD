@@ -25,9 +25,9 @@ errors = np.empty((len(methods), len(parameters)))
 for i in range(len(methods)):
     for j in range(len(parameters)):
         mean, error = time_method(methods[i], parameters[j], num_times=1000, num_repeats=7)
-        means[i, j] = mean
-        errors[i, j] = error
+        means[i, j] = 1e3 * mean
+        errors[i, j] = 1e3 * error
 
 headline = ["", r"$m=800$", r"$m=1600$", r"$m=2400$", r"$m=3200$"]
 
-generate_tex_tabular(means, "thesis/tables/timing_interpolation.tex", headline, labels, errors)
+generate_tex_tabular(means, "thesis/tables/timing_interpolation.tex", headline, labels, errors, fmt=r"${:.1f}$")
