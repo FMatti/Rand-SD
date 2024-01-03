@@ -249,7 +249,11 @@ again have a form in which they can be expanded efficiently and for all $t$ simu
 as we have seen in \refsec{sec:2-chebyshev-delta-gauss-chebyshev}.\\
 
 The implementation of this new method is similar to the \gls{DGC} and \gls{NC} methods (\refalg{alg:2-chebyshev-DGC} and \refalg{alg:3-nystrom-nystrom-chebyshev}).
-The pseudocode for the \glsfirst{NCPP} is given in \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp}.
+Although from \refequ{equ:4-nystromchebyshev-spectral-density-decomposition} we
+could see that the result of the \glsfirst{NCPP} method could be obtained by
+combining the results of the \gls{NC} and \gls{DGC} methods, doing so is not
+efficient in practice. The pseudocode for the \glsfirst{NCPP} method is given
+in \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp}.
 
 \begin{algo}{Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-nystrom-chebyshev-pp}
     \input{algorithms/nystrom_chebyshev_pp.tex}

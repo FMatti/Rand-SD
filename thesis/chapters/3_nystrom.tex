@@ -288,7 +288,8 @@ of the method, we need to quantify the \glsfirst{numerical-rank} of this matrix
 function, in order to get an a priori guarantee for the convergence of the 
 method.\\
 
-The eigenvalues of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$ are given by
+When using a Gaussian \gls{smoothing-kernel}, we can explicitly write
+the eigenvalues of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$ as
 \begin{equation}
     \sigma_i(t) = g_{\sigma}(t - \lambda_{(i)}) = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{-\frac{(t - \lambda_{(i)})^2}{2 \sigma^2}}
     \label{equ:3-nystrom-kernel-function-eigenvalues}
@@ -299,7 +300,8 @@ distance from \gls{spectral-parameter}, such that $\sigma_1(t) \geq \dots \geq \
 Consequently, by using the closed-form expression of the eigenvalues \refequ{equ:3-nystrom-kernel-function-eigenvalues}
 and inserting it into \refequ{equ:3-nystrom-numerical-rank-frobenius-norm} or
 \refequ{equ:3-nystrom-numerical-rank-spectral-norm},
-we may upper bound the numerical rank of \refequ{equ:3-nystrom-matrix-function} as
+we may upper bound the numerical rank of \refequ{equ:3-nystrom-matrix-function}
+for Gaussian \gls{smoothing-kernel} as
 \begin{equation}
     r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \leq \#\{1\leq i\leq n: |t - \lambda_{(i)}| \leq C_{\varepsilon, \cdot}(\sigma)\}
     \label{equ:3-nystrom-kernel-numerical-rank}
@@ -329,7 +331,8 @@ This is also illustrated in \reffig{fig:3-nystrom-numerical-rank-constant}.\\
 If we additionally assume the eigenvalues of the matrix $\mtx{A}$
 to be evenly distributed within $[a, b]$, that is, in any subinterval of fixed length in
 $[a, b]$ we can expect to find roughly the same number of eigenvalues (see \reffig{fig:3-nystrom-evenly-distributed-spectrum}), then
-we can estimate the numerical rank of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$ to be
+we can estimate the numerical rank of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$
+for Gaussian \gls{smoothing-kernel} to be
 \begin{equation}
     r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \lessapprox \frac{2 n}{b - a} C_{\varepsilon, \cdot}(\sigma).
     \label{equ:3-nystrom-kernel-numerical-rank-even-eigenvalues}

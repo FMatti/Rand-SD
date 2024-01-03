@@ -131,11 +131,11 @@ for which -- we will see -- exist many efficient algorithms.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Overview of the proposed methods}
+\section{Overview of the methods developed in this thesis}
 \label{sec:1-introduction-overview}
 
 The three methods we will develop in this thesis are based on \cite{lin2017randomized}.
-All of them are intimately related. In a first stage, they all expand the matrix
+All of them are closely related to each other. In a first stage, they all expand the matrix
 function $g_{\sigma}(t\mtx{I}_n - \mtx{A})$ from
 \refequ{equ:1-introduction-spectral-density-as-trace} in a truncated basis of
 Chebyshev polynomials. The \gls{DGC} method then proceeds by approximating the
@@ -165,6 +165,17 @@ in \reffig{fig:1-introduction-methods-overview}.
     in this thesis: the \glsfirst{DGC}, \glsfirst{NC}, and \glsfirst{NCPP} methods.}
     \label{fig:1-introduction-methods-overview}
 \end{figure}
+
+The \gls{DGC} method from \cite{lin2017randomized} is very similar to our version
+of this method, except that we employ a more rigorous and faster approach when
+computing the Chebyshev expansion. \cite{lin2017randomized} also proposes the
+\gls{SS} method, as well as the \gls{RESS} method. We decide to not discuss the
+\gls{SS} method, since we have found an equivalent version of this method which
+incorporates the \enquote{efficient} part from the \gls{RESS} method at no loss
+of accuracy. We call it the \gls{NC} method.
+Finally, the \gls{NCPP} method is derived from the \gls{RESS} method. Both the
+\gls{NC} and \gls{NCPP} methods feature major algorithmic improvements compared
+to their ancestors.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -231,21 +242,23 @@ queries used, which is a highly desirable algorithmic property.
 \section{Main contributions}
 \label{sec:1-introduction-contributions}
 
-Besides a couple of small clarifications and improvements to the algorithms 
-from \cite{lin2017randomized}, we see our main contributions to be
+Besides a couple of small clarifications to \cite{lin2017randomized}, we see our
+main contributions to be
 
 \begin{itemize}
     \item the development of a simple and consistent \gls{DCT}-based interpolation
           scheme which allows us to speed up \cite[algorithm~5]{lin2017randomized}
           by orders of magnitude at no loss of accuracy;
-    \item the derivation of an a priori guarantee for the number of matrix-vector
-          products needed to get an accurate approximation of the spectral
-          density under certain assumptions on the matrix;
-    \item proposal of a simple generalization of the presented methods to other
-          commonly used randomized low-rank approximation schemes;
+    \item the proposal of multiple algorithmic improvements and speed-ups
+          of the algorithms from \cite{lin2017randomized};
+    %\item the derivation of an a priori guarantee for the number of matrix-vector
+    %      products needed to get an accurate approximation of the spectral
+    %      density under certain assumptions on the matrix;
     \item an analogoue result for the reciprocal decrease of the approximation
           error with the number of queries as seen in \cite[theorem~1]{meyer2021hutch}
           but for the trace of parameter dependent matrices;
+    \item proposal of a simple generalization of the presented methods to other
+          commonly used randomized low-rank approximation schemes;
     \item a fast and rigorously documented implementation of all the algorithms
           following the notation and conventions of this thesis, which can be used to
           reproduce every plot, table, and much more\footnote{A GitHub repository

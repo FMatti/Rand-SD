@@ -298,7 +298,7 @@ with $\mathcal{O}(m n_t + n n_{\Psi})$ required additional storage.
 
 Expression \refequ{equ:2-chebyshev-chebyshev-expansion} is only well-defined for matrices whose spectra are fully
 contained in $[-1, 1]$. To also apply the \gls{DGC} method for matrices whose
-spectra we know (or can estimate) to be within $[a, b]$, we can define a
+spectra we know (or can estimate) to be within $[a, b] \subset \mathbb{R}$, we can define a
 \gls{spectral-transformation} as follows
 \begin{equation}
     \tau(t) = \frac{2t - a - b}{b - a},
@@ -329,14 +329,19 @@ form are computed using this technique.
 \subsection{Theoretical analysis}
 \label{subsec:2-chebyshev-theoretical-analysis}
 
-The convergence of the expansion of \gls{smoothing-kernel} is exponential
+In order to obtain tractable results and because it is the most common case in
+literature, we choose to restrict the analysis in this section to Gaussian 
+\gls{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}.\\
+
+The convergence of the expansion of a Gaussian \gls{smoothing-kernel} is exponential
 and depends on \gls{smoothing-parameter}. This can be seen quite well
 in \reffig{fig:2-chebyshev-chebyshev-convergence}, and is proven in the following
 lemma.
 
 \begin{lemma}{$L^1$-error of Chebyshev expansion for Gaussian smoothing}{2-chebyshev-error}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix whose spectrum
-    is contained in $[-1, 1]$. Then
+    is contained in $[-1, 1]$. Then the expansion of the \glsfirst{smooth-spectral-density}
+    with Gaussian \glsfirst{smoothing-kernel} satisfies
     \begin{equation}
         \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
         \label{equ:2-chebyshev-interpolation-error}
@@ -430,6 +435,7 @@ result for the accuracy of the \gls{DGC} method.
 \begin{theorem}{$L^1$-error of Delta-Gauss-Chebyshev method}{2-delta-gauss-chebyshev}
     Let $\widetilde{\phi}_{\sigma}^{(m)}(t)$ be the result from running \refalg{alg:2-chebyshev-DGC}
     on a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$ using
+    a Gaussian \glsfirst{smoothing-kernel} with
     \glsfirst{smoothing-parameter} $>0$, \glsfirst{chebyshev-degree} $\in \mathbb{N}$, and
     \glsfirst{num-hutchinson-queries} $\in \mathbb{N}$. For $\delta \in (0, e^{-1})$ it holds with
     probability $1-\delta$, that
