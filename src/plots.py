@@ -17,6 +17,33 @@ from src.kernel import gaussian_kernel
 
 
 def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_kernel, n_t=1000, t=None, add_baseline=False):
+    """
+    Compute the spectral densities of a matrix A using different methods or parameters.
+
+    Parameters
+    ----------
+    A : np.array or sp.sparse.matrix
+        The matrix.
+    methods : function or list of functions
+        The method(s) used to compute the spectral densities.
+    labels : function or list of functions
+        The labels used as names for the computed spectral densities.
+    parameters : function or list of functions
+        The parameter(s) used to compute the spectral densities.
+    kernel : function
+        The smoothing kernel.
+    n_t : int > 0
+        The number of parameter values at which the spectral density is evaluated.
+    t : np.ndarray (n_t,)
+        (Optional) specific parameter values at which the spectral density is evaluated.
+    add_baseline : bool
+        Additionally compute the baseline of the spectral density.
+    
+    Returns
+    -------
+    spectral_densities : dict of np.ndarray
+        The computed spectral densities for each of the methods/parameters.
+    """
     parameters = deepcopy(parameters)
 
     eigenvalues = np.linalg.eigvalsh(A if isinstance(A, np.ndarray) else A.toarray())
@@ -58,6 +85,33 @@ def compute_spectral_densities(A, methods, labels, parameters, kernel=gaussian_k
 
 
 def plot_spectral_densities(spectral_densities, parameters, variable_parameter=None, ignored_parameters=[], ax=None, colors=None, t=None):
+    """
+    Plot the spectral densities of a matrix A using different methods or parameters.
+
+    Parameters
+    ----------
+    spectral_densities : dict of np.ndarray
+        The computed spectral densities for each of the methods/parameters.
+    parameters : function or list of functions
+        The parameter(s) used to compute the spectral densities.
+    variable_parameter : str
+        The name of the variable parameter.
+    ignored_parameters : list of str
+        The names of the ignored parameters.
+    kernel : function
+        The smoothing kernel.
+    ax : matplotlib.axes.Axes
+        The axis on which the spectral density is plotted.
+    colors : list of colors
+        A list with the colors of the lines in the plot.
+    t : np.ndarray (n_t,)
+        (Optional) specific parameter values at which the spectral density is evaluated.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        The axis on which the spectral density was plotted.
+    """
     title = ""
     if isinstance(parameters, list):
         parameters = parameters[0]
@@ -86,6 +140,40 @@ def plot_spectral_densities(spectral_densities, parameters, variable_parameter=N
 
 
 def compute_spectral_density_errors(A, methods, labels, variable_parameter, variable_parameter_values, parameters, kernel=gaussian_kernel, n_t=1000, error_metric=p_norm, correlated_parameter=None, correlated_parameter_values=None, eigenvalues=None):
+    """
+    Compute the errors of the spectral densities of a matrix A using different
+    methods or parameters.
+
+    Parameters
+    ----------
+    A : np.array or sp.sparse.matrix
+        The matrix.
+    methods : function or list of functions
+        The method(s) used to compute the spectral densities.
+    labels : function or list of functions
+        The labels used as names for the computed spectral densities.
+    variable_parameter : str
+        The name of the variable parameter.
+    variable_parameter_values : np.ndarray
+        The values of the variable parameter.
+    parameters : function or list of functions
+        The parameter(s) used to compute the spectral densities.
+    kernel : function
+        The smoothing kernel.
+    n_t : int > 0
+        The number of parameter values at which the spectral density is evaluated.
+    correlated_parameter : str
+        A parameter which is correlated with the variable parameter.
+    correlated_parameter_values : function
+        The values which the correlated parameter depending on the variable parameter.
+    eigenvalues : np.ndarray
+        Eigenvalues which are used to form the baseline spectral density.
+    
+    Returns
+    -------
+    spectral_density_errors : dict of np.ndarray
+        The errors for each of the methods/parameters depending on the variable parameter.
+    """
     parameters = deepcopy(parameters)
 
     # Spectral transform of matrix
@@ -119,9 +207,9 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
 
     t = np.linspace(-1, 1, n_t)
 
-    dos_errors = {}
+    spectral_density_errors = {}
     for label, method, parameter in zip(labels, methods, parameters):
-        dos_errors[label] = []
+        spectral_density_errors[label] = []
         for param in variable_parameter_values:
             if correlated_parameter is not None:
                 parameter[correlated_parameter] = correlated_parameter_values(param)
@@ -136,12 +224,46 @@ def compute_spectral_density_errors(A, methods, labels, variable_parameter, vari
             parameter[variable_parameter] = param
             spectral_density_baseline = form_spectral_density(eigenvalues_transformed, kernel=kernel, n=A_transformed.shape[0], n_t=n_t, sigma=parameter["sigma"])
             spectral_density = method(A=A_transformed, t=t, **parameter)
-            dos_errors[label].append(error_metric(spectral_density_baseline, spectral_density))
+            spectral_density_errors[label].append(error_metric(spectral_density_baseline, spectral_density))
 
-    return dos_errors
+    return spectral_density_errors
 
 
 def plot_spectral_density_errors(spectral_density_errors, parameters, variable_parameter, variable_parameter_values, error_metric_name="Error", x_label=None, ignored_parameters=[], ax=None, colors=None, markers=None, linestyles=None):
+    """
+    Plot the errors of the spectral densities of a matrix A using different
+    methods or parameters.
+
+    Parameters
+    ----------
+    spectral_density_errors : dict of np.ndarray
+        The errors of the spectral densities for each of the methods/parameters.
+    parameters : function or list of functions
+        The parameter(s) used to compute the spectral densities.
+    variable_parameter : str
+        The name of the variable parameter.
+    variable_parameter_values : np.ndarray
+        The values of the variable parameter.
+    error_metric_name : str
+        The name of the error metric (y-label).
+    x_label : str
+        The name of the x-label.
+    ignored_parameters : list of str
+        The names of the ignored parameters.
+    ax : matplotlib.axes.Axes
+        The axis on which the spectral density is plotted.
+    colors : list of colors
+        A list with the colors of the lines in the plot.
+    markers : list of markers
+        A list with the types of markers used in the plot.
+    linestyles : list of linestyles
+        A list with the styles of the lines in the plot.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        The axis on which the spectral density was plotted.
+    """
     title = ""
     if isinstance(parameters, list):
         parameters = parameters[0]
@@ -173,7 +295,38 @@ def plot_spectral_density_errors(spectral_density_errors, parameters, variable_p
     return ax
 
 
-def compute_spectral_density_errors_heatmap(A, method, variable_parameters, parameters, kernel=gaussian_kernel, n_t=1000, error_metric=p_norm):
+# --- Unused implementations ---
+
+
+def _plot_spectral_density_errors_heatmap(spectral_density_errors, variable_parameters, parameters, ignored_parameters=[], ax=None):
+    title = ""
+    if isinstance(parameters, list):
+        parameters = parameters[0]
+    for key, value in parameters.items():
+        if key in variable_parameters.keys() or key in ignored_parameters:
+            continue
+        title += "${}".format(key) if len(key) < 4 else"$\{}".format(key)
+        title += " = {}$, ".format(value)
+    title = title[:-2]
+    if ax is None:
+        _, ax = plt.subplots(figsize=(4, 4))
+
+    param_1, param_2 = variable_parameters.keys()
+    values_1, values_2 = variable_parameters.values()
+
+    ax.set_title(title)
+    ax.set_ylabel("${}$".format(param_1))
+    ax.set_xlabel("${}$".format(param_2))
+    ax.set_yticks(range(len(values_1)), values_1)
+    ax.set_xticks(range(len(values_2)), values_2)
+
+    plt.imshow(spectral_density_errors, cmap="magma", norm=matplotlib.colors.LogNorm())
+    plt.colorbar()
+
+    return ax
+
+
+def _compute_spectral_density_errors_heatmap(A, method, variable_parameters, parameters, kernel=gaussian_kernel, n_t=1000, error_metric=p_norm):
     parameters = deepcopy(parameters)
 
     # Spectral transform of matrix
@@ -201,31 +354,3 @@ def compute_spectral_density_errors_heatmap(A, method, variable_parameters, para
             dos_errors[i, j] = error_metric(spectral_density_baseline, spectral_density)
 
     return dos_errors
-
-
-def plot_spectral_density_errors_heatmap(spectral_density_errors, variable_parameters, parameters, ignored_parameters=[], ax=None):
-    title = ""
-    if isinstance(parameters, list):
-        parameters = parameters[0]
-    for key, value in parameters.items():
-        if key in variable_parameters.keys() or key in ignored_parameters:
-            continue
-        title += "${}".format(key) if len(key) < 4 else"$\{}".format(key)
-        title += " = {}$, ".format(value)
-    title = title[:-2]
-    if ax is None:
-        _, ax = plt.subplots(figsize=(4, 4))
-
-    param_1, param_2 = variable_parameters.keys()
-    values_1, values_2 = variable_parameters.values()
-
-    ax.set_title(title)
-    ax.set_ylabel("${}$".format(param_1))
-    ax.set_xlabel("${}$".format(param_2))
-    ax.set_yticks(range(len(values_1)), values_1)
-    ax.set_xticks(range(len(values_2)), values_2)
-
-    plt.imshow(spectral_density_errors, cmap="magma", norm=matplotlib.colors.LogNorm())
-    plt.colorbar()
-
-    return ax

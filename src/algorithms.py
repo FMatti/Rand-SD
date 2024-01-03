@@ -13,7 +13,6 @@ import scipy as sp
 from src.kernel import gaussian_kernel
 from src.interpolation import chebyshev_coefficients, exponentiate_chebyshev_coefficients_cosine_transform, chebyshev_recurrence
 from src.eigenproblem import generalized_eigenproblem_standard, generalized_eigenproblem_pinv, generalized_eigenproblem_dggev, generalized_eigenproblem_lstsq, generalized_eigenproblem_kernelunion, generalied_eigenproblem_direct
-from src.approximation import generalized_nystrom_pinv, generalized_nystrom_qr, generalized_nystrom_stable_qr
 from src.utils import continued_fraction
 
 
@@ -23,7 +22,7 @@ sys.setrecursionlimit(5000)
 
 def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
     """
-    Delta-Gauss-Chebyshev method for computing the spectral density.
+    Delta-Gauss-Chebyshev method for estimating the spectral density.
 
     Parameters
     ----------
@@ -36,7 +35,7 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
     sigma : int or float > 0
         Smearing parameter.
     n_v : int > 0
-        Number of random vectors.
+        Number of Hutchinson's queries.
     kernel : function
         The smoothing kernel applied to the spectral density.
     seed : int >= 0
@@ -49,7 +48,7 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 2.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -63,14 +62,346 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
     g = lambda x: kernel(x, n=n, sigma=sigma)
     mu = chebyshev_coefficients(t, m, function=g)
 
-    # Do recurrence
-    W = np.random.randn(n, n_v)
-    phi_tilde = chebyshev_recurrence(mu, A, T_0=W, L=lambda x: np.sum(np.multiply(W, x)) / n_v)
+    # Compute recurrence from Chebyshev expansion
+    Psi = np.random.randn(n, n_v)
+    phi_tilde = chebyshev_recurrence(mu, A, T_0=Psi, L=lambda x: np.multiply(Psi, x).sum() / n_v)
 
     return phi_tilde
 
 
-def KPM(A, t, m, n_v, seed=0, sigma=None):
+def NC(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+    """
+    Nyström-Chebyshev method for estimating the spectral density.
+
+    Parameters
+    ----------
+    A : np.ndarray (n, n)
+        Symmetric matrix with eigenvalues between (-1, 1).
+    t : np.ndarray (n_t,)
+        A set of points at which the DOS is to be evaluated.
+    m : int > 0
+        Degree of the Chebyshev polynomial.
+    sigma : int or float > 0
+        Smearing parameter.
+    n_v : int > 0
+        Size of sketching matrix (in Nyström approximation).
+    k : int > 0
+        The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
+    tau : int or float in (0, 1]
+        Truncation parameter for enforcing conditioning of eigenvalue problem.
+    kappa : float > 0
+        The threshold on the Hutchinson estimate of g_sigma. If it is below this
+        value, instead of solving the possibly ill-conditioned generalized
+        eigenvalue problem, we set the spectral density at that point to zero.
+    eta : float > 0
+        The tolerance for removing eigenvalues which are outside the range of
+        g_sigma.
+    kernel : function
+        The smoothing kernel applied to the spectral density.
+    square_coefficients : str or None
+        Method by which the coefficients of the squared Gaussian are computed.
+         -> transformation = Compute coefficients with discrete cosine transform
+         -> interpolation = Interpolate the squared function
+    eigenproblem : str
+        Resolution method of the generalized eigenvalue problem in SS methods.
+         -> standard = As proposed in [1] (project out kern(K_W))
+         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
+         -> direct = Directly solve the generalized eigenproblem
+         -> pinv = Directly compute pseudoinverse
+         -> dggev = Use QZ algorithm
+         -> lstsq = Solve leastsquares problem
+    seed : int >= 0
+        The seed for generating the random matrix W.
+
+    Returns
+    -------
+    phi_hat : np.ndarray
+        Approximations of the spectral density at the points t.
+
+    References
+    ----------
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
+        made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 5.
+        DOI: https://doi.org/10.1007/s00211-016-0837-7
+    """
+    # Seed the random number generator
+    np.random.seed(seed)
+
+    # Determine size of matrix
+    n = A.shape[0]
+
+    # Convert evaluation point(s) to numpy array
+    if not isinstance(t, np.ndarray):
+        t = np.array(t).reshape(-1)
+
+    # Compute coefficients of Chebyshev expansion of the smoothing kernel
+    g = lambda x: kernel(x, n=n, sigma=sigma)
+    if square_coefficients == "interpolation":
+        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
+        mu_Z = chebyshev_coefficients(t, (k + 1) * m, function=lambda x: g(x) ** (k + 1))
+    else:  # square_coefficients == "transformation":
+        mu = chebyshev_coefficients(t, m, function=g)
+        mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
+        mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
+
+    # Compute recurrence from Chebyshev expansion
+    Omega = np.random.randn(n, n_v)
+    K_W = chebyshev_recurrence(mu_W, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+    K_Z = chebyshev_recurrence(mu_Z, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+
+    # Trace computation
+    phi_hat = np.empty(t.shape[0])
+    for i in range(t.shape[0]):
+        # Check if rank of if Hutchinson (k=1) for Tr(g^{(m)}(tI-A)) is almost zero
+        if np.trace(K_W[i]) / n_v < kappa:
+            phi_hat[i] = 0
+            continue
+        else:
+            if eigenproblem == "kernelunion":
+                Xi = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            elif eigenproblem == "pinv":
+                Xi = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            elif eigenproblem == "dggev":
+                Xi = generalized_eigenproblem_dggev(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            elif eigenproblem == "lstsq":
+                Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            elif eigenproblem == "direct":
+                Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            else:  # eigenproblem == "standard":
+                Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            phi_hat[i] = np.sum(Xi)
+
+    return phi_hat
+
+
+def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+    """
+    Nyström-Chebyshev++ method for estimating the spectral density.
+
+    Parameters
+    ----------
+    A : np.ndarray (n, n)
+        Symmetric matrix with eigenvalues between (-1, 1).
+    t : np.ndarray (n_t,)
+        A set of points at which the DOS is to be evaluated.
+    m : int > 0
+        Degree of Chebyshev the polynomial.
+    sigma : int or float > 0
+        Smearing parameter.
+    n_v : int > 0
+        Size of sketching matrix (in Nyström approximation).
+    n_v_tilde : int > 0
+        Number of Hutchinson's queries.
+    k : int > 0
+        The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
+    tau : int or float in (0, 1]
+        Truncation parameter.
+    kappa : float > 0
+        The threshold on the Hutchinson estimate of g_sigma. If it is below this
+        value, instead of solving the possibly ill-conditioned generalized
+        eigenvalue problem, we set the spectral density at that point to zero.
+    eta : float > 0
+        The tolerance for removing eigenvalues which are outside the range of
+        g_sigma.
+    kernel : function
+        The smoothing kernel applied to the spectral density.
+    square_coefficients : str or None
+        Method by which the coefficients of the squared Gaussian are computed.
+         -> transformation = Compute coefficients with discrete cosine transform
+         -> interpolation = Interpolate the squared function
+    eigenproblem : str
+        Resolution method of the generalized eigenvalue problem in SS methods.
+         -> standard = As proposed in [1] (project out kern(K_W))
+         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
+         -> direct = Directly solve the generalized eigenproblem
+    seed : int >= 0
+        The seed for generating the random matrix W.
+
+    Returns
+    -------
+    phi_breve : np.ndarray
+        Approximations of the spectral density at the points t.
+
+    References
+    ----------
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
+        made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 7.
+        DOI: https://doi.org/10.1007/s00211-016-0837-7
+    """
+    # Seed the random number generator
+    np.random.seed(seed)
+
+    # Determine size of matrix i.e. number of eigenvalues 
+    n = A.shape[0]
+
+    # Convert evaluation point(s) to numpy array
+    if not isinstance(t, np.ndarray):
+        t = np.array(t).reshape(-1)
+
+    # Preprocess the number of random vectors
+    if n_v == 0:
+        return DGC(A, t, m, sigma, n_v_tilde, kernel, seed)
+    if n_v_tilde is None:  # Evenly distribute mat-vecs
+        n_v_tilde = n_v // 2
+        n_v = n_v // 2
+    elif n_v_tilde == 0:
+        return NC(A, t, m, sigma, n_v, k, tau, kappa, eta, kernel, square_coefficients, eigenproblem, seed)
+
+    # Compute coefficients of Chebyshev expansion of the smoothing kernel
+    g = lambda x: kernel(x, n=n, sigma=sigma)
+    if square_coefficients == "transformation":
+        mu = chebyshev_coefficients(t, m, function=g)
+        mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
+        mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
+        mu_C = mu if k < 3 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 1) // 2)
+        mu_D = mu_C if k % 2 == 1 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 2) // 2)
+    else:  # square_coefficients == "interpolation":
+        mu = chebyshev_coefficients(t, m, function=g)
+        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
+        mu_Z = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** (k + 1))
+        mu_C = mu if k < 3 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 1) // 2))
+        mu_D = mu_C if k % 2 == 1 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 2) // 2))
+
+    # Compute recurrence from Chebyshev expansion
+    Omega = np.random.randn(n, n_v)
+    Psi = np.random.randn(n, n_v_tilde)
+    K_W = chebyshev_recurrence(mu_W, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+    K_Z = chebyshev_recurrence(mu_Z, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+    K_C = chebyshev_recurrence(mu_C, A, T_0=Omega, L=lambda x: Psi.T @ x, final_shape=(n_v_tilde, n_v))
+    K_D = K_C if k % 2 == 1 else chebyshev_recurrence(mu_D, A, T_0=Omega, L=lambda x: Psi.T @ x, final_shape=(n_v_tilde, n_v))
+    K_W_tilde = chebyshev_recurrence(mu, A, T_0=Psi, L=lambda x: np.sum(np.multiply(Psi, x)), final_shape=())
+
+    phi_breve = np.zeros(t.shape[0])
+    for i in range(t.shape[0]):
+        if np.trace(K_W[i]) / n_v < kappa:  # Hutchinson for Tr(g^{(m)}(tI-A))
+            continue
+
+        if eigenproblem == "kernelunion":
+            xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
+        elif eigenproblem == "direct":
+            xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
+        else:  # square_coefficients == "standard":
+            xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
+            T = np.trace(K_C[i] @ C_tilde @ C_tilde.conjugate().T @ K_D[i].T)
+        phi_breve[i] = np.sum(xi_tilde) + (K_W_tilde[i] - T) / n_v_tilde
+
+    return phi_breve
+
+
+def Lanczos(A, x, k, reorth_tol=0.7):
+    """
+    Compute coefficients of symmetric tridiagonal matrix T from Lanczos.
+
+        T = np.diagonal([b, a, b], [-1, 0, 1])
+
+    Parameters
+    ----------
+    A : np.ndarray (n, n)
+        Symmetric matrix.
+    x : np.ndarray (n,)
+        Starting vector for Lanczos method.
+    k : int > 0
+        Number of Lanczos iterations.
+
+    Returns
+    -------
+    a : np.ndarray (k,)
+        The diagonal elements of the tridiagonal matrix from Lanczos.
+    b : np.ndarray (k,)
+        The secondary-diagonal elements of the tridiagonal matrix from Lanczos.
+
+    References
+    ----------
+    [2] Lanczos, C. An Iteration Method for the Solution of the Eigenvalue
+        Problem of Linear Differential and Integral Operators. Journal of
+        Research of the National Bureau of Standards. 45, 255-282 (1950)},
+        DOI: https://doi.org/10.6028/jres.045.026
+    """
+    # Initialize arrays for storing the diagonal and secondary-diagonal elements
+    a = np.empty(k)
+    b = np.empty(k)
+
+    # Orthogonal matrix which is constructed in Lanczos algorithm
+    U = np.empty((A.shape[0], k + 1))
+    U[:, 0] = x / np.linalg.norm(x)
+
+    # Lanczos iterations
+    for j in range(k):
+        w = A @ U[:, j]
+        a[j] = U[:, j].T @ w
+        u_tilde = w -  U[:, j] * a[j] - (U[:, j - 1] * b[j - 1] if j > 0 else 0) 
+
+        # Perform reorthogonalization
+        if np.linalg.norm(u_tilde) <= reorth_tol * np.linalg.norm(w):
+            # Twice is enough
+            h_hat = U[:, : j + 1].T @ u_tilde
+            a[j] += h_hat[-1]
+            if j > 0:
+                b[j - 1] += h_hat[-2]
+            u_tilde -= U[:, : j + 1] @ h_hat
+
+        b[j] = np.linalg.norm(u_tilde)
+        U[:, j + 1] = u_tilde / b[j]
+
+    return a, b
+
+
+def Haydock(A, t, m, sigma, n_v, seed=0, kernel=None):
+    """
+    Haydock's method.
+
+    Parameters
+    ----------
+    A : np.ndarray (n, n)
+        Symmetric matrix with eigenvalues between (-1, 1).
+    t : np.ndarray (n_t,)
+        A set of points at which the DOS is to be evaluated.
+    m : int > 0
+        The number of Lanczos iterations.
+    sigma : int or float > 0
+        Smearing parameter.
+    n_v : int > 0
+        Number of random vectors used in Monte-Carlo estimate.
+    seed : int >= 0
+        The seed for generating the random matrix W.
+    kernel : None
+        Unused dummy argument for compatibility reasons.
+
+    Returns
+    -------
+    phi_tilde : np.ndarray
+        Approximations of the spectral density at the points t.
+
+    References
+    ----------
+    [3] L. Lin, Y. Saad, C. Yang. Approximating Spectral Densities of Large Matrices.
+        SIAM Reviev 58(1) (2016). Section 3.2.2. 
+        Link: https://doi.org/10.1137/130934283
+    """
+    # Seed the random number generator
+    np.random.seed(seed)
+
+    # Determine size of matrix i.e. number of eigenvalues 
+    n = A.shape[0]
+
+    phi_tilde = np.zeros(len(t))
+    for _ in range(n_v):
+        # Compute tridiagonal matrix from Lanczos for random vector
+        v = np.random.randn(n)
+        a, b = Lanczos(A, v, m)
+        phi_tilde += np.imag(continued_fraction((t + 1j*sigma), a, b))
+
+    phi_tilde *= - 1 / (n_v * np.pi)
+    return phi_tilde
+
+
+# --- Unused implementations ---
+
+
+from src.approximation import _generalized_nystrom_pinv, _generalized_nystrom_qr, _generalized_nystrom_stable_qr
+
+
+def _KPM(A, t, m, n_v, seed=0, sigma=None):
     """
     Kernel polynomial method for computing the spectral density.
 
@@ -125,314 +456,7 @@ def KPM(A, t, m, n_v, seed=0, sigma=None):
     return phi_tilde
 
 
-def FastNyCheb(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
-    """
-    Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
-    estimating the spectral density.
-
-    Parameters
-    ----------
-    A : np.ndarray (n, n)
-        Symmetric matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (n_t,)
-        A set of points at which the DOS is to be evaluated.
-    m : int > 0
-        Degree of the Chebyshev polynomial.
-    sigma : int or float > 0
-        Smearing parameter.
-    n_v : int > 0
-        Number of random vectors.
-    k : int > 0
-        The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
-    tau : int or float in (0, 1]
-        Truncation parameter.
-    kappa : float > 0
-        The threshold on the Hutchinson estimate of g_sigma. If it is below this
-        value, instead of solving the possibly ill-conditioned generalized
-        eigenvalue problem, we set the spectral density at that point to zero.
-    eta : float > 0
-        The tolerance for removing eigenvalues which are outside the range of
-        g_sigma.
-    kernel : function
-        The smoothing kernel applied to the spectral density.
-    square_coefficients : str or None
-        Method by which the coefficients of the squared Gaussian are computed.
-         -> transformation = Compute coefficients with discrete cosine transform
-         -> interpolation = Interpolate the squared function
-    eigenproblem : str
-        Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [2] (project out kern(K_W))
-         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
-         -> direct = Directly solve the generalized eigenproblem
-         -> pinv = Directly compute pseudoinverse
-         -> dggev = Use QZ algorithm
-         -> lstsq = Solve leastsquares problem
-    seed : int >= 0
-        The seed for generating the random matrix W.
-
-    Returns
-    -------
-    phi_tilde : np.ndarray
-        Approximations of the spectral density at the points t.
-
-    References
-    ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
-        made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 5.
-        DOI: https://doi.org/10.1007/s00211-016-0837-7
-    """
-    # Seed the random number generator
-    np.random.seed(seed)
-
-    # Determine size of matrix
-    n = A.shape[0]
-
-    # Convert evaluation point(s) to numpy array
-    if not isinstance(t, np.ndarray):
-        t = np.array(t).reshape(-1)
-
-    # Chebyshev expansion
-    g = lambda x: kernel(x, n=n, sigma=sigma) + (1e-3 if eigenproblem == "cholesky" else 0)
-
-    if square_coefficients == "interpolation":
-        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
-        mu_Z = chebyshev_coefficients(t, (k + 1) * m, function=lambda x: g(x) ** (k + 1))
-    elif square_coefficients == "transformation":
-        mu = chebyshev_coefficients(t, m, function=g)
-        mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
-        mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
-
-    # Chebyshev recurrence
-    W = np.random.randn(n, n_v)
-
-    K_W = chebyshev_recurrence(mu_W, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
-    K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
-
-    # Trace computation
-    phi_tilde = np.empty(t.shape[0])
-    for i in range(t.shape[0]):
-        # Check if rank of if Hutchinson (k=1) for Tr(g^{(m)}(tI-A)) is almost zero
-        if np.trace(K_W[i]) / n_v < kappa:
-            phi_tilde[i] = 0
-            continue
-        else:
-            if eigenproblem == "kernelunion":
-                Xi = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            elif eigenproblem == "pinv":
-                Xi = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            elif eigenproblem == "dggev":
-                Xi = generalized_eigenproblem_dggev(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            elif eigenproblem == "lstsq":
-                Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            elif eigenproblem == "direct":
-                Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            else:  # square_coefficients == "standard":
-                Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            phi_tilde[i] = np.sum(Xi) - len(Xi) * (1e-3 if eigenproblem == "cholesky" else 0)
-
-    return phi_tilde
-
-
-def FastNyChebPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
-    """
-    Robust and efficient spectrum sweeping with Delta-Gauss-Chebyshev method
-    for estimating the spectral density.
-
-    Parameters
-    ----------
-    A : np.ndarray (n, n)
-        Symmetric matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (n_t,)
-        A set of points at which the DOS is to be evaluated.
-    m : int > 0
-        Degree of Chebyshev the polynomial.
-    sigma : int or float > 0
-        Smearing parameter.
-    n_v : int > 0
-        Number of random vectors in W.
-    n_v_tilde : int > 0
-        Number of random vectors in W_tilde.
-    k : int > 0
-        The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
-    tau : int or float in (0, 1]
-        Truncation parameter.
-    kappa : float > 0
-        The threshold on the Hutchinson estimate of g_sigma. If it is below this
-        value, instead of solving the possibly ill-conditioned generalized
-        eigenvalue problem, we set the spectral density at that point to zero.
-    eta : float > 0
-        The tolerance for removing eigenvalues which are outside the range of
-        g_sigma.
-    kernel : function
-        The smoothing kernel applied to the spectral density.
-    square_coefficients : str or None
-        Method by which the coefficients of the squared Gaussian are computed.
-         -> transformation = Compute coefficients with discrete cosine transform
-         -> summation = Explicitly square the interpolant
-         -> interpolation = Interpolate the squared function
-    eigenproblem : str
-        Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [2] (project out kern(K_W))
-         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
-         -> direct = Directly solve the generalized eigenproblem
-    seed : int >= 0
-        The seed for generating the random matrix W.
-
-    Returns
-    -------
-    phi_tilde : np.ndarray
-        Approximations of the spectral density at the points t.
-
-    References
-    ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
-        made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 7.
-        DOI: https://doi.org/10.1007/s00211-016-0837-7
-    """
-    # Seed the random number generator
-    np.random.seed(seed)
-
-    # Determine size of matrix i.e. number of eigenvalues 
-    n = A.shape[0]
-
-    # Convert evaluation point(s) to numpy array
-    if not isinstance(t, np.ndarray):
-        t = np.array(t).reshape(-1)
-
-    # Preprocess the number of random vectors
-    if n_v == 0:
-        return DGC(A, t, m, sigma, n_v_tilde, kernel, seed)
-    if n_v_tilde is None:  # Evenly distribute mat-vecs
-        n_v_tilde = n_v // 2
-        n_v = n_v // 2
-    elif n_v_tilde == 0:
-        return FastNyCheb(A, t, m, sigma, n_v, k, tau, kappa, eta, kernel, square_coefficients, eigenproblem, seed)
-
-    # Chebyshev expansion
-    g = lambda x: kernel(x, n=n, sigma=sigma)
-    
-    if square_coefficients == "transformation":
-        mu = chebyshev_coefficients(t, m, function=g)
-        mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
-        mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
-        mu_C = mu if k < 3 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 1) // 2)
-        mu_D = mu_C if k % 2 == 1 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 2) // 2)
-    else:  # square_coefficients == "interpolation":
-        mu = chebyshev_coefficients(t, m, function=g)
-        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
-        mu_Z = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** (k + 1))
-        mu_C = mu if k < 3 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 1) // 2))
-        mu_D = mu_C if k % 2 == 1 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 2) // 2))
-
-    # Initializations
-    W = np.random.randn(n, n_v)
-    W_tilde = np.random.randn(n, n_v_tilde)
-
-    K_W = chebyshev_recurrence(mu_W, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
-    K_Z = chebyshev_recurrence(mu_Z, A, T_0=W, L=lambda x: W.T @ x, final_shape=(n_v, n_v))
-    K_C = chebyshev_recurrence(mu_C, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
-    K_D = K_C if k % 2 == 1 else chebyshev_recurrence(mu_D, A, T_0=W, L=lambda x: W_tilde.T @ x, final_shape=(n_v_tilde, n_v))
-    K_W_tilde = chebyshev_recurrence(mu, A, T_0=W_tilde, L=lambda x: np.sum(np.multiply(W_tilde, x)), final_shape=())
-
-    phi_tilde = np.zeros(t.shape[0])
-    for i in range(t.shape[0]):
-        if np.trace(K_W[i]) / n_v < kappa:  # Hutchinson for Tr(g^{(m)}(tI-A))
-            continue
-
-        if eigenproblem == "kernelunion":
-            xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
-        elif eigenproblem == "direct":
-            xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
-        elif eigenproblem == "test":
-            xi_tilde, C_tilde = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
-            T = np.trace(K_C[i] @ np.linalg.pinv(K_W[i], rcond=tau) @ K_D[i].T)
-            #if i == 50: print(T)
-        else:  # square_coefficients == "standard":
-            xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
-            T = np.trace(K_C[i] @ C_tilde @ C_tilde.conjugate().T @ K_D[i].T)
-        phi_tilde[i] = np.sum(xi_tilde) + (K_W_tilde[i] - T) / n_v_tilde
-
-    return phi_tilde
-
-
-def Lanczos(A, x, k, reorth_tol=0.7):
-    n = A.shape[0]
-
-    a = np.empty(k)
-    b = np.empty(k)
-
-    U = np.empty((n, k + 1))
-    U[:, 0] = x / np.linalg.norm(x)
-
-    for j in range(k):
-        w = A @ U[:, j]
-        a[j] = U[:, j].T @ w
-        u_tilde = w -  U[:, j] * a[j] - (U[:, j - 1] * b[j - 1] if j > 0 else 0) 
-
-        if np.linalg.norm(u_tilde) <= reorth_tol * np.linalg.norm(w):
-            # Twice is enough
-            h_hat = U[:, : j + 1].T @ u_tilde
-            a[j] += h_hat[-1]
-            if j > 0:
-                b[j - 1] += h_hat[-2]
-            u_tilde -= U[:, : j + 1] @ h_hat
-
-        b[j] = np.linalg.norm(u_tilde)
-        U[:, j + 1] = u_tilde / b[j]
-
-    return a, b
-
-
-def Haydock(A, t, m, sigma, n_v, seed=0, kernel=None):
-    """
-    Haydock's method.
-
-    Parameters
-    ----------
-    A : np.ndarray (n, n)
-        Symmetric matrix with eigenvalues between (-1, 1).
-    t : np.ndarray (n_t,)
-        A set of points at which the DOS is to be evaluated.
-    m : int > 0
-        The number of Lanczos iterations.
-    sigma : int or float > 0
-        Smearing parameter.
-    n_v : int > 0
-        Number of random vectors used in Monte-Carlo estimate.
-    seed : int >= 0
-        The seed for generating the random matrix W.
-    kernel : None
-        Unused dummy argument for compatibility reasons.
-
-    Returns
-    -------
-    phi_tilde : np.ndarray
-        Approximations of the spectral density at the points t.
-
-    References
-    ----------
-    [7] L. Lin, Y. Saad, C. Yang. Approximating Spectral Densities of Large Matrices.
-        SIAM Reviev 58(1) (2016). Section 3.2.2. 
-        Link: https://doi.org/10.1137/130934283
-    """
-    # Seed the random number generator
-    np.random.seed(seed)
-
-    # Determine size of matrix i.e. number of eigenvalues 
-    n = A.shape[0]
-
-    phi_tilde = np.zeros(len(t))
-    for _ in range(n_v):
-        # Compute tridiagonal matrix from Lanczos for random vector
-        v = np.random.randn(n)
-        a, b = Lanczos(A, v, m)
-        phi_tilde += np.imag(continued_fraction((t + 1j*sigma), a, b))
-
-    phi_tilde *= - 1 / (n_v * np.pi)
-    return phi_tilde
-
-
-def SLQ(A, t, sigma, n_v, m=200, seed=0):
+def _SLQ(A, t, sigma, n_v, m=200, seed=0):
     """
     Stochastic Lanczos Quadrature.
 
@@ -458,7 +482,7 @@ def SLQ(A, t, sigma, n_v, m=200, seed=0):
 
     References
     ----------
-    [6] T. Chen, T. Trogdon, S. Ubaru. Analysis of stochastic Lanczos quadrature
+    [5] T. Chen, T. Trogdon, S. Ubaru. Analysis of stochastic Lanczos quadrature
         for spectrum approximation. PMLR 139:1728-1739 (2021).
         Link: http://proceedings.mlr.press/v139/chen21s/chen21s.pdf
     """
@@ -504,7 +528,7 @@ def _randomized_lowrank_decomposition(A, r, c=10, seed=0):
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 3.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -542,7 +566,7 @@ def _randomized_trace_estimation(A, n_v, n_v_tilde):
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 6.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -590,7 +614,7 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, e
         The smoothing kernel applied to the spectral density.
     eigenproblem : str
         Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [2] (project out kern(K_W))
+         -> standard = As proposed in [1] (project out kern(K_W))
          -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
          -> pinv = Directly compute pseudoinverse
          -> dggev = Use KZ algorithm
@@ -605,7 +629,7 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, e
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 5.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -672,7 +696,7 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eig
         The smoothing kernel applied to the spectral density.
     eigenproblem : str
         Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [2] (project out kern(K_W))
+         -> standard = As proposed in [1] (project out kern(K_W))
          -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
          -> pinv = Directly compute pseudoinverse
          -> dggev = Use KZ algorithm
@@ -687,7 +711,7 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eig
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 5.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -784,11 +808,11 @@ def _GenNyCheb(A, t, m, sigma, n_v, c1=1/4, c2=1/2, nystrom_version="pinv", seed
     phi_tilde = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
         if nystrom_version == "pinv":
-            P = generalized_nystrom_pinv(Z_1[i], Z_2[i], W_2)
+            P = _generalized_nystrom_pinv(Z_1[i], Z_2[i], W_2)
         if nystrom_version == "qr":
-            P = generalized_nystrom_qr(Z_1[i], Z_2[i], W_2)
+            P = _generalized_nystrom_qr(Z_1[i], Z_2[i], W_2)
         if nystrom_version == "stable_qr":
-            P = generalized_nystrom_stable_qr(Z_1[i], Z_2[i], W_2)
+            P = _generalized_nystrom_stable_qr(Z_1[i], Z_2[i], W_2)
         phi_tilde[i] = np.trace(P) + (np.trace(W_3.T @ Z_3[i]) + np.trace(W_3.T @ P @ W_3)) / N_v_3
 
     return phi_tilde
@@ -846,7 +870,7 @@ def _hutchpp(A, n_v, sketch_fraction=2/3, seed=0):
 
     References
     ----------
-    [3] Meyer et. al. Hutch++: Optimal Stochastic Trace Estimation.
+    [6] Meyer et. al. Hutch++: Optimal Stochastic Trace Estimation.
         Proc SIAM Symp Simplicity Algorithms. (2021) 142-155. 
         DOI: 10.1137/1.9781611976496.16
     """   
@@ -895,7 +919,7 @@ def _nahutchpp(A, n_v, c1=1/4, c2=1/2, seed=0):
 
     References
     ----------
-    [3] Meyer et. al. Hutch++: Optimal Stochastic Trace Estimation.
+    [6] Meyer et. al. Hutch++: Optimal Stochastic Trace Estimation.
         Proc SIAM Symp Simplicity Algorithms. (2021) 142-155. 
         DOI: 10.1137/1.9781611976496.16
     """ 
@@ -972,5 +996,3 @@ def _HDGC(A, t, m, sigma, n_v, estimator=_hutchpp, seed=0):
     for i in range(t.shape[0]):
         phi_tilde[i] = estimator(g_M[i], n_v, seed=seed)
     return phi_tilde
-
-

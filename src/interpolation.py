@@ -15,7 +15,7 @@ def chebyshev_coefficients(t, m, function):
 
     Parameters
     ----------
-    t : int, float, list, or np.ndarray of shape (n,)
+    t : int, float, list, or np.ndarray of shape (n_t,)
         Point(s) where the expansion should be evaluated.
     m : int > 0
         Degree of the Chebyshev polynomial.
@@ -31,9 +31,8 @@ def chebyshev_coefficients(t, m, function):
     if not isinstance(t, np.ndarray):
         t = np.array(t).reshape(-1)
 
-    theta = np.arange(m + 1) * np.pi / m
-
     # Compute the coefficients mu for all t and l simultaneously with FFT
+    theta = np.arange(m + 1) * np.pi / m
     t_minus_theta = np.subtract.outer(t, np.cos(theta))
     mu = sp.fft.idct(function(t_minus_theta), type=1)
 
@@ -45,9 +44,7 @@ def chebyshev_coefficients(t, m, function):
 
 def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None):
     """
-    Squared expansion of the polynomial defined by Chebyshev coefficients mu.
-    The discrete cosine transform is used to efficiently compute the
-    coefficients of the squared Chebyshev polynomial.
+    Exponentiate a Chebyshev expansion defined by its coefficients mu.
 
     Parameters
     ----------
@@ -61,7 +58,7 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None):
     Returns
     -------
     nu : np.ndarray of shape (n_t, m + 1)
-        Chebyshev coefficients for square of expansion defined by mu.
+        Chebyshev coefficients for exponentiated of expansion defined by mu.
 
     References
     ----------
@@ -72,6 +69,8 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None):
     """
     if k == 1:
         return mu
+
+    # Determine size of Chebyshev coefficient array
     M_mu = mu.shape[1] - 1
     if m is None:
         m = k * M_mu
@@ -79,7 +78,11 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None):
 
     # Rescale coefficients due to type-2 DCT convention
     mu_tilde[:, 1:M_mu] /= 2
+
+    # Chain DCT with an inverse DCT to compute exponentiated coefficients
     nu = sp.fft.idct(sp.fft.dct(mu_tilde, type=1) ** k, type=1)[:, : m + 1]
+
+    # Rescale coefficients due to type-2 DCT convention
     nu[:, 1:-1] *= 2
 
     return nu
@@ -109,6 +112,7 @@ def chebyshev_recurrence(mu, A, T_0=None, L=None, final_shape=()):
     Z : np.ndarray (n_t, final_shape)
         The evaluated Chebyshev matrix polynomial for A with coefficients mu.
     """
+    # Preprocess input arguments
     if L is None:
         L = lambda x: x
     if T_0 is None:
@@ -116,12 +120,15 @@ def chebyshev_recurrence(mu, A, T_0=None, L=None, final_shape=()):
     if len(mu.shape) < 2:
         mu = mu.reshape(1, -1)
 
+    # The array which stores the coefficients
     Z = np.zeros((mu.shape[0], *final_shape))
 
+    # Initialize recursion matrices
     T_prev = np.zeros_like(T_0)
     T_curr = T_0.copy()
     T_next = np.zeros_like(T_0)
 
+    # Perform Chebyshev recurrence
     for l in range(mu.shape[1]):
         X = L(T_curr)
         for i in range(mu.shape[0]):
@@ -131,6 +138,9 @@ def chebyshev_recurrence(mu, A, T_0=None, L=None, final_shape=()):
         T_curr = T_next.copy()
 
     return Z
+
+
+# --- Unused implementations ---
 
 
 def _chebyshev_coefficients_quadrature(t, m, function, n_theta=None):

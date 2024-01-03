@@ -49,7 +49,7 @@ $$
 and compute its trace
 
 $$
-\phi_{\sigma}(t) \approx \widehat \phi_{\sigma}^{(m)}(t) = \widehat \phi_{\sigma}^{(m)}(t) = \mathrm{Tr}(\widehat{g}_{\sigma}^{(m)}(t\boldsymbol{I}- \boldsymbol{A})).
+\phi_{\sigma}(t) \approx \widehat \phi_{\sigma}^{(m)}(t) = \mathrm{Tr}(\widehat{g}_{\sigma}^{(m)}(t\boldsymbol{I}- \boldsymbol{A})).
 $$
 
 ### Nyström-Chebyshev++

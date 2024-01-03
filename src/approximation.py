@@ -9,7 +9,10 @@ import numpy as np
 import scipy as sp
 
 
-def generalized_nystrom_pinv(AX, AY, Y):
+# --- Unused implementations ---
+
+
+def _generalized_nystrom_pinv(AX, AY, Y):
     """
     https://arxiv.org/pdf/2010.09649.pdf (Algorithm 2)
     """
@@ -17,7 +20,7 @@ def generalized_nystrom_pinv(AX, AY, Y):
     return A_nys
 
 
-def generalized_nystrom_qr(AX, AY, Y):
+def _generalized_nystrom_qr(AX, AY, Y):
     """
     https://arxiv.org/pdf/2009.11392.pdf (Algorithm 2.1)
     """
@@ -26,7 +29,7 @@ def generalized_nystrom_qr(AX, AY, Y):
     return A_nys
 
 
-def generalized_nystrom_stable_qr(AX, AY, Y):
+def _generalized_nystrom_stable_qr(AX, AY, Y):
     """
     https://arxiv.org/pdf/2009.11392.pdf (Algorithm 2.1)
     """
@@ -35,7 +38,7 @@ def generalized_nystrom_stable_qr(AX, AY, Y):
     return A_nys
 
 
-def generalized_nystrom_stable_qr_alt(AX, AY, Y):
+def _generalized_nystrom_stable_qr_alt(AX, AY, Y):
     """
     https://arxiv.org/pdf/2009.11392.pdf (Section 5.1.1)
     """
@@ -49,7 +52,7 @@ def generalized_nystrom_stable_qr_alt(AX, AY, Y):
     return A_nys
 
 
-def nystrom_svd(AX, X):
+def _nystrom_svd(AX, X):
     """
     https://arxiv.org/pdf/2306.12418.pdf (Algorithm 5.6)
     """

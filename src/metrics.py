@@ -11,7 +11,7 @@ import scipy as sp
 
 def p_norm(phi, phi_tilde, p=1, relative=True):
     """
-    Compute the relative error of the spectral densities.
+    Compute the error in the p-norm of the spectral densities.
 
     Parameters
     ----------
@@ -19,11 +19,15 @@ def p_norm(phi, phi_tilde, p=1, relative=True):
         The true DOS evaluated at a series of uniformly distributed points.
     phi_tilde : np.ndarray of shape (n,)
         The approximated DOS evaluated at the same points as phi.
+    p : int > 0
+        The exponent of the p-norm.
+    relative : bool
+        Whether to compute the relative or absolute error.
 
     Returns
     -------
     error : float
-        The relative error of the approximated DOS from the actual DOS.
+        The error of the approximated DOS from the actual DOS.
     """
     error = np.sum(np.abs(phi_tilde - phi)**p) ** (1 / p)
     if relative:

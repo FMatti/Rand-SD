@@ -6,7 +6,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-from src.algorithms import DGC, FastNyCheb, FastNyChebPP
+from src.algorithms import DGC, NC, NCPP
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 
 import matplotlib
@@ -20,7 +20,7 @@ fixed_parameters = {"m": 2400, "sigma": 0.05}
 variable_parameters = "n_v"
 variable_parameters_values = np.logspace(1.3, 2.6, 6).astype(int)
 
-methods = [DGC, FastNyCheb, FastNyChebPP]
+methods = [DGC, NC, NCPP]
 labels = ["DGC", "NC", "NC++"]
 colors = ["#89A5C2", "#2F455C", "#F98125"]
 

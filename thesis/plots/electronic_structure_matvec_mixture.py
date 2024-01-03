@@ -6,7 +6,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-from src.algorithms import FastNyChebPP
+from src.algorithms import NCPP
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 
 import matplotlib
@@ -18,7 +18,7 @@ matplotlib.rcParams["font.size"] = 12
 
 A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 
-methods = [FastNyChebPP]
+methods = [NCPP]
 labels = ["$n_{\Omega}=0$, $n_{\Psi}=80$ (DGC)", "$n_{\Omega}=20$, $n_{\Psi}=60$ (NC++)", "$n_{\Omega}=40$, $n_{\Psi}=40$ (NC++)", "$n_{\Omega}=60$, $n_{\Psi}=20$ (NC++)", "$n_{\Omega}=80$, $n_{\Psi}=0$ (NC)"]
 fixed_parameters = [{"n_v": 0, "n_v_tilde": 80},
                     {"n_v": 20, "n_v_tilde": 60},

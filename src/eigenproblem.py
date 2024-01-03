@@ -13,7 +13,7 @@ import scipy as sp
 
 def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
-    Solve the generalized eigenvalue problem for the spectrum sweeping method.
+    Solve the generalized eigenvalue problem as in spectrum sweeping method [1].
 
     Parameters
     ----------
@@ -21,6 +21,8 @@ def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3
         Reduced matrix defined as K_Z = Z* Z = W* P^2 W.
     K_W : np.ndarray of shape (n_v, n_v)
         Reduced matrix defined as K_W = W* Z = W* P W.
+    n : int > 0
+        Size of original problem.
     sigma : int or float > 0
         Smearing parameter.
     tau : int or float in (0, 1]
@@ -38,39 +40,65 @@ def generalized_eigenproblem_standard(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 4.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
+    # Compute eigenvalue decomposition
     s, U = np.linalg.eigh(K_W)
 
+    # Only keep large enough eigenvalues
     idx = np.where(s >= tau * np.max(s))[0].flatten()
     s_tilde_invsqrt = s[idx] ** (-0.5)
     U_tilde = U[:, idx]
-    #print("Keeping {} of s".format(np.sum(s >= tau * np.max(s)) / len(s)))
-    A = np.outer(s_tilde_invsqrt, s_tilde_invsqrt) * (U_tilde.T @ K_Z @ U_tilde)
 
+    # Form eigenvalue problem
+    A = np.outer(s_tilde_invsqrt, s_tilde_invsqrt) * (U_tilde.T @ K_Z @ U_tilde)
     xi, X = np.linalg.eigh(A)
 
     # Increase maximum allowed value slightly to avoid unwanted filtering
     max_val = (1 + eta) / (n * sigma * np.sqrt(2 * np.pi))
 
+    # Filter out unrealistic values
     idx_tilde = np.where(np.logical_and(0 <= xi, xi <= max_val))[0].flatten()
     xi_tilde = xi[idx_tilde]
     X_tilde = X[:, idx_tilde]
-    #print("Keeping {} of xi".format(np.sum(np.logical_and(0 <= xi, xi <= max_val)) / len(xi)))
 
+    # Form helper matrix
     C_tilde = U_tilde @ np.diag(s_tilde_invsqrt) @ X_tilde
 
     return xi_tilde, C_tilde
 
 
 def generalied_eigenproblem_direct(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
+    """
+    Directly solve generalized eigenvalue problem.
+
+    Parameters
+    ----------
+    K_Z : np.ndarray of shape (n_v, n_v)
+        Reduced matrix defined as K_Z = Z* Z = W* P^2 W.
+    K_W : np.ndarray of shape (n_v, n_v)
+        Reduced matrix defined as K_W = W* Z = W* P W.
+    n : int > 0
+        Unused dummy argument for compatibility reasons.
+    sigma : int or float > 0
+        Unused dummy argument for compatibility reasons.
+    tau : int or float in (0, 1]
+        Truncation parameter.
+    eta : float > 0
+        The tolerance for removing eigenvalues which are outside the range of
+        g_sigma. 
+
+    Returns
+    -------
+    xi_tilde : np.ndarray
+        The generalized eigenvalues.
+    C_tilde : np.ndarray
+        The generalized eigenvectors.
+    """
     xi, C_l, C_r = sp.linalg.eig(K_Z, K_W, left=True, right=True)
-    conditioning = 1 / np.abs(np.diag(C_l.conjugate().T @ C_r))
-    idx = conditioning > tau
-    #print(np.sum(idx))
-    return xi, C_r #xi[idx], C_r[:, idx]
+    return xi, C_r
 
 
 def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
@@ -100,7 +128,7 @@ def generalized_eigenproblem_kernelunion(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 4.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -156,7 +184,7 @@ def generalized_eigenproblem_pinv(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 4.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -193,7 +221,7 @@ def generalized_eigenproblem_dggev(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 4.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -232,7 +260,7 @@ def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 4.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """
@@ -242,7 +270,10 @@ def generalized_eigenproblem_lstsq(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     return np.diag(Xi), None
 
 
-def generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
+# --- Unused implementations ---
+
+
+def _generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3):
     """
     Solve the generalized eigenvalue problem for the spectrum sweeping method.
 
@@ -269,7 +300,7 @@ def generalized_eigenproblem_cholesky(K_Z, K_W, n, sigma=1.0, tau=1e-7, eta=1e-3
 
     References
     ----------
-    [2] Lin, L. Randomized estimation of spectral densities of large matrices
+    [1] Lin, L. Randomized estimation of spectral densities of large matrices
         made accurate. Numer. Math. 136, 203-204 (2017). Algorithm 4.
         DOI: https://doi.org/10.1007/s00211-016-0837-7
     """

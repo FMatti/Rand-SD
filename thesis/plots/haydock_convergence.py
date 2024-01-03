@@ -6,7 +6,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-from src.algorithms import Haydock, FastNyCheb, FastNyChebPP
+from src.algorithms import Haydock, NC, NCPP
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 from src.kernel import cauchy_kernel
 
@@ -19,7 +19,7 @@ matplotlib.rcParams["font.size"] = 12
 
 A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 
-methods = [Haydock, FastNyCheb, FastNyChebPP]
+methods = [Haydock, NC, NCPP]
 labels = ["Haydock", "NC", "NC++"]
 colors = ["#89A5C2", "#2F455C", "#F98125"]
 

@@ -4,7 +4,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-from src.algorithms import FastNyCheb
+from src.algorithms import NC
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 
 import matplotlib
@@ -16,7 +16,7 @@ matplotlib.rcParams["font.size"] = 12
 
 np.random.seed(0)
 
-methods = FastNyCheb
+methods = NC
 labels = ["pseudo-inverse", "eigenproblem"]
 fixed_parameters = [{"n_v": 80, "sigma": 0.05, "eigenproblem": "pinv"},
                     {"n_v": 80, "sigma": 0.05, "eigenproblem": "standard"}]

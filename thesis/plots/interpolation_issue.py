@@ -3,7 +3,7 @@ import __context__
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.algorithms import FastNyCheb
+from src.algorithms import NC
 from src.matrices import ModES3D
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 
@@ -16,7 +16,7 @@ matplotlib.rcParams["font.size"] = 12
 
 np.random.seed(0)
 
-methods = FastNyCheb
+methods = NC
 labels = ["interpolation", "squaring"]
 fixed_parameters = [{"n_v": 80, "sigma": 0.05, "square_coefficients": "interpolation"},
                     {"n_v": 80, "sigma": 0.05, "square_coefficients": "transformation"}]

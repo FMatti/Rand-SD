@@ -4,7 +4,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-from src.algorithms import FastNyCheb
+from src.algorithms import NC
 from src.plots import compute_spectral_densities, plot_spectral_densities
 
 import matplotlib
@@ -16,7 +16,7 @@ matplotlib.rcParams["font.size"] = 12
 
 np.random.seed(0)
 
-methods = FastNyCheb
+methods = NC
 labels = ["no short-circuit", "short-circuit"]
 parameters = [{"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": -1},
               {"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": 1e-5}]

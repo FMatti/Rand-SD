@@ -6,7 +6,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-from src.algorithms import DGC, FastNyCheb, FastNyChebPP
+from src.algorithms import DGC, NC, NCPP
 from src.plots import compute_spectral_density_errors, plot_spectral_density_errors
 
 import matplotlib
@@ -18,7 +18,7 @@ matplotlib.rcParams["font.size"] = 12
 
 A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 
-methods = [DGC, FastNyCheb, FastNyChebPP]
+methods = [DGC, NC, NCPP]
 labels = ["DGC", "NC", "NC++"]
 colors = ["#89A5C2", "#2F455C", "#F98125"]
 

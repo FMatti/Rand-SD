@@ -3,12 +3,12 @@ import __context__
 import numpy as np
 import scipy as sp
 
-from src.algorithms import DGC, FastNyCheb, FastNyChebPP
+from src.algorithms import DGC, NC, NCPP
 from src.utils import time_method, generate_tex_tabular, spectral_transformation
 
 A = spectral_transformation(sp.sparse.load_npz("matrices/ModES3D_1.npz"))
 
-methods = [DGC, FastNyCheb, FastNyChebPP]
+methods = [DGC, NC, NCPP]
 labels = ["DGC", "NC", "NC++"]
 
 n_t = 100

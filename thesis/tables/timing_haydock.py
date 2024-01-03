@@ -3,13 +3,13 @@ import __context__
 import numpy as np
 import scipy as sp
 
-from src.algorithms import Haydock, FastNyCheb, FastNyChebPP
+from src.algorithms import Haydock, NC, NCPP
 from src.utils import time_method, generate_tex_tabular, spectral_transformation
 from src.kernel import cauchy_kernel
 
 A = spectral_transformation(sp.sparse.load_npz("matrices/ModES3D_1.npz"))
 
-methods = [Haydock, FastNyCheb, FastNyChebPP]
+methods = [Haydock, NC, NCPP]
 labels = ["Haydock", "NC", "NC++"]
 
 n_t = 100
