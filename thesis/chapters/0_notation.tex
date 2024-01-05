@@ -1,7 +1,8 @@
 \chapter*{Notation}
 \label{chp:0-notation}
 
-We try to follow the notation which is used in contemporary literature in this field:
+We try to follow the notation and conventions which are used in contemporary
+literature in this field. That is,
 
 \begin{itemize}
     \item we exclusively work with objects over the real numbers $\mathbb{R}$ and non-zero integers $\mathbb{N}$;
@@ -16,8 +17,8 @@ We try to follow the notation which is used in contemporary literature in this f
     \item the eigenvalues of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$
           are all scalars $\lambda$ which, together with some non-zero vectors
           $\vct{v}$, satisfy the condition $\mtx{A} \vct{v} = \lambda \vct{v}$.
-          We denote them as $\lambda_1 \geq \dots \geq \lambda_n$ or if we know
-          them to be non-negative as $\sigma_1 \geq \dots \geq \sigma_n \geq 0$;
+          We denote them as $\lambda_1 \geq \dots \geq \lambda_n$ or, if we know
+          them to be non-negative, as $\sigma_1 \geq \dots \geq \sigma_n \geq 0$;
     \item the trace of a square matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ is
           the sum of its diagonal elements $\Tr(\mtx{A}) = \sum_{i=1}^n a_{ii}$
           but also the sum of its eigenvalues $\Tr(\mtx{A}) = \sum_{i=1}^n \lambda_i$;
@@ -27,12 +28,12 @@ We try to follow the notation which is used in contemporary literature in this f
           with $\mtx{\Lambda} = \diag(\lambda_1, \dots, \lambda_n) \in \mathbb{R}^{n \times n}$ and 
           $\mtx{U} \in \mathbb{R}^{n \times n}$ such that $\mtx{U}^{\top} \mtx{U} = \mtx{I}_n$.
           You may assume every symbol $\mtx{A}$ you encounter in this thesis to
-          represent a symmetric matrix;
+          represent a real symmetric matrix;
     \item matrix norms are denoted with $\lVert \cdot \rVert _{\cdot}$.
           For symmetric matrices, the Schatten norm is
           $\lVert \mtx{A} \rVert _{(p)} = (\sum_{i=1}^n |\lambda_i|^p)^{1/p}$.
           We refer to the spectral norm as
-          $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \lambda_1$, while the Frobenius norm
+          $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \max_{i=1,\dots,n}|\lambda_i|$, while the Frobenius norm
           is $\lVert \mtx{A} \rVert _F = \lVert \mtx{A} \rVert _{(2)} = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
     \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$. It
           satisfies $\mtx{A}^{\dagger}=(\mtx{A}^{\top} \mtx{A})^{\dagger} \mtx{A}^{\top}$,
@@ -40,19 +41,21 @@ We try to follow the notation which is used in contemporary literature in this f
           in the sense that $\mtx{A}^{\dagger} \mtx{A} = \mtx{I}_n$ \cite{penrose1955pseudo};
     \item a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ is said to be positive
           semi-definite if its eigenvalues are all non-negative. You may assume every
-          symbol $\mtx{B}$ you encounter in this thesis to denote a positive
+          symbol $\mtx{B}$ you encounter in this thesis to denote a real positive
           semi-definite matrix;
     \item closed interval are written as $[a, b] \subset \mathbb{R}$ and open
           intervals as $(a, b) \subset \mathbb{R}$;
-    \item the $L^p$-norm of a real-valued, measurable function $f$ on a
+    \item the $L^p$-norm of a real-valued, integrable function $f$ on a
           domain $[a, b]$ is defined as
-          $\lVert f \rVert _{p} = (\int_{a}^{b} |f(x)|^p \mathrm{d}x)^{1/p}$ with the Lebesgue integral;
+          $\lVert f \rVert _{p} = (\int_{a}^{b} |f(x)|^p \mathrm{d}x)^{1/p}$ with
+          respect to the Lebesgue integral;
+    \item The expected value is denoted with $\mathbb{E}$ and the variance with $\Var$;
     \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
     \item Dirac's delta distribution is written $\delta$ \cite[chapter~15]{dirac1947quantum}
           and the Kronecker delta $\delta_{ij}$;
-    \item the cosine trigonometric function is denoted with $\cos$ and its inverse is $\arccos$.
+    \item the trigonometric cosine function is denoted with $\cos$ and its inverse is $\arccos$.
     \item the real part of a complex number $z$ is $\Re(z)$ while its imaginary part is $\Im(z)$.
-          The complex unit is $\iota$;
+          The complex unit is printed as $\iota$;
     \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
           on the complexity of a computation. For those more familiar with the
           Bachmann-Landau notation \cite[section~3.2]{cormen2009algorithms},

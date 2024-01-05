@@ -16,7 +16,8 @@ be commonly used in literature (\refsec{sec:5-experiments-various-matrices}).\\
 The accuracy is measured in terms of the discrete relative $L^1$-error of the approximated
 spectral density $\widetilde{\phi}_{\sigma}^{(m)}$ (also denoted $\widehat{\phi}_{\sigma}^{(m)}$ and
 $\breve{\phi}_{\sigma}^{(m)}$) from the spectral density $\phi_{\sigma}$
-which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}}:
+which we obtain using standard eigenvalue solvers\footnote{We use the
+standard symmetric eigenvalue solver from the NumPy Python package: \url{https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html}.}:
 \begin{equation}
     \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^{(m)}(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^{n_t} |\phi_{\sigma}(t_i)|}.
     \label{equ:5-experiments-L1-error}
@@ -24,22 +25,23 @@ which we obtain using standard eigenvalue solvers\footnote{\url{https://numpy.or
 We always use $n_t=100$ evenly spaced evaluation points which cover the whole spectrum of
 $\mtx{A}$. The choice of this metric can be justified by the fact that this
 error roughly corresponds to the midpoint quadrature rule \cite[chapter~9.2.1]{quarteroni2007numerical}
-applied to the $L^1$-norm, for which our theoretical results hold.
+applied to the continuous $L^1$-norm, for which our theoretical results hold.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Model problem from density functional theory}
 \label{sec:5-experiments-density-function}
 
-For our first example, we assemble the matrix which arises from the second order
-finite difference discretization of the differential operator
+For our first example, we consider the matrix which arises from the second order
+finite difference discretization of the Laplace operator $\Delta$ in a potential
+field $V$,
 \begin{equation}
-    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V(\vct{x}) u(\vct{x})
+    \mathcal{A} u(\vct{x}) = - \Delta u(\vct{x}) + V(\vct{x}) u(\vct{x}),
     \label{equ:5-experiments-electronic-hamiltonian}
 \end{equation}
 for a uniform mesh of size $h=0.6$. The potential $V$ results from a
-lattice whose primitive cell is of side-length $L=6$ and in whose center the
-charge
+lattice whose primitive cell is of side-length $L=6$ and in whose center a
+potential
 \begin{equation}
     \alpha \exp(-\frac{\lVert \vct{x} \rVert _2^2}{ 2 \beta^2 })
     \label{equ:5-experiments-gaussian-cell}
@@ -118,26 +120,27 @@ the \gls{NCPP} method.\\
 In \reffig{fig:5-experiments-electronic-structure-convergence-nv-m800} the
 Chebyshev expansion is clearly not accurate enough for a good approximation
 of the spectral density. This is confirmed by \reffig{fig:5-experiments-electronic-structure-convergence-m}:
-unless a Chebyshev expansion of degree \gls{chebyshev-degree} $>1000$ is used,
+unless a Chebyshev expansion of degree \gls{chebyshev-degree} $\gtrapprox 1000$ is used,
 we cannot hope for high accuracy approximations.
 \Reffig{fig:5-experiments-electronic-structure-convergence-nv-m2400} allows us to
-make an interesting observation: the approximation error for the \gls{NCPP} method
+make an interesting observation: The approximation error for the \gls{NCPP} method
 first decays quite slowly compared to the \gls{NC} method.
-The convergence is approximately of order $\mathcal{\varepsilon^{-1}}$
+The convergence is approximately of order $\mathcal{O}(\varepsilon^{-1})$
 as suggested by \refthm{thm:4-nystromchebyshev-trace-correction-parameter-dependent}.
 However, after \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
 exceeds a certain value, the approximation error shoots down quickly to where it
 saturates. The reason is that at this point \gls{sketch-size} starts exceeding
-the \gls{numerical-rank} of the model matrix, which, as a consequence of
+the \glsfirst{numerical-rank} of the model matrix, which, as a consequence of
 \refthm{thm:3-nystrom-frobenius-norm}, means that the approximation error is
 expected to be significantly smaller than \refthm{thm:4-nystromchebyshev-final}
 guarantees in general. In fact, it seems that after this point, \gls{NC} and \gls{NCPP}
 behave almost identically, with the exception that the \gls{NC} uses 
-a \gls{sketch-size} which is twice as large as the one in \gls{NCPP} by design
+an \gls{sketch-size} which is twice as large as the one in \gls{NCPP} by design
 of the experiment, while the contribution from the Hutchinson's correction part
-in \refequ{equ:4-nystromchebyshev-hutch-pp} seems to be insignificant.\\
+in the \gls{NCPP} method \refequ{equ:4-nystromchebyshev-hutch-pp} seems to be
+insignificant.\\
 
-In \reftab{tab:5-experiments-timing-DGC} we list the wall time each method
+In \reftab{tab:5-experiments-timing-DGC} we list the wall-clock time each method
 takes to compute an approximate \gls{spectral-density} at \gls{num-evaluation-points} $=100$ points
 for different values of \gls{sketch-size} and \gls{chebyshev-degree}.\\
 
@@ -151,14 +154,14 @@ for different values of \gls{sketch-size} and \gls{chebyshev-degree}.\\
     \input{tables/timing_DGC.tex}
 \end{table}
 
-The \gls{NCPP} is a hybrid method between the \gls{DGC} and \gls{NC} methods.
+We have seen that the \gls{NCPP} method is a hybrid method between the \gls{DGC} and \gls{NC} methods.
 In fact, for \gls{sketch-size} $=0$, the \gls{NCPP} is equivalent to the \gls{DGC}
 method, while for \gls{num-hutchinson-queries} $=0$, it is equivalent to the \gls{NC} method.
 Back in \refchp{chp:3-nystrom} we already saw that for small values of \gls{smoothing-parameter}
-the Nystr\"om approximation will only need a small \gls{sketching-matrix} in order
+the Nystr\"om approximation will only need a small \gls{sketch-size} in order
 to achieve an accurate approximation. On the other hand, for large choices of
-\gls{smoothing-parameter} the low-rank approximation will by itself not suffice.
-The interplay between the two parts which make up the \gls{NCPP},
+\gls{smoothing-parameter} the low-rank approximation will -- by itself -- not suffice.
+The interplay between the two parts which make up the \gls{NCPP} method,
 on one hand the low-rank approximation and on the other hand the
 trace estimation on the residual, is illustrated well in
 \reffig{fig:5-experiments-electronic-structure-matvec-mixture}.
@@ -187,7 +190,7 @@ accuracy, the behavior of the error for fixed \gls{sketch-size} $+$ \gls{num-hut
 Haydock's method \cite{haydock1972electronic,lin2016review} is a specialized technique for approximating \gls{smooth-spectral-density}
 in the case where a Lorentzian smoothing kernel
 \begin{equation}
-    g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2} = -\frac{1}{\pi} \Im\left\{ \frac{1}{s + \iota \sigma} \right\}
+    g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2}% = -\frac{1}{\pi} \Im\left\{ \frac{1}{s + \iota \sigma} \right\}
     \label{equ:5-experiments-cauchy-kernel}
 \end{equation}
 is used. A comparison of this kernel with the Gaussian kernel \refequ{equ:1-introduction-def-gaussian-kernel}
@@ -226,7 +229,7 @@ We repeat the same experiments as in \refsec{sec:5-experiments-density-function}
 but this time for a Lorentzian kernel with Haydock's method to demonstrate that
 also in the case of non-Gaussian \gls{smoothing-kernel} our theoretical guarantees
 apply. We plot the results in \reffig{fig:5-experiments-haydock-convergence-nv} and
-\reffig{fig:5-experiments-haydock-convergence-m}, and compare the wall time
+\reffig{fig:5-experiments-haydock-convergence-m}, and compare the wall-clock time
 between the methods in \reftab{tab:5-experiments-timing-haydock}.\\
 
 \begin{figure}[ht]
@@ -277,14 +280,14 @@ Due to these reasons, the convergence of the \gls{NC} and \gls{NCPP} methods
 are slower than they used to be in \refsec{sec:5-experiments-density-function}.
 Nevertheless, this choice of \gls{smoothing-kernel} exhibits perfectly the 
 $\mathcal{O}(\varepsilon^{-1})$ and $\mathcal{O}(\varepsilon^{-2})$ convergence
-orders of the $L^1$ approximation error, which the \gls{DGC} and \gls{NCPP}
-methods respectively guarantee with respect to
+orders of the $L^1$ approximation error, which the Haydock and \gls{NCPP}
+methods respectively exhibit with respect to
 \gls{sketch-size} $+$ \gls{num-hutchinson-queries} in \reffig{fig:5-experiments-haydock-convergence-nv-m2400}.\\
 
 \begin{table}[ht]
     \caption{Comparison of the runtime in seconds of the algorithms applied to the model problem
     from \refsec{sec:5-experiments-density-function}
-    for approximating the \glsfirst{smooth-spectral-density} with a Lorentzian kernel with
+    for approximating the \glsfirst{smooth-spectral-density} with a Lorentzian kernel \gls{smoothing-kernel} with
     \gls{smoothing-parameter} $=0.05$ at \gls{num-evaluation-points} $=100$
     points for various choices of \gls{chebyshev-degree} and \gls{sketch-size} $+$ \gls{num-hutchinson-queries}.
     The mean and standard deviation of 7 runs is given.}
@@ -295,18 +298,18 @@ methods respectively guarantee with respect to
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
-\section{Application to various matrices}
+\section{Experiments with various matrices}
 \label{sec:5-experiments-various-matrices}
 
 We test the algorithms on various problems encountered in literature.
-We take a synthetic sparse matrix with $2000$ uniformly distributed eigenvalues
+We take a synthetic sparse matrix with $2000$ uniformly spaced eigenvalues
 in $[-1, 1]$ \cite{chen2021slq};
 GOE, a matrix $\mtx{A} = (\mtx{G} + \mtx{G}^{\top})/\sqrt{2}$ with standard
 normal $\mtx{G} \in \mathbb{R}^{1000 \times 1000}$ from the Gaussian Orthogonal Ensemble;
 the matrix ModES3D\_8, an $8000 \times 8000$ sparse matrix resulting
 from the same problem as in \refsec{sec:5-experiments-density-function} but with
 a larger computational domain \cite{lin2017randomized}; and
-Erdos992\footnote{\url{https://sparse.tamu.edu/Pajek/Erdos992}},
+Erdos992\footnote{Downloaded in the matrix marked format from: \url{https://sparse.tamu.edu/Pajek/Erdos992}.},
 an $6100 \times 6100$ sparse matrix representing the collaboration network of the
 Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}.
 %the matrix nd3k\footnote{\url{https://sparse.tamu.edu/ND/nd3k}},
@@ -314,7 +317,7 @@ Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}.
 %which originates from modelling the vibrational modes of a polyethylene molecule
 %with 3000 atoms \cite{lin2016review},
 All these
-matrices are symmetric. For all these matrices, we compute, for
+matrices are symmetric. For all of them, we compute, for
 fixed \gls{chebyshev-degree} $=2400$ and increasing \gls{sketch-size} $+$ \gls{num-hutchinson-queries},
 the relative $L^1$ approximation error
 of the spectral density for a Gaussian \glsfirst{smoothing-kernel} with
@@ -356,7 +359,7 @@ a significant difference.
     \end{subfigure}
     \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
     but fixed \gls{chebyshev-degree} $=2400$ we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
-    for multiple different matrices. As usual, we use
-    Gaussian smoothing with \gls{smoothing-parameter} $=0.05$.}
+    for multiple different matrices. We use a
+    Gaussian \glsfirst{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-multi-matrix-convergence}
 \end{figure}

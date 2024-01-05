@@ -8,22 +8,22 @@ understand how to use the source code you have written for your project?\\
 
 Provable reproducibility is an initiative I hereby launch, which pursues the
 goal of making results published in articles, theses, and software packages easy to
-reproduce and verify. No more ambiguity, data manipulation, cherry-picked
+reproduce and verify. No more ambiguity, misunderstandings, cherry-picked
 parameters, and hand-crafted results. Every figure, plot, and table
 in a provably reproducible project can be unequivocally traced back to where
 it originated from. This goes one step further than the practice of open-sourcing
-the code of a project, where a reviewer or user will have to go through the
-tedious and often error-prone process of trying to reproduce the results.\\
+the code of a project, where a reviewer or user still has to go through the
+tedious and often error-prone process of reproducing your results.\\
 
-The proof is usually delivered by remotely -- not locally -- recreating every aspect of a
-project, for example in an online archive. Like in a public demonstration of a scientific
-experiment, everyone can see what steps are taken to achieve a certain outcome.
+Like in a public demonstration of a scientific experiment, the proof is delivered
+by remotely -- not locally -- recreating every aspect of a project, for example
+in an online archive. Everyone can see what steps are taken to achieve a certain outcome.
 Making a project provably reproducible includes, but is not limited to,
-explicitly downloading, importing or creating all the external dependencies which are being used (code, data, \dots),
-running all the computations and generating the corresponding results (plots, tables, \dots),
-and building the project outcome (article, report, \dots).
+explicitly downloading, importing, and building all the external dependencies which are being used (code, data, \dots);
+running all the computations and generating the corresponding results (plots, tables, \dots);
+and compiling the project outcome (article, report, \dots).
 A reproducibility proof can be achieved without too much effort by
-using the continuous integration frameworks provided by most contemporary
+using the continuous integration frameworks offered in most contemporary
 software development and version control services, such as GitHub actions or
 GitLab CI/CD. Corresponding guidelines and resources will be made available in due
 time\footnote{\url{https://github.com/FMatti/Re-Pro}}.
@@ -63,6 +63,6 @@ time\footnote{\url{https://github.com/FMatti/Re-Pro}}.
     \node[anchor=west] at (0.9, 0.55) {\small This document, including all its content, is provably reproducible.};
     \node[anchor=west] at (1.2, 0.12) {\footnotesize \texttt{> hosted at \url{https://github.com/FMatti/Rand-SD}}};
     \node[anchor=west] at (1.2, -0.22) {\footnotesize \texttt{> \input{re-pro-state.tex}}};
-    \node[anchor=west] at (0.9, -0.65) {\small Learn more about Re-Pro at \url{https://github.com/FMatti/Re-Pro}.};
+    \node[anchor=west] at (0.9, -0.65) {\small Learn more about it under \url{https://github.com/FMatti/Re-Pro}.};
 \end{tikzpicture}
 \end{center}

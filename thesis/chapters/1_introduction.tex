@@ -52,13 +52,13 @@ or to compute the trace of a matrix function \cite{lin2017randomized}
     \label{equ:1-introduction-matrix-trace}
 \end{equation}\\
 
-Constructing the spectral density (\refdef{def:1-introduction-spectral-density})
+Constructing the \glsfirst{spectral-density} (\refdef{def:1-introduction-spectral-density})
 of a matrix amounts to knowing all its eigenvalues, which are often prohibitively
-expensive to compute. Furthermore, neither can we hope to measure the convergence
+expensive to compute. Since we can neither hope to measure the convergence
 of a smooth approximation to \gls{spectral-density} in any of the conventionally
-used $L^p$-norms, nor can we visualize the spectral density in a simple
-and easily interpretable plot. For these reasons, we proceed by working with a
-smoothened spectral density.
+used $L^p$-norms, nor visualize the spectral density in a simple
+and easily interpretable plot, we work with a
+smoothened version of the spectral density.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -115,8 +115,8 @@ decomposition $\mtx{A} = \mtx{U} \mtx{\Lambda} \mtx{U}^{\top}$ where
 $\mtx{\Lambda} \in \mathbb{R}^{n \times n}$ is the diagonal matrix which carries
 the eigenvalues of $\mtx{A}$ on its diagonal and $\mtx{U} \in \mathbb{R}^{n \times n}$
 is orthonormal, i.e. $\mtx{U}^{\top} \mtx{U} = \mtx{I}_n$ \cite[theorem~4.1.5]{horn1985matrix}.
-Thus, if we absorb the factor in \refequ{equ:1-introduction-def-smooth-spectral-density}
-involving the \gls{matrix-size} in \gls{smoothing-kernel},
+Thus, if we absorb the $1/n$ factor from \refequ{equ:1-introduction-def-smooth-spectral-density}
+in \gls{smoothing-kernel},
 use the definition of a smooth function $f$ applied to a symmetric matrix
 $f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
 with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[definition~1.2]{higham2008functions},
@@ -183,7 +183,7 @@ to their ancestors.
 \label{sec:1-introduction-related}
 
 Multiple approaches have been taken for approximating the \glsfirst{spectral-density}
-of large symmetric matrices. They can loosely be grouped into two big families
+of a large symmetric matrix. Most of which can loosely be grouped into two big families
 of methods (see also \reffig{fig:1-introduction-literature-overview} for an
 illustrated overview of the methods):
 
@@ -203,7 +203,8 @@ illustrated overview of the methods):
         spectral densities of large symmetric matrices. For each method, the publication
         where it was originally introduced, the type of smoothing it applies,
         what kind of expansion is used, and how the trace in
-        \refequ{equ:1-introduction-spectral-density-as-trace} is approximated.
+        \refequ{equ:1-introduction-spectral-density-as-trace} is approximated
+        are mentioned.
         Relations between the methods are indicated with dashed lines.}
     \label{fig:1-introduction-literature-overview}
 \end{figure}
@@ -214,7 +215,8 @@ by first tridiagonalizing the matrix with a few iterations of the Lanczos algori
 \cite{lanczos1950iteration} and subsequently evaluating the matrix function using
 a continued fraction formula. The stochastic Lanczos quadrature \cite{lin2016review, ubaru2017lanczos,chen2021slq}
 also first tridiagonalizes the matrix. It then extracts the nodes and weights
-for the corresponding Gaussian quadrature to build an approximate spectral density.
+for the corresponding Gaussian quadrature to build an approximate spectral density.\\
+
 The expansion-based methods encompass the kernel polynomial methods \cite{silver1994kpm, wang1994kpm, weisse2006kpm}
 which involve the formal expansion of a suitable modification of \gls{spectral-density}
 in a basis of orthogonal polynomials. The Delta-Gauss-Legendre \cite{lin2016review}
@@ -250,7 +252,7 @@ main contributions to be
           scheme which allows us to speed up \cite[algorithm~5]{lin2017randomized}
           by orders of magnitude at no loss of accuracy;
     \item the proposal of multiple algorithmic improvements and speed-ups
-          of the algorithms from \cite{lin2017randomized};
+          for all methods from \cite{lin2017randomized};
     %\item the derivation of an a priori guarantee for the number of matrix-vector
     %      products needed to get an accurate approximation of the spectral
     %      density under certain assumptions on the matrix;
@@ -274,11 +276,13 @@ main contributions to be
 This paragraph finishes off the introductory \refchp{chp:1-introduction}.
 In \refchp{chp:2-chebyshev} we introduce the Chebyshev expansion, present an
 efficient method for computing it, and study its convergence. We also take a
-look at stochastic trace estimation to then construct a first algorithm using these tools.
+look at stochastic trace estimation to then construct a first algorithm,
+the \glsfirst{DGC} method, using these tools.
 \Refchp{chp:3-nystrom} is dedicated to the use of randomized low-rank factorization
-of matrices for computing spectral densities, which gives rise to a second algorithm.
+of matrices for computing spectral densities, which gives rise to a second algorithm,
+the \glsfirst{NC} method.
 Putting the ideas from the two previously discussed algorithms together,
-we end up with a fast and general algorithm for computing spectral densities
+we end up with a fast and general algorithm, the \glsfirst{NCPP} method, for computing spectral densities
 of large matrices in \refchp{chp:4-nystromchebyshev}. In \refchp{chp:5-experiments},
 we study the accuracy and computational time of these algorithms on numerous
 numerical experiments. We conclude the thesis in \refchp{chp:6-conclusion}.

@@ -3,9 +3,9 @@
 \hspace*{\algorithmicindent} \textbf{Output:} Approximate evaluations of the spectral density $\{\widetilde{\phi}_{\sigma}^{(m)}(t_i)\}_{i=1}^{n_t}$
 \begin{algorithmic}[1]
     \State Compute $\{\mu_l(t_i)\}_{l=0}^{m}$ for all $t_i$ using \refalg{alg:2-chebyshev-chebyshev-expansion}
-    \State Generate \glsfirst{random-matrix} $\in \mathbb{R}^{n \times n_{\Psi}}$
+    \State Generate standard Gaussian \glsfirst{random-matrix} $\in \mathbb{R}^{n \times n_{\Psi}}$
     \State Initialize $[\mtx{V}_1, \mtx{V}_2, \mtx{V}_3] \gets [\mtx{0}_{n \times n_{\Psi}}, \mtx{\Psi}, \mtx{0}_{n \times n_{\Psi}}]$
-    \State Set $\widetilde{\phi}_{\sigma}^{(m)}(t_i) \gets 0$ for $i=1,\dots,n_t$
+    \State Set $\widetilde{\phi}_{\sigma}^{(m)}(t_i) \gets 0$ for all $t_i$
     \For {$l = 0, \dots, m$}
       \State $x \gets \Tr(\mtx{\Psi}^{\top} \mtx{V}_2)$ \label{lin:2-chebyshev-fast-trace}  \Comment{Linear mapping of interpolant (\reffig{fig:2-chebyshev-sketched-interpolation})} \label{lin:2-chebyshev-linear-mapping}
       \For {$i = 1, \dots, n_t$}

@@ -1,16 +1,16 @@
 \chapter{Conclusion}
 \label{chp:6-conclusion}
 
-In our work we have concerned ourselves with a particular family of methods
+In our work we have developed a family of methods
 designed for the randomized computation of the spectral density of large matrices,
-which have initially been proposed in \cite{lin2017randomized}.\\
+which are closely related to the methods from \cite{lin2017randomized}.\\
 
 We were able to
 significantly improve many algorithmic aspects of these methods. The development
 of an alternative expansion framework in \refsec{sec:2-chebyshev-interpolation}
-allowed us to vastly simplify the expansion stage, which is common to all the
+allowed us to vastly simplify the Chebyshev expansion stage, which is common to all the
 studied methods, while obtaining provable accuracy of the expansion, all this in
-addition to making this stage orders of magnitude faster in many cases. 
+addition to making this stage orders of magnitude faster in most cases. 
 The studied methods were made more robust through a series of well founded
 implementation strategies \refsec{subsec:3-nystrom-implementation-details}.
 Furthermore, we give theoretical error guarantees for all the encountered methods.
@@ -27,7 +27,7 @@ may still improve the accuracy and stability of our methods. For example
 \cite[algorithm~5.6]{tropp2023randomized} may help, but a way of making this
 compatible with the fast interpolation framework has not been found yet.\\
 
-On the theoretical side, the incorporation of the Chebyshev expansion in the
+On the theoretical side, the incorporation of the Chebyshev expansion into the
 error bound analogous to \refthm{thm:2-delta-gauss-chebyshev} is of high priority.
 What hinders such a unification for now is the fact that the Chebyshev expansion
 is not guaranteed to be non-negative, which in turn breaks the \gls{PSD} property,

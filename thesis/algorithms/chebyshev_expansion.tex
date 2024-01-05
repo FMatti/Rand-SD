@@ -2,7 +2,7 @@
 \hspace*{\algorithmicindent} \textbf{Parameters:} \glsfirst{chebyshev-degree} \\
 \hspace*{\algorithmicindent} \textbf{Output:} Coefficients $\{ \mu_l \}_{l=0}^{m}$ of the expansion $f^{(m)}(s) = \sum_{l=0}^{m} \mu_l T_l(s)$
 \begin{algorithmic}[1]
-    \State Evaluate $f$ at $\{\cos(\pi i / m)\}_{i=0}^{(m)}$ and collect the results in $\vct{f}\in \mathbb{R}^{m+1}$
+    \State Evaluate $f$ at $\{\cos(\pi i / m)\}_{i=0}^{m}$ and store the results in $\vct{f}\in \mathbb{R}^{m+1}$
     \State Compute $\vct{\mu} = \DCT^{-1}(\vct{f})$
     \State Let $\mu_l = (\vct{\mu})_l$ for $l=0,\dots,m$
 \end{algorithmic}
