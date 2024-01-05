@@ -11,6 +11,40 @@
 ![](https://img.shields.io/badge/SciPy-white?style=flat-square&logo=scipy&color=white&logoColor=white&labelColor=gray)
 ![](https://img.shields.io/badge/Matplotlib-white?style=flat-square&logo=python&color=white&logoColor=white&labelColor=gray)
 
+## Quick start
+
+### Prerequisites
+
+To reproduce our results, you will need
+
+- a [Git](https://git-scm.com/downloads) installation to clone the repository;
+- a recent version of [Python](https://www.python.org/downloads) to run the experiments;
+- and (optionally) a [LaTeX](https://www.latex-project.org/get/#tex-distributions) distribution to build the thesis.
+
+> [!NOTE]
+> The commands `git` and `python`have to be discoverable by your terminal. If you want to build the thesis, additionally `pdflatex`, `bibtex`, and `makeglossaries` need to work. To verify this, use `[command] --version`.
+
+### Setup
+
+Clone this repository using
+```[shell]
+git clone https://github.com/FMatti/Rand-SD
+cd Rand-SD
+```
+
+Install all the requirements with
+```[shell]
+python -m pip install --upgrade pip
+python -m install -r requirements.txt
+```
+
+Reproduce the whole project with the following command
+```[shell]
+python -m setup.py -a
+```
+> [!NOTE]
+> Reproducing the whole project might take up to three hours!
+
 ## Theoretical background
 
 We concern ourselves with the approximation of the smoothened spectral density 
@@ -60,39 +94,21 @@ $$
 \phi_{\sigma}(t) \approx \breve \phi_{\sigma}^{(m)}(t) = \mathrm{Tr}(\widehat g_{\sigma}^{(m)}(t\boldsymbol{I} - \boldsymbol{A})) + \frac{1}{n_{\Psi}} \mathrm{Tr}(\boldsymbol{\Psi}^{\top} (g_{\sigma}^{(m)}(t\boldsymbol{I}- \boldsymbol{A}) - \widehat g_{\sigma}^{(m)}(t\boldsymbol{I} - \boldsymbol{A})) \boldsymbol{\Psi}).
 $$
 
-## Quick start
+## Project structure
 
-### Prerequisites
-
-To reproduce our results, you will need
-
-- a [Git](https://git-scm.com/downloads) installation to clone the repository;
-- a recent version of [Python](https://www.python.org/downloads) to run the experiments;
-- and (optionally) a [LaTeX](https://www.latex-project.org/get/#tex-distributions) distribution to build the thesis.
-
-> [!NOTE]
-> The commands `git` and `python`have to be discoverable by your terminal. If you want to build the thesis, additionally `pdflatex`, `bibtex`, and `makeglossaries` need to work. To verify this, use `[command] --version`.
-
-### Setup
-
-Clone this repository using
-```[shell]
-git clone https://github.com/FMatti/Rand-SD
-cd Rand-SD
 ```
-
-Install all the requirements with
-```[shell]
-python -m pip install --upgrade pip
-python -m install -r requirements.txt
+Rand-SD
+│   README.md           (file you are reading right now)
+|   requirements.txt    (python package requirements file)
+|   setup.py            (script for easy setup of project)
+|
+└───examples            (folder with example jupyter notebooks for the project)
+└───poster              (LaTeX files which are used to generate the poster)
+└───setup               (scripts which help setup and reproduce project)
+└───slides              (LaTeX files which are used to generate the slides)
+└───src                 (the Python modules which were written for the project)
+└───thesis              (LaTeX files which are used to generate the thesis)
 ```
-
-Reproduce the whole project with the following command
-```[shell]
-python -m setup.py -a
-```
-> [!NOTE]
-> Reproducing the whole project might take a few hours!
 
 ## Contact
 
