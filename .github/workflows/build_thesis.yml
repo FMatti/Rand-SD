@@ -42,26 +42,46 @@ jobs:
         run: python setup/generate_results.py
 
       - name: Obtain commit hash and time
-        shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
           echo "build_time=$(date +'%Y-%m-%d at %H:%M:%S')" >> $GITHUB_ENV
 
       - name: Generate thesis
         run: |
-          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.THESIS_DIR }}/re-pro-state.tex"
+          echo "\begin{tikzpicture}" > "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \draw[black, line width=3pt] (0.1, 0.95) to (\textwidth, 0.95) (0.1, -0.95) to (0.8\textwidth, -0.95);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \fill[white] (0, 1.1) to (1, 1.1) arc (90:-90:1.1) to (0, -1.1);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \fill[black] (1, 0) circle (1);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \draw[white, line width=1pt] (0.35, 0.55) arc(140:-80:0.45) to (1.1, -0.65) to (0.95, -0.65) (0.45, 0.45) arc(140:-110:0.31) to (0.58, -0.65) (1.35, -0.65) arc(270:20:0.35) to (1.35, -0.35) (1.35, -0.51) arc(270:50:0.21) (1.43, -0.65) rectangle (1.57, -0.51);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \node[anchor=west] at (2.1, 0.45) {This document is provably reproducible.};" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \node[anchor=west] at (2.3, -0.1) {\small \texttt{> hosted at \url{${{ github.server_url }}/${{ github.repository }}}}};" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \node[anchor=west] at (2.3, -0.5) {\small \texttt{> built on ${{ env.build_time }} from \href{${{ github.server_url }}/${{ github.repository }}/tree/${{ env.sha_short }}}{${{ env.sha_short }}}}};" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "\end{tikzpicture}" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
           python setup/generate_thesis.py
-      
+
       - name: Generate slides
         run: |
-          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.SLIDES_DIR }}/re-pro-state.tex"
+          echo "\begin{tikzpicture}" > "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \draw[black, line width=3pt] (0.1, 0.95) to (\textwidth, 0.95) (0.1, -0.95) to (0.8\textwidth, -0.95);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \fill[white] (0, 1.1) to (1, 1.1) arc (90:-90:1.1) to (0, -1.1);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \fill[black] (1, 0) circle (1);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \draw[white, line width=1pt] (0.35, 0.55) arc(140:-80:0.45) to (1.1, -0.65) to (0.95, -0.65) (0.45, 0.45) arc(140:-110:0.31) to (0.58, -0.65) (1.35, -0.65) arc(270:20:0.35) to (1.35, -0.35) (1.35, -0.51) arc(270:50:0.21) (1.43, -0.65) rectangle (1.57, -0.51);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \node[anchor=west] at (2.1, 0.45) {This document is provably reproducible.};" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \node[anchor=west] at (2.3, -0.1) {\small \texttt{> hosted at \url{${{ github.server_url }}/${{ github.repository }}}}};" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \node[anchor=west] at (2.3, -0.5) {\small \texttt{> built on ${{ env.build_time }} from \href{${{ github.server_url }}/${{ github.repository }}/tree/${{ env.sha_short }}}{${{ env.sha_short }}}}};" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "\end{tikzpicture}" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
           python setup/generate_slides.py
-        
+
       - name: Generate poster
         run: |
-          echo "built on ${{ env.build_time }} from \href{https://github.com/FMatti/Rand-SD/tree/${{ env.sha_short }}}{${{ env.sha_short }}}" > "${{ env.POSTER_DIR }}/re-pro-state.tex"
+          echo "\fill[white] (1, 0) circle (1.05);" > "${{ env.POSTER_DIR }}/re-pro-state.tex"
+          echo "\fill[darkblue] (1, 0) circle (1);" >> "${{ env.POSTER_DIR }}/re-pro-state.tex"
+          echo "\draw[white, line width=1pt] (0.35, 0.55) arc(140:-80:0.45) to (1.1, -0.65) to (0.95, -0.65) (0.45, 0.45) arc(140:-110:0.31) to (0.58, -0.65) (1.35, -0.65) arc(270:20:0.35) to (1.35, -0.35) (1.35, -0.51) arc(270:50:0.21) (1.43, -0.65) rectangle (1.57, -0.51);" >> "${{ env.POSTER_DIR }}/re-pro-state.tex"
+          echo "\node[anchor=west] at (2.1, 0.65) {\small This document is provably reproducible.};" >> "${{ env.POSTER_DIR }}/re-pro-state.tex"
+          echo "\node[anchor=west] at (2.3, -0.1) {\footnotesize \texttt{> hosted at \url{${{ github.server_url }}/${{ github.repository }}}}};" >> "${{ env.POSTER_DIR }}/re-pro-state.tex"
+          echo "\node[anchor=west] at (2.3, -0.75) {\footnotesize \texttt{> built on ${{ env.build_time }} from \href{${{ github.server_url }}/${{ github.repository }}/tree/${{ env.sha_short }}}{${{ env.sha_short }}}}};" >> "${{ env.POSTER_DIR }}/re-pro-state.tex"
           python setup/generate_poster.py
-    
+
       - name: Upload thesis as PDF artifact
         uses: actions/upload-artifact@v3
         with:
