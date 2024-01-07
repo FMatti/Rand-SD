@@ -306,27 +306,59 @@ with $\mathcal{O}(m n_t + n n_{\Psi})$ required additional storage.
 \label{subsec:2-chebyshev-implementation-details}
 
 Expression \refequ{equ:2-chebyshev-chebyshev-expansion} is only well-defined for matrices whose spectra are fully
-contained in $[-1, 1]$. To also apply the \gls{DGC} method to matrices whose
-spectra we know (or can estimate) to be within $[a, b] \subset \mathbb{R}$, we can define a
-\gls{spectral-transformation} as follows
+contained in $[-1, 1]$. To also use the \gls{DGC} method on matrices whose
+spectra we know (or can estimate) to be within a different interval $[a, b] \subset \mathbb{R}$,
+we can define a \gls{spectral-transformation} as the linear mapping
 \begin{equation}
     \begin{cases}
-        \tau : [a, b] \to [-1, 1], \\ 
+        \tau : [a, b] \to [-1, 1], \\
         \tau(t) = \frac{2t - a - b}{b - a}.
     \end{cases}
     \label{equ:2-chebyshev-spectral-transformation}
 \end{equation}
-Then, we can apply the \gls{DGC} method to $\bar{\mtx{A}} = \tau(\mtx{A})$ whose
-spectrum is contained in $[-1, 1]$. In order to be able to retrieve the spectral density
-for the original matrix $\mtx{A}$, we will have to use the rescaled
+The \gls{DGC} method can then be applied to $\bar{\mtx{A}} = \tau(\mtx{A})$ whose
+spectrum is contained in $[-1, 1]$.\\
+
+However, in order to be retrieve the \glsfirst{smooth-spectral-density}
+of the original matrix $\mtx{A}$, one has to be slightly careful:
+Let us call $\bar{\phi}$ the spectral density of $\bar{\mtx{A}}$. Clearly,
+$\phi = \bar{\phi} \circ \tau$. Finding a relation between \gls{smooth-spectral-density}
+and $\bar{\phi}_{\sigma}$ is not entirely obvious, and is usually swept under
+the rug in literature. For this, we need to go back all the way to the definition of
+\gls{smooth-spectral-density} \refequ{equ:1-introduction-def-smooth-spectral-density}
+and evaluate the expression
+\begin{align*}
+    \phi_{\sigma}(\tau^{-1}(t))
+    &= (\phi \ast g_{\sigma})(\tau^{-1}(t)) && \text{(definition of \gls{smooth-spectral-density})} \notag \\
+    &= \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(convolution $\ast$)} \notag \\
+    &= \int_{-\infty}^{\infty} \bar{\phi}(\tau(s)) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(identity $\phi = \bar{\phi} \circ \tau$)} \notag \\
+    &= \int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t)-\tau^{-1}(\bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(substitution $\bar{s} = \tau(s)$)} \notag \\
+    %&= \int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t - \bar{s})\right) \frac{2}{b-a} \mathrm{d}\bar{s} && \text{(linearity of \gls{spectral-transformation})} \notag \\
+    &= \int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\frac{b-a}{2}(t - \bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(explicit form of $\tau^{-1}$)}
+\end{align*}
+%Therefore, we can
+%obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running the method
+%with 
+By identifying
+\begin{equation}
+    \bar{g}_{\sigma}(s) = g_{\sigma}\left(\frac{b-a}{2}s\right) \frac{b-a}{2}
+\end{equation}
+we see that $\phi_{\sigma} \circ \tau^{-1} = (\bar{\phi} \ast \bar{g}_{\sigma})$.
+Therefore, we can obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running
+\refalg{alg:2-chebyshev-DGC} with $\bar{g}_{\sigma}$
+and $\bar{\mtx{A}}$ on the transformed evaluation points $\{ \tau(t_i) \}_{i=1}^{n_t}$.
+Since all of the \gls{smoothing-kernel} we consider in this thesis (Gaussian, Lorentzian, ...) are of the form
+\gls{smoothing-kernel}$(s)=\frac{1}{\sigma}f(\frac{s}{\sigma})$ for some function $f$ independent of
+\gls{smoothing-parameter}, we only need to rescale the \glsfirst{smoothing-parameter} to
 \begin{equation}
     \bar{\sigma} = \frac{2\sigma}{b - a}
     \label{equ:2-chebyshev-sigma-transformation}
 \end{equation}
-which allow us, for most kernels (Gaussian, Lorentzian, ...) and up to multiplication
-with a constant factor, to reconstruct the spectral density of $\mtx{A}$.
-In all our examples, we will implicitly assume the rescaling
-\refequ{equ:2-chebyshev-sigma-transformation} has been done.\\
+to get $\bar{g}_{\sigma}=g_{\bar{\sigma}}$.
+%which allow us, for most kernels (Gaussian, Lorentzian, ...) and up to multiplication
+%with a constant factor, to reconstruct the spectral density of $\mtx{A}$.
+In all our examples, this procedure will be used to compute spectral densities
+of matrices which have eigenvalues outside of $[-1, 1]$.\\
 %and instead expand $\bar{g}_{\bar{\sigma}}^{(m)} = g_{\sigma}^{(m)} \circ \tau^{-1}$ 
 %from which we can retrieve $g_{\sigma}^{(m)} = \bar{g}_{\bar{\sigma}}^{(m)} \circ \tau$.
 %\todo{Clean up this mess}
