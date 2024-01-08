@@ -743,17 +743,27 @@ an eigenvalue problem, and added filter tolerance.
 \subsection{Theoretical analysis}
 \label{subsec:3-nystrom-theoretical-analysis}
 
-Using \refthm{thm:3-nystrom-frobenius-norm} we can now conclude that for some $\gamma \geq 1$, with probability $1-\gamma^{-p}$,
+Using \refthm{thm:3-nystrom-frobenius-norm} we can now conclude that for some $\gamma \geq 1$, with probability $\geq 1-\gamma^{-p}$,
 \begin{equation}
-    \lVert \phi_{\sigma} - \widehat{\phi}_{\sigma} \rVert _1 \leq \gamma\sqrt{1+r} \int_{a}^{b} \sum_{i=r+1}^{n} g_{\sigma}(t - \lambda_{(i)}) \mathrm{d}t,
+    \lVert \phi_{\sigma} - \widehat{\phi}_{\sigma} \rVert _1 \leq \gamma^2(1+r) \int_{a}^{b} \sum_{i=r+1}^{n} g_{\sigma}(t - \lambda_{(i)}) \mathrm{d}t,
     \label{equ:3-nystrom-spectral-density-error}
 \end{equation}
 if we run the \gls{NC} method with \gls{sketch-size} $= r + p$ where $r \geq 2, p \geq 4$,
-and if we assume the Chebyshev expansion is exact. Remember that $\lambda_{(i)}$
+and if we assume the Chebyshev expansion to be exact. Remember that $\lambda_{(i)}$
 were the eigenvalues of $\mtx{A}$ sorted in such a way that the ones closest to
-\gls{spectral-parameter} come first. Due to the fact that the Chebyshev
-expansion does not necessarily preserve the \gls{PSD} property of a matrix function,
-a general result similar to \refthm{thm:2-delta-gauss-chebyshev} is out of reach for now.\\
+\gls{spectral-parameter} come first.\\
+
+Due to the fact that the Chebyshev
+expansion does not necessarily preserve the non-negativity of a function,
+a general result similar to \refthm{thm:2-delta-gauss-chebyshev} does not immediately follow.
+However, if we know that the Chebyshev expansion $g_{\sigma}^{(m)}$ does not
+deviate by more than $\varepsilon$ from \gls{smoothing-kernel}, then we can guarantee
+that the function $\bar{g}_{\sigma}^{(m)} = g_{\sigma}^{(m)} + \varepsilon$ is
+non-negative, and therefore, $\bar{g}_{\sigma}^{(m)}(t\mtx{I} - \mtx{A})$
+\gls{PSD}. This allows us to apply \refthm{thm:3-nystrom-frobenius-norm} to the
+resulting up-shifted spectral density approximation the \gls{NC} method would
+compute, which approaches \refequ{equ:3-nystrom-spectral-density-error} as the
+Chebyshev expansion gets more and more accurate.\\
 
 At the beginning of this section we have discussed the decay of $g_{\sigma}(t - \lambda_{(i)})$
 as $i$ increases. These observations can be used to argue that the bound
