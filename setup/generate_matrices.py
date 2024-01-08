@@ -29,7 +29,7 @@ ns = [1, 2]#, 3, 4]
 
 print("\nGenerating ModES3D matrices")
 for i, n in enumerate(ns):
-    matrix = ModES3D(n=n, L=6, h=0.6, dim=3, bc="periodic", var=4.0, scaling_factor=-4.0)
+    matrix = ModES3D(n=n, L=6, h=0.6, dim=3, bc="periodic", beta=2.0, alpha=-4.0)
     sp.sparse.save_npz(os.path.join(matrix_dir, "ModES3D_{}".format(n**3)), matrix)
     print("\u2713 Generated matrix ({}/{})".format(i + 1, len(ns)))
 

@@ -31,7 +31,7 @@ def gaussian_kernel(x, n=1, sigma=1.0):
     return np.exp(exponent) / normalization
 
 
-def cauchy_kernel(x, n=1, sigma=1.0):
+def lorentzian_kernel(x, n=1, sigma=1.0):
     """
     Kernel modeled after the Cauchy distribution.
 
@@ -56,7 +56,10 @@ def cauchy_kernel(x, n=1, sigma=1.0):
     return sigma / (n * np.pi * (x**2 + sigma**2))
 
 
-def bump_kernel(x, n=1, sigma=1.0):
+# --- Unused implementations ---
+
+
+def _bump_kernel(x, n=1, sigma=1.0):
     """
     Kernel modeled after the Cauchy distribution.
 
@@ -84,42 +87,42 @@ def bump_kernel(x, n=1, sigma=1.0):
     return result
 
 
-def epanechnikov_kernel(x, n=1, sigma=1.0):
+def _epanechnikov_kernel(x, n=1, sigma=1.0):
     normalization = 3 / (4 * sigma * n)
     function = 1 - (x / sigma)**2
     result = np.where(np.abs(x) < sigma, function * normalization, 0)
     return result
 
 
-def quartic_kernel(x, n=1, sigma=1.0):
+def _quartic_kernel(x, n=1, sigma=1.0):
     normalization = 15 / (16 * sigma * n)
     function = (1 - (x / sigma)**2) ** 2
     result = np.where(np.abs(x) < sigma, function * normalization, 0)
     return result
 
 
-def tricube_kernel(x, n=1, sigma=1.0):
+def _tricube_kernel(x, n=1, sigma=1.0):
     normalization = 70 / (81 * sigma * n)
     function = (1 - np.abs(x / sigma)**3) ** 3
     result = np.where(np.abs(x) < sigma, function * normalization, 0)
     return result
 
 
-def cosine_kernel(x, n=1, sigma=1.0):
+def _cosine_kernel(x, n=1, sigma=1.0):
     normalization = np.pi / (4 * sigma * n)
     function = np.cos(np.pi * x / (2 * sigma))
     result = np.where(np.abs(x) < sigma, function * normalization, 0)
     return result
 
 
-def logistic_kernel(x, n=1, sigma=1.0):
+def _logistic_kernel(x, n=1, sigma=1.0):
     normalization = 1 / (sigma * n)
     function = 1 / (np.exp(x / sigma) + 2 + np.exp(-x / sigma))
     result = function * normalization
     return result
 
 
-def sigmoid_kernel(x, n=1, sigma=1.0):
+def _sigmoid_kernel(x, n=1, sigma=1.0):
     normalization = 2 / (np.pi * sigma * n)
     function = 1 / (np.exp(x / sigma) + np.exp(-x / sigma))
     result = function * normalization

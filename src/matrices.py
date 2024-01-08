@@ -132,7 +132,7 @@ def gaussian_well(X, mu=None, var=None, scaling_factor=1.0):
         to the constant variance matrix of appropriate dimension (given by X).
     scaling_factor : int or float
         The scaling factor by which each Gaussian well is scaled.
-        
+
     Returns
     -------
     g(X) : np.ndarray of shape (n, dim)
@@ -183,7 +183,7 @@ def periodic_gaussian_well(X, n=1, L=6, var=1.0, scaling_factor=1.0):
         Variance of the Gaussians.
     scaling_factor : int or float
         The scaling factor by which each Gaussian well is scaled.
-       
+
     Returns
     -------
     potential : np.ndarray of shape (n,)
@@ -221,7 +221,7 @@ def periodic_gaussian_well(X, n=1, L=6, var=1.0, scaling_factor=1.0):
     return potential
 
 
-def ModES3D(n=1, L=6, h=0.6, dim=3, bc="periodic", var=4.0, scaling_factor=-4.0):
+def ModES3D(n=1, L=6, h=0.6, dim=3, bc="periodic", beta=2.0, alpha=-4.0):
     """
     Generate the example matrices 'ModES3D_X' from [2].
 
@@ -237,9 +237,9 @@ def ModES3D(n=1, L=6, h=0.6, dim=3, bc="periodic", var=4.0, scaling_factor=-4.0)
         The spatial dimension of the grid.
     bc : str {"dirichlet", "periodic"}
         Nature of the boundary conditions.
-    var : int or float > 0
+    beta : int or float > 0
         The variance of the Gaussians.
-    scaling_factor :  int or float
+    alpha :  int or float
         Scaling factor of the Gaussians.
 
     Returns
@@ -263,42 +263,10 @@ def ModES3D(n=1, L=6, h=0.6, dim=3, bc="periodic", var=4.0, scaling_factor=-4.0)
     A = laplace_finite_difference(N=N, h=h, dim=dim, bc=bc)
     grid_points = regular_grid(a=0, b=L * n - h, N=N, dim=dim)
     V = sp.sparse.diags(
-        periodic_gaussian_well(grid_points, L=L, n=n, var=var, scaling_factor=scaling_factor)
+        periodic_gaussian_well(grid_points, L=L, n=n, var=beta**2, scaling_factor=alpha)
     )
 
     return A + V
-
-
-def laplace_finite_difference_eigvals(n=1, L=6, h=0.6, dim=3):
-    """
-    Eigenvalues of periodic finite difference discretization of the Laplacian.
-
-    Parameters
-    ----------
-    n : int > 0
-        Number of unit cells of Gaussians in each dimension (X = n**dim).
-    L : int or float > 0
-        Length of the unit cells.
-    h : int or float > 0
-        Spacing between the grid points.
-    dim : int > 0
-        The spatial dimension of the grid.
-
-    Returns
-    -------
-    eigvals : np.ndarray of shape (N,)
-        The eigenvalues corresponding to the problem.
-
-    References
-    ----------
-    [4] Wikipedia. Eigenvalues and eigenvectors of the second derivative. 2023.
-        https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors_of_the_second_derivative
-    """
-    n = L / h
-    j = np.arange(n) + np.arange(n) % 2
-    eigvals1d = 4 / h**2 * np.sin(np.pi * j / (2 * n)) ** 2
-    eigvals = functools.reduce(np.add.outer, dim * [eigvals1d]).flatten()
-    return eigvals
 
 
 def uniform(n=5000, a=-1, b=1, density=0.0001, seed=0):
@@ -340,3 +308,38 @@ def gaussian_orthogonal_ensemble(n=5000, seed=0):
     
     A = np.random.randn(n, n)
     return (A + A.T) / np.sqrt(2)
+
+
+# --- Unused implementations ---
+
+
+def _laplace_finite_difference_eigvals(n=1, L=6, h=0.6, dim=3):
+    """
+    Eigenvalues of periodic finite difference discretization of the Laplacian.
+
+    Parameters
+    ----------
+    n : int > 0
+        Number of unit cells of Gaussians in each dimension (X = n**dim).
+    L : int or float > 0
+        Length of the unit cells.
+    h : int or float > 0
+        Spacing between the grid points.
+    dim : int > 0
+        The spatial dimension of the grid.
+
+    Returns
+    -------
+    eigvals : np.ndarray of shape (N,)
+        The eigenvalues corresponding to the problem.
+
+    References
+    ----------
+    [4] Wikipedia. Eigenvalues and eigenvectors of the second derivative. 2023.
+        https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors_of_the_second_derivative
+    """
+    n = L / h
+    j = np.arange(n) + np.arange(n) % 2
+    eigvals1d = 4 / h**2 * np.sin(np.pi * j / (2 * n)) ** 2
+    eigvals = functools.reduce(np.add.outer, dim * [eigvals1d]).flatten()
+    return eigvals

@@ -12,7 +12,7 @@ import scipy as sp
 
 from src.kernel import gaussian_kernel
 from src.interpolation import chebyshev_coefficients, exponentiate_chebyshev_coefficients_cosine_transform, chebyshev_recurrence
-from src.eigenproblem import generalized_eigenproblem_standard, generalized_eigenproblem_pinv, generalized_eigenproblem_dggev, generalized_eigenproblem_lstsq, generalized_eigenproblem_kernelunion, generalied_eigenproblem_direct
+from src.eigenproblem import generalized_eigenproblem_standard, generalized_eigenproblem_pinv, generalied_eigenproblem_direct
 from src.utils import continued_fraction
 
 
@@ -69,7 +69,7 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
     return phi_tilde
 
 
-def NC(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def NC(A, t, m, sigma, n_v, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
     """
     Nyström-Chebyshev method for estimating the spectral density.
 
@@ -87,7 +87,7 @@ def NC(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian
         Size of sketching matrix (in Nyström approximation).
     k : int > 0
         The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
-    tau : int or float in (0, 1]
+    zeta : int or float in (0, 1]
         Truncation parameter for enforcing conditioning of eigenvalue problem.
     kappa : float > 0
         The threshold on the Hutchinson estimate of g_sigma. If it is below this
@@ -104,12 +104,9 @@ def NC(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian
          -> interpolation = Interpolate the squared function
     eigenproblem : str
         Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [1] (project out kern(K_W))
-         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
+         -> standard = As proposed in [1] (project out kern(K_1))
          -> direct = Directly solve the generalized eigenproblem
          -> pinv = Directly compute pseudoinverse
-         -> dggev = Use QZ algorithm
-         -> lstsq = Solve leastsquares problem
     seed : int >= 0
         The seed for generating the random matrix W.
 
@@ -137,44 +134,38 @@ def NC(A, t, m, sigma, n_v, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian
     # Compute coefficients of Chebyshev expansion of the smoothing kernel
     g = lambda x: kernel(x, n=n, sigma=sigma)
     if square_coefficients == "interpolation":
-        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
-        mu_Z = chebyshev_coefficients(t, (k + 1) * m, function=lambda x: g(x) ** (k + 1))
+        mu = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
+        nu = chebyshev_coefficients(t, (k + 1) * m, function=lambda x: g(x) ** (k + 1))
     else:  # square_coefficients == "transformation":
-        mu = chebyshev_coefficients(t, m, function=g)
-        mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
-        mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
+        mu_1 = chebyshev_coefficients(t, m, function=g)
+        mu = exponentiate_chebyshev_coefficients_cosine_transform(mu_1, k=k)
+        nu = exponentiate_chebyshev_coefficients_cosine_transform(mu_1, k=k + 1)
 
     # Compute recurrence from Chebyshev expansion
     Omega = np.random.randn(n, n_v)
-    K_W = chebyshev_recurrence(mu_W, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
-    K_Z = chebyshev_recurrence(mu_Z, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+    K_1 = chebyshev_recurrence(mu, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+    K_2 = chebyshev_recurrence(nu, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
 
     # Trace computation
     phi_hat = np.empty(t.shape[0])
     for i in range(t.shape[0]):
         # Check if rank of if Hutchinson (k=1) for Tr(g^{(m)}(tI-A)) is almost zero
-        if np.trace(K_W[i]) / n_v < kappa:
+        if np.trace(K_1[i]) / n_v < kappa:
             phi_hat[i] = 0
             continue
         else:
-            if eigenproblem == "kernelunion":
-                Xi = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            elif eigenproblem == "pinv":
-                Xi = generalized_eigenproblem_pinv(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            elif eigenproblem == "dggev":
-                Xi = generalized_eigenproblem_dggev(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
-            elif eigenproblem == "lstsq":
-                Xi = generalized_eigenproblem_lstsq(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            if eigenproblem == "pinv":
+                Xi = generalized_eigenproblem_pinv(K_2[i], K_1[i], zeta=zeta)
             elif eigenproblem == "direct":
-                Xi = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+                Xi = generalied_eigenproblem_direct(K_2[i], K_1[i], n=n, sigma=sigma, eta=eta)
             else:  # eigenproblem == "standard":
-                Xi = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+                Xi = generalized_eigenproblem_standard(K_2[i], K_1[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
             phi_hat[i] = np.sum(Xi)
 
     return phi_hat
 
 
-def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", seed=0):
     """
     Nyström-Chebyshev++ method for estimating the spectral density.
 
@@ -194,7 +185,7 @@ def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-
         Number of Hutchinson's queries.
     k : int > 0
         The approximation method used (1 = Nyström, 2 = RSVD, 3 = SI-Nyström)
-    tau : int or float in (0, 1]
+    zeta : int or float in (0, 1]
         Truncation parameter.
     kappa : float > 0
         The threshold on the Hutchinson estimate of g_sigma. If it is below this
@@ -209,11 +200,6 @@ def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-
         Method by which the coefficients of the squared Gaussian are computed.
          -> transformation = Compute coefficients with discrete cosine transform
          -> interpolation = Interpolate the squared function
-    eigenproblem : str
-        Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [1] (project out kern(K_W))
-         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
-         -> direct = Directly solve the generalized eigenproblem
     seed : int >= 0
         The seed for generating the random matrix W.
 
@@ -245,45 +231,39 @@ def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, tau=1e-7, kappa=1e-5, eta=1e-
         n_v_tilde = n_v // 2
         n_v = n_v // 2
     elif n_v_tilde == 0:
-        return NC(A, t, m, sigma, n_v, k, tau, kappa, eta, kernel, square_coefficients, eigenproblem, seed)
+        return NC(A, t, m, sigma, n_v, k, zeta, kappa, eta, kernel, square_coefficients, eigenproblem, seed)
 
     # Compute coefficients of Chebyshev expansion of the smoothing kernel
     g = lambda x: kernel(x, n=n, sigma=sigma)
     if square_coefficients == "transformation":
-        mu = chebyshev_coefficients(t, m, function=g)
-        mu_W = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k)
-        mu_Z = exponentiate_chebyshev_coefficients_cosine_transform(mu, k=k + 1)
-        mu_C = mu if k < 3 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 1) // 2)
-        mu_D = mu_C if k % 2 == 1 else exponentiate_chebyshev_coefficients_cosine_transform(mu, k=(k + 2) // 2)
+        mu_1 = chebyshev_coefficients(t, m, function=g)
+        mu = exponentiate_chebyshev_coefficients_cosine_transform(mu_1, k=k)
+        nu = exponentiate_chebyshev_coefficients_cosine_transform(mu_1, k=k + 1)
+        mu_L = mu_1 if k < 3 else exponentiate_chebyshev_coefficients_cosine_transform(mu_1, k=(k + 1) // 2)
+        nu_L = mu_L if k % 2 == 1 else exponentiate_chebyshev_coefficients_cosine_transform(mu_1, k=(k + 2) // 2)
     else:  # square_coefficients == "interpolation":
-        mu = chebyshev_coefficients(t, m, function=g)
-        mu_W = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
-        mu_Z = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** (k + 1))
-        mu_C = mu if k < 3 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 1) // 2))
-        mu_D = mu_C if k % 2 == 1 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 2) // 2))
+        mu_1 = chebyshev_coefficients(t, m, function=g)
+        mu = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
+        nu = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** (k + 1))
+        mu_L = mu_1 if k < 3 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 1) // 2))
+        nu_L = mu_L if k % 2 == 1 else chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** ((k + 2) // 2))
 
     # Compute recurrence from Chebyshev expansion
     Omega = np.random.randn(n, n_v)
     Psi = np.random.randn(n, n_v_tilde)
-    K_W = chebyshev_recurrence(mu_W, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
-    K_Z = chebyshev_recurrence(mu_Z, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
-    K_C = chebyshev_recurrence(mu_C, A, T_0=Omega, L=lambda x: Psi.T @ x, final_shape=(n_v_tilde, n_v))
-    K_D = K_C if k % 2 == 1 else chebyshev_recurrence(mu_D, A, T_0=Omega, L=lambda x: Psi.T @ x, final_shape=(n_v_tilde, n_v))
-    K_W_tilde = chebyshev_recurrence(mu, A, T_0=Psi, L=lambda x: np.sum(np.multiply(Psi, x)), final_shape=())
+    K_1 = chebyshev_recurrence(mu, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+    K_2 = chebyshev_recurrence(nu, A, T_0=Omega, L=lambda x: Omega.T @ x, final_shape=(n_v, n_v))
+    L_1 = chebyshev_recurrence(mu_L, A, T_0=Omega, L=lambda x: Psi.T @ x, final_shape=(n_v_tilde, n_v))
+    L_2 = L_1 if k % 2 == 1 else chebyshev_recurrence(nu_L, A, T_0=Omega, L=lambda x: Psi.T @ x, final_shape=(n_v_tilde, n_v))
+    ell = chebyshev_recurrence(mu_1, A, T_0=Psi, L=lambda x: np.sum(np.multiply(Psi, x)), final_shape=())
 
     phi_breve = np.zeros(t.shape[0])
     for i in range(t.shape[0]):
-        if np.trace(K_W[i]) / n_v < kappa:  # Hutchinson for Tr(g^{(m)}(tI-A))
+        if np.trace(K_1[i]) / n_v < kappa:  # Hutchinson for Tr(g^{(m)}(tI-A))
             continue
-
-        if eigenproblem == "kernelunion":
-            xi_tilde, C_tilde = generalized_eigenproblem_kernelunion(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
-        elif eigenproblem == "direct":
-            xi_tilde, C_tilde = generalied_eigenproblem_direct(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
-        else:  # square_coefficients == "standard":
-            xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z[i], K_W[i], n=n, sigma=sigma, tau=tau, eta=eta)
-            T = np.trace(K_C[i] @ C_tilde @ C_tilde.conjugate().T @ K_D[i].T)
-        phi_breve[i] = np.sum(xi_tilde) + (K_W_tilde[i] - T) / n_v_tilde
+        xi_tilde, C_tilde = generalized_eigenproblem_standard(K_2[i], K_1[i], n=n, sigma=sigma, zeta=zeta, eta=eta)
+        T = np.trace(L_1[i] @ C_tilde @ C_tilde.conjugate().T @ L_2[i].T)
+        phi_breve[i] = np.sum(xi_tilde) + (ell[i] - T) / n_v_tilde
 
     return phi_breve
 
@@ -346,7 +326,7 @@ def Lanczos(A, x, k, reorth_tol=0.7):
     return a, b
 
 
-def Haydock(A, t, m, sigma, n_v, seed=0, kernel=None):
+def Haydock(A, t, m, sigma, n_v, seed=0, kernel=None, eta=None):
     """
     Haydock's method.
 
@@ -365,6 +345,8 @@ def Haydock(A, t, m, sigma, n_v, seed=0, kernel=None):
     seed : int >= 0
         The seed for generating the random matrix W.
     kernel : None
+        Unused dummy argument for compatibility reasons.
+    eta : None
         Unused dummy argument for compatibility reasons.
 
     Returns
@@ -575,20 +557,20 @@ def _randomized_trace_estimation(A, n_v, n_v_tilde):
 
     W = np.random.randn(n, n_v)
     W_tilde = np.random.randn(n, n_v_tilde)
-    K_W = W.T @ (A @ W)
-    K_Z = W.T @ (np.linalg.matrix_power(A, 2) @ W)
+    K_1 = W.T @ (A @ W)
+    K_2 = W.T @ (np.linalg.matrix_power(A, 2) @ W)
     K_C = W_tilde.T @ (A @ W)
-    K_W_tilde = W_tilde.T @ (A @ W_tilde)
+    K_1_tilde = W_tilde.T @ (A @ W_tilde)
 
-    xi_tilde, C_tilde = generalized_eigenproblem_standard(K_Z, K_W, n=n)
+    xi_tilde, C_tilde = generalized_eigenproblem_standard(K_2, K_1, n=n)
 
     T = K_C @ C_tilde @ C_tilde.T @ K_C.T
-    trace = np.sum(xi_tilde) + (np.trace(K_W_tilde - T)) / n_v_tilde
+    trace = np.sum(xi_tilde) + (np.trace(K_1_tilde - T)) / n_v_tilde
 
     return trace
 
 
-def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def _NyChebSI(A, t, m, sigma, n_v, zeta=1e-7, eta=1e-3, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -605,7 +587,7 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, e
         Smearing parameter.
     n_v : int > 0
         Number of random vectors.
-    tau : int or float in (0, 1]
+    zeta : int or float in (0, 1]
         Truncation parameter.
     eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
@@ -614,8 +596,8 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, e
         The smoothing kernel applied to the spectral density.
     eigenproblem : str
         Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [1] (project out kern(K_W))
-         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
+         -> standard = As proposed in [1] (project out kern(K_1))
+         -> kernelunion = Project out union of kern(K_1) and kern(K_2)
          -> pinv = Directly compute pseudoinverse
          -> dggev = Use KZ algorithm
          -> lstsq = Solve leastsquares problem
@@ -656,21 +638,21 @@ def _NyChebSI(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, e
     for i in range(t.shape[0]):
         phi_tilde[i] = np.trace(Z[i] @ np.linalg.pinv(Z[i].T @ Z[i]) @ Z[i].T @ Y[i])
         #if eigenproblem == "kernelunion":
-        #    Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+        #    Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         #elif eigenproblem == "pinv":
-        #    Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+        #    Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         #elif eigenproblem == "dggev":
-        #    Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+        #    Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         #elif eigenproblem == "lstsq":
-        #    Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+        #    Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         #else:
-        #    Xi = generalized_eigenproblem_standard(Y[i].T @ Y[i], Z[i].T @ Y[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+        #    Xi = generalized_eigenproblem_standard(Y[i].T @ Y[i], Z[i].T @ Y[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         #phi_tilde[i] = np.sum(Xi)
 
     return phi_tilde
 
 
-def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
+def _NyCheb(A, t, m, sigma, n_v, zeta=1e-7, eta=1e-3, kernel=gaussian_kernel, eigenproblem="standard", seed=0):
     """
     Spectrum sweeping method using the Delta-Gauss-Chebyshev expansion for
     estimating the spectral density.
@@ -687,7 +669,7 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eig
         Smearing parameter.
     n_v : int > 0
         Number of random vectors.
-    tau : int or float in (0, 1]
+    zeta : int or float in (0, 1]
         Truncation parameter.
     eta : float > 0
         The tolerance for removing eigenvalues which are outside the range of
@@ -696,8 +678,8 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eig
         The smoothing kernel applied to the spectral density.
     eigenproblem : str
         Resolution method of the generalized eigenvalue problem in SS methods.
-         -> standard = As proposed in [1] (project out kern(K_W))
-         -> kernelunion = Project out union of kern(K_W) and kern(K_Z)
+         -> standard = As proposed in [1] (project out kern(K_1))
+         -> kernelunion = Project out union of kern(K_1) and kern(K_2)
          -> pinv = Directly compute pseudoinverse
          -> dggev = Use KZ algorithm
          -> lstsq = Solve leastsquares problem
@@ -735,15 +717,15 @@ def _NyCheb(A, t, m, sigma, n_v, tau=1e-7, eta=1e-3, kernel=gaussian_kernel, eig
     phi_tilde = np.empty(t.shape[0])
     for i in range(t.shape[0]):
         if eigenproblem == "kernelunion":
-            Xi = generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            Xi = _generalized_eigenproblem_kernelunion(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         elif eigenproblem == "pinv":
-            Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            Xi = generalized_eigenproblem_pinv(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         elif eigenproblem == "dggev":
-            Xi = generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            Xi = _generalized_eigenproblem_dggev(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         elif eigenproblem == "lstsq":
-            Xi = generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            Xi = _generalized_eigenproblem_lstsq(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         else:
-            Xi = generalized_eigenproblem_standard(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, tau=tau, eta=eta)[0]
+            Xi = generalized_eigenproblem_standard(Z[i].T @ Z[i], W.T @ Z[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
         phi_tilde[i] = np.sum(Xi)
 
     return phi_tilde

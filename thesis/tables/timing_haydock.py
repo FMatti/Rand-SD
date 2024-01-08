@@ -5,7 +5,7 @@ import scipy as sp
 
 from src.algorithms import Haydock, NC, NCPP
 from src.utils import time_method, generate_tex_tabular, spectral_transformation
-from src.kernel import cauchy_kernel
+from src.kernel import lorentzian_kernel
 
 A = spectral_transformation(sp.sparse.load_npz("matrices/ModES3D_1.npz"))
 
@@ -14,10 +14,10 @@ labels = ["Haydock", "NC", "NC++"]
 
 n_t = 100
 t = np.arange(-1, 1, n_t)
-parameters = [{"A": A, "t": t, "m": 800, "n_v": 40, "sigma": 0.05, "kernel": cauchy_kernel},
-              {"A": A, "t": t, "m": 2400, "n_v": 40, "sigma": 0.05, "kernel": cauchy_kernel},
-              {"A": A, "t": t, "m": 800, "n_v": 160, "sigma": 0.05, "kernel": cauchy_kernel},
-              {"A": A, "t": t, "m": 2400, "n_v": 160, "sigma": 0.05, "kernel": cauchy_kernel}]
+parameters = [{"A": A, "t": t, "m": 800, "n_v": 40, "sigma": 0.05, "kernel": lorentzian_kernel},
+              {"A": A, "t": t, "m": 2400, "n_v": 40, "sigma": 0.05, "kernel": lorentzian_kernel},
+              {"A": A, "t": t, "m": 800, "n_v": 160, "sigma": 0.05, "kernel": lorentzian_kernel},
+              {"A": A, "t": t, "m": 2400, "n_v": 160, "sigma": 0.05, "kernel": lorentzian_kernel}]
 
 means = np.empty((len(methods), len(parameters)))
 errors = np.empty((len(methods), len(parameters)))

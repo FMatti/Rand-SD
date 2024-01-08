@@ -35,7 +35,10 @@ def p_norm(phi, phi_tilde, p=1, relative=True):
     return error
 
 
-def KL_divergence(phi, phi_tilde, epsilon=0):
+# --- Unused implementations ---
+
+
+def _KL_divergence(phi, phi_tilde, epsilon=0):
     """
     Compute the Kullback-Leibler divergence of the spectral densities.
 
@@ -58,7 +61,7 @@ def KL_divergence(phi, phi_tilde, epsilon=0):
     return error
 
 
-def KS_distance(phi, phi_tilde):
+def _KS_distance(phi, phi_tilde):
     """
     Compute the Kolmogorov-Smirnov distance between spectral densities.
 
@@ -78,7 +81,7 @@ def KS_distance(phi, phi_tilde):
     return error
 
 
-def JS_distance(phi, phi_tilde, epsilon=0):
+def _JS_distance(phi, phi_tilde, epsilon=0):
     """
     Compute the Jensen-Shannon divergence of the spectral densities.
 
@@ -97,11 +100,11 @@ def JS_distance(phi, phi_tilde, epsilon=0):
         The JS distance between the approximated DOS from the actual DOS.
     """
     phi_mixture = (phi_tilde + phi) / 2
-    error = 0.5 * (KL_divergence(phi, phi_mixture, epsilon) + KL_divergence(phi_tilde, phi_mixture, epsilon))
+    error = 0.5 * (_KL_divergence(phi, phi_mixture, epsilon) + _KL_divergence(phi_tilde, phi_mixture, epsilon))
     return error
 
 
-def Wasserstein_distance(phi, phi_tilde, t=None, normalize=False):
+def _Wasserstein_distance(phi, phi_tilde, t=None, normalize=False):
     """
     Compute the Wasserstein distance between the spectral densities.
 

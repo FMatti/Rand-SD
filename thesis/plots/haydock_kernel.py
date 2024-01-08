@@ -3,7 +3,7 @@ import __context__
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.kernel import cauchy_kernel, gaussian_kernel
+from src.kernel import lorentzian_kernel, gaussian_kernel
 
 import matplotlib
 matplotlib.rc("text", usetex=True)
@@ -16,7 +16,7 @@ s = np.linspace(-0.5, 0.5, 100)
 sigma = 0.05
 n = 1
 g = lambda x: gaussian_kernel(x, n=n, sigma=sigma)
-h = lambda x: cauchy_kernel(x, n=n, sigma=sigma)
+h = lambda x: lorentzian_kernel(x, n=n, sigma=sigma)
 
 plt.figure(figsize=(4, 1.5))
 
