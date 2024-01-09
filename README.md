@@ -19,10 +19,10 @@ To reproduce our results, you will need
 
 - a [Git](https://git-scm.com/downloads) installation to clone the repository;
 - a recent version of [Python](https://www.python.org/downloads) to run the experiments;
-- and (optionally) a [LaTeX](https://www.latex-project.org/get/#tex-distributions) distribution to build the thesis.
+- and a [LaTeX](https://www.latex-project.org/get/#tex-distributions) distribution to build the thesis, slides, and poster.
 
 > [!NOTE]
-> The commands `git` and `python`have to be discoverable by your terminal. If you want to build the thesis, additionally `pdflatex`, `bibtex`, and `makeglossaries` need to work. To verify this, use `[command] --version`.
+> The commands `git`, `python`, `pdflatex`, `lualatex`, `bibtex`, and `makeglossaries` have to be discoverable by your terminal. To verify this, type `[command] --version` in your terminal.
 
 ### Setup
 

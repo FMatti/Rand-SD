@@ -1,8 +1,5 @@
 ### CUSTOM
 
-.venv/
-backups/
-
 ## Matrices
 *.npz
 

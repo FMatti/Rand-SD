@@ -81,8 +81,10 @@
 % Bibliography management
 \usepackage[square, numbers]{natbib}
 \bibliographystyle{plainnat}
-\newcommand*{\doi}[1]{\href{https://doi.org/#1}{doi: #1}}
-\bibpunct{\color{linkcolor}[}{\color{linkcolor}]}{,}{n}{}{;}
+\newcommand*{\doi}[1]{DOI: \href{https://doi.org/#1}{#1}}
+\let\oldcite\cite
+\renewcommand{\cite}[2][]{\textcolor{linkcolor}{\oldcite[#1]{#2}}}
+%\bibpunct{\color{linkcolor}[}{\color{linkcolor}]}{,}{n}{}{;}
 
 % Links
 \usepackage{url}
@@ -269,11 +271,11 @@
     \pagecolor{darkblue}
     \color{white}
     \centering
-    \vspace{2cm}
+    %\vspace{0.5cm}
     {\scshape\Large\@project\unskip\strut\par}
-    \vspace{2cm}
+    \vspace{1.5cm}
     {\Huge\bfseries\@title\unskip\strut\par}
-    \vspace{2cm}
+    \vspace{1cm}
     { 
     \begin{center}
     \input{plots/icon.pgf}
@@ -313,16 +315,20 @@
     %\end{tikzpicture}
     %\end{center}
     }
-    \vspace{2cm}
+    \vspace{1cm}
     {\Large\itshape\@author\unskip\strut\par}
     \vfill
     supervised by\par
-    \vspace{0.5cm}
+    \vspace{0.4cm}
     {\large\@supervisor\unskip\strut\par}
-    \vspace{0.5cm}
+    \vspace{0.4cm}
     from the\par
-    \vspace{0.5cm}
+    \vspace{0.4cm}
     {\large\@lab\unskip\strut\par}
+    \vspace{0.4cm}
+    at the\par
+    \vspace{0.4cm}
+    {\large\@institution\unskip\strut\par}
     \vfill
     {\large \@date\par}
     \end{titlepage}
