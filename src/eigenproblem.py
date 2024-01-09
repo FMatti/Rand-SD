@@ -57,7 +57,7 @@ def generalized_eigenproblem_standard(K_2, K_1, n, sigma=1.0, zeta=1e-7, eta=1e-
     xi, X = np.linalg.eigh(LHS)
 
     # Increase maximum allowed value slightly to avoid unwanted filtering
-    if eta:
+    if eta is not None:
         max_val = (1 + eta) / (n * sigma * np.sqrt(2 * np.pi))
     else:  # eta == None
         max_val = float("inf")  # No filtering is applied
