@@ -144,7 +144,8 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
         \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq C \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
     In particular, if \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $=\mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$,
-    then $\Tr^{++}(\mtx{B}(t))$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
+    then $\Tr^{++}(\mtx{B}(t))$ is an $\varepsilon$-approximator of $\Tr(\mtx{B}(t))$
+    in the relative $L^1$ norm.
 \end{theorem}
 
 \begin{proof}
@@ -333,7 +334,7 @@ to directly conclude that with probability $\geq 1-\delta$,
     \label{equ:4-nystromchebyshev-spectral-density-error}
 \end{equation}
 if we run the \gls{NCPP} method with \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $= \mathcal{O}(\log(1/\delta)/\varepsilon)$
-and assume the Chebyshev expansion is exact. Due to the fact that in general the Chebyshev
+and assume the Chebyshev expansion to be exact. Due to the fact that in general the Chebyshev
 expansion is not exact and, hence, does not necessarily preserve the \gls{PSD} structure of a matrix function,
 a result similar to \refthm{thm:2-delta-gauss-chebyshev} for the \gls{DGC} method
 is out of reach for the \gls{NCPP} method for now.
