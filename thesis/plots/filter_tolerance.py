@@ -26,7 +26,7 @@ A = sp.sparse.load_npz("matrices/ModES3D_1.npz")
 colors = ["#2F455C", "#F98125"]
 
 eigenvalues = np.linalg.eigvalsh(A.todense())
-t = np.sort(np.append(np.linspace(-1, 1, 100), spectral_transformation(eigenvalues, eigenvalues[0], eigenvalues[-1])))
+t = np.sort(np.append(np.linspace(-1, 1, 500), spectral_transformation(eigenvalues, eigenvalues[0], eigenvalues[-1])))
 spectral_densities = compute_spectral_densities(A, methods, labels, parameters, add_baseline=False, t=t)
 
 fig, ax = plt.subplots(figsize=(6, 3))

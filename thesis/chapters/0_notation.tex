@@ -33,7 +33,9 @@ literature in this field. That is,
           For symmetric matrices, the Schatten norm is
           $\lVert \mtx{A} \rVert _{(p)} = (\sum_{i=1}^n |\lambda_i|^p)^{1/p}$.
           We refer to the spectral norm as
-          $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \max_{i=1,\dots,n}|\lambda_i|$, while the Frobenius norm
+          $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \max_{i=1,\dots,n}|\lambda_i|$,
+          the nuclear norm as $\lVert \mtx{A} \rVert _{\ast} = \lVert \mtx{A} \rVert _{(1)} = \sum_{i=1}^{n} \lambda_i$,
+          and the Frobenius norm
           is $\lVert \mtx{A} \rVert _F = \lVert \mtx{A} \rVert _{(2)} = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
     \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$. It
           satisfies $\mtx{A}^{\dagger}=(\mtx{A}^{\top} \mtx{A})^{\dagger} \mtx{A}^{\top}$,
@@ -45,10 +47,9 @@ literature in this field. That is,
           semi-definite matrix;
     \item closed interval are written as $[a, b] \subset \mathbb{R}$ and open
           intervals as $(a, b) \subset \mathbb{R}$;
-    \item the $L^p$-norm of a real-valued, integrable function $f$ on a
-          domain $[a, b]$ is defined as
-          $\lVert f \rVert _{p} = (\int_{a}^{b} |f(x)|^p \mathrm{d}x)^{1/p}$ with
-          respect to the Lebesgue integral;
+    \item the $L^p$-norm of a real-valued, integrable function $f$ on $[-1, 1]$ is defined as
+          $\lVert f \rVert _{p} = (\int_{-1}^{1} |f(s)|^p \mathrm{d}s)^{1/p}$ with
+          respect to the Lebesgue integral. Further, we define $\lVert f \rVert _{\infty} = \sup_{s \in [-1, 1]} |f(s)|$;
     \item convolutions between two functions $f:\mathbb{R} \to \mathbb{R}$ and $g:\mathbb{R} \to \mathbb{R}$
           can be defined as $(f \ast g)(t) = \int_{-\infty}^{\infty}f(s)g(t-s)\mathrm{d}s$;
     \item the expected value is denoted with $\mathbb{E}$ and the variance with $\Var$;
@@ -65,5 +66,4 @@ literature in this field. That is,
     \item $c(n)$ denotes the computational complexity of a matrix-vector product;
     \item and finally, we call an operation \emph{prohibitively expensive}, if its
           complexity scales more than quadratically with the size of the problem.
-    % Add convolution, inverse function, ...
 \end{itemize}

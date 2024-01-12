@@ -306,7 +306,7 @@ with $\mathcal{O}(m n_t + n n_{\Psi})$ required additional storage.
 \label{subsec:2-chebyshev-implementation-details}
 
 Expression \refequ{equ:2-chebyshev-chebyshev-expansion} is only well-defined for matrices whose spectra are fully
-contained in $[-1, 1]$. To also use the \gls{DGC} method on matrices whose
+contained in $[-1, 1]$. To also use the \gls{DGC} method on matrices $\mtx{A}$ whose
 spectra we know (or can estimate) to be within a different interval $[a, b] \subset \mathbb{R}$,
 we can define a \gls{spectral-transformation} as the linear mapping
 \begin{equation}
@@ -319,48 +319,61 @@ we can define a \gls{spectral-transformation} as the linear mapping
 The \gls{DGC} method can then be applied to $\bar{\mtx{A}} = \tau(\mtx{A})$ whose
 spectrum is contained in $[-1, 1]$.\\
 
-However, in order to retrieve the \glsfirst{smooth-spectral-density}
-of the original matrix $\mtx{A}$, one has to be slightly careful:
-Let us call $\bar{\phi}$ the spectral density of $\bar{\mtx{A}}$. From \refequ{equ:1-introduction-def-spectral-density}
-it can be deduced that $\phi = \frac{2}{b - a}\bar{\phi} \circ \tau$ due to the scaling properties
-of the \glsfirst{dirac-delta}. Finding a relation between \gls{smooth-spectral-density}
-and $\bar{\phi}_{\sigma}$ is not entirely obvious, and is usually swept under
-the rug in literature. For this, we need to go back all the way to the definition of
-\gls{smooth-spectral-density} \refequ{equ:1-introduction-def-smooth-spectral-density}
-and evaluate the expression
-\begin{align*}
-    &\phi_{\sigma}(\tau^{-1}(t)) \notag \\
-    &= (\phi \ast g_{\sigma})(\tau^{-1}(t)) && \text{(definition of \gls{smooth-spectral-density})} \notag \\
-    &= \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(convolution $\ast$)} \notag \\
-    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\tau(s)) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(identity $\phi = \frac{2}{b-a}\bar{\phi} \circ \tau$)} \notag \\
-    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t)-\tau^{-1}(\bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(substitution $\bar{s} = \tau(s)$)} \notag \\
-    %&= \int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t - \bar{s})\right) \frac{2}{b-a} \mathrm{d}\bar{s} && \text{(linearity of \gls{spectral-transformation})} \notag \\
-    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\frac{b-a}{2}(t - \bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(explicit form of $\tau^{-1}$)}
-\end{align*}
-%Therefore, we can
-%obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running the method
-%with 
-By identifying
+However, retrieving the \glsfirst{smooth-spectral-density} of the original
+matrix $\mtx{A}$ after this transformation is not straight forward
+and is usually swept under the rug in literature.
+Let us call $\bar{\phi}$ the spectral density of $\bar{\mtx{A}}$.
+Based on a derivation from \refapp{chp:A-appendix}, it turns out that in order
+to approximate $\phi_{\sigma}$ of a general matrix $\mtx{A}$
+for the \glsfirst{smoothing-kernel} we consider
+in this thesis (Gaussian, Lorentzian), we only need to rescale their
+\glsfirst{smoothing-parameter} to
 \begin{equation}
-    \bar{g}_{\sigma}(s) = g_{\sigma}\left(\frac{b-a}{2}s\right) \frac{b-a}{2}
-\end{equation}
-we see that $\phi_{\sigma}= \frac{2}{b-a}(\bar{\phi} \ast \bar{g}_{\sigma}) \circ \tau$.
-Therefore, we can obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running
-\refalg{alg:2-chebyshev-DGC} with $\bar{g}_{\sigma}$
-and $\bar{\mtx{A}}$ on the transformed evaluation points $\{ \tau(t_i) \}_{i=1}^{n_t}$,
-and rescale the result with $\frac{2}{b-a}$.
-Since all of the \glsfirst{smoothing-kernel} we consider in this thesis (Gaussian, Lorentzian) are of the form
-\gls{smoothing-kernel}$(s)=\frac{1}{\sigma}f(\frac{s}{\sigma})$ for some function $f$ independent of
-\gls{smoothing-parameter}, we only need to rescale the \glsfirst{smoothing-parameter} to
-\begin{equation}
-    \bar{\sigma} = \frac{2\sigma}{b - a}
+    \bar{\sigma} = \frac{2\sigma}{b - a},
     \label{equ:2-chebyshev-sigma-transformation}
 \end{equation}
-to determine $\bar{g}_{\sigma}=g_{\bar{\sigma}}$.
-%which allow us, for most kernels (Gaussian, Lorentzian, ...) and up to multiplication
-%with a constant factor, to reconstruct the spectral density of $\mtx{A}$.
+run \refalg{alg:2-chebyshev-DGC} on $\bar{\mtx{A}}$ with $\bar{g}_{\sigma}$
+on the transformed evaluation points $\{ \tau(t_i) \}_{i=1}^{n_t}$ and finally
+multiply the resulting approximation with $\frac{2}{b-a}$.
 In all our examples, this procedure will be used to compute spectral densities
 of matrices which have eigenvalues outside of $[-1, 1]$.\\
+
+%From \refequ{equ:1-introduction-def-spectral-density}
+%it can be deduced that $\phi = \frac{2}{b - a}\bar{\phi} \circ \tau$ due to the scaling properties
+%of the \glsfirst{dirac-delta}. Finding a relation between \gls{smooth-spectral-density}
+%and $\bar{\phi}_{\sigma}$ is not entirely obvious, and is usually swept under
+%the rug in literature. For this, we need to go back all the way to the definition of
+%\gls{smooth-spectral-density} \refequ{equ:1-introduction-def-smooth-spectral-density}
+%and evaluate the expression
+%\begin{align*}
+%    &\phi_{\sigma}(\tau^{-1}(t)) \notag \\
+%    &= (\phi \ast g_{\sigma})(\tau^{-1}(t)) && \text{(definition of \gls{smooth-spectral-density})} \notag \\
+%    &= \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(convolution $\ast$)} \notag \\
+%    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\tau(s)) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(identity $\phi = \frac{2}{b-a}\bar{\phi} \circ \tau$)} \notag \\
+%    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t)-\tau^{-1}(\bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(substitution $\bar{s} = \tau(s)$)} \notag \\
+%    %&= \int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t - \bar{s})\right) \frac{2}{b-a} \mathrm{d}\bar{s} && \text{(linearity of \gls{spectral-transformation})} \notag \\
+%    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\frac{b-a}{2}(t - \bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(explicit form of $\tau^{-1}$)}
+%\end{align*}
+%%Therefore, we can
+%%obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running the method
+%%with 
+%By identifying
+%\begin{equation}
+%    \bar{g}_{\sigma}(s) = g_{\sigma}\left(\frac{b-a}{2}s\right) \frac{b-a}{2}
+%\end{equation}
+%we see that $\phi_{\sigma}= \frac{2}{b-a}(\bar{\phi} \ast \bar{g}_{\sigma}) \circ \tau$.
+%Therefore, we can obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running
+%\refalg{alg:2-chebyshev-DGC} with $\bar{g}_{\sigma}$
+%and $\bar{\mtx{A}}$ on the transformed evaluation points $\{ \tau(t_i) \}_{i=1}^{n_t}$,
+%and rescale the result with $\frac{2}{b-a}$.
+%Since all of the \glsfirst{smoothing-kernel} we consider in this thesis (Gaussian, Lorentzian) are of the form
+%\gls{smoothing-kernel}$(s)=\frac{1}{\sigma}f(\frac{s}{\sigma})$ for some function $f$ independent of
+%\gls{smoothing-parameter}, we only need to rescale the \glsfirst{smoothing-parameter} to
+
+%which allow us, for most kernels (Gaussian, Lorentzian, ...) and up to multiplication
+%with a constant factor, to reconstruct the spectral density of $\mtx{A}$.
+%In all our examples, this procedure will be used to compute spectral densities
+%of matrices which have eigenvalues outside of $[-1, 1]$.\\
 %and instead expand $\bar{g}_{\bar{\sigma}}^{(m)} = g_{\sigma}^{(m)} \circ \tau^{-1}$ 
 %from which we can retrieve $g_{\sigma}^{(m)} = \bar{g}_{\bar{\sigma}}^{(m)} \circ \tau$.
 %\todo{Clean up this mess}
@@ -399,12 +412,16 @@ lemma.
 
 \begin{lemma}{$L^1$-error of Chebyshev expansion for Gaussian smoothing}{2-chebyshev-error}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix whose spectrum
-    is contained in $[-1, 1]$. Then the expansion of the \glsfirst{smooth-spectral-density}
-    with Gaussian \glsfirst{smoothing-kernel} satisfies
-    \begin{equation}
-        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
+    is contained in $[-1, 1]$. Then the expansion of the Gaussian \glsfirst{smoothing-kernel}
+    and the corresponding \glsfirst{smooth-spectral-density} satisfy
+    \begin{align}
+        \lVert  g_{\sigma} - g_{\sigma}^{(m)} \rVert _{\infty} &\leq \frac{C_1}{2n\sigma^2}(1 + C_2 \sigma)^{-m}
+        \label{equ:2-chebyshev-interpolation-sup-error-kernel} \\
+        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _{\infty} &\leq \frac{C_1}{2\sigma^2}(1 + C_2 \sigma)^{-m}
+        \label{equ:2-chebyshev-interpolation-sup-error} \\
+        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 &\leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
         \label{equ:2-chebyshev-interpolation-error}
-    \end{equation}
+    \end{align}
     with constants $C_1, C_2 \geq 0$ independent of \gls{smoothing-parameter} and \gls{chebyshev-degree}.
 \end{lemma}
 
@@ -421,25 +438,17 @@ A proof of a similar result can be found in \cite[theorem~2]{lin2017randomized}.
 However, since our result -- and more so the proof -- deviate from the aforementioned
 work, we chose to reproduce it hereafter.
 \begin{proof}
-    Using basic properties of matrix functions, we obtain
-    \begin{align*}
-        &\left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right| \notag \\
-        &= \left| \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) - \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right|
-        && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-chebyshev-expansion})} \notag \\
-        &= \left| \sum_{i=1}^n \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^{(m)}(t - \lambda_i)\right) \right|
-        && \text{($\lambda_1, \dots, \lambda_n$ eigenvalues of $\mtx{A}$)} \notag \\
-        &\leq n \sup_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^{(m)}(t - \lambda_i) \right|
-        && \text{(conservative upper bound)} \notag \\
-        &\leq n \sup_{s \in [-1, 1]} \left| g_{\sigma}(t - s) - g_{\sigma}^{(m)}(t - s) \right|
-        && \text{(extension of domain)} \notag \\
-        &\leq n \frac{2}{\chi^{m}(\chi - 1)} \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
-        && \text{(Bernstein \cite[theorem~73]{meinardus1967approximation})}
-    \end{align*}
-    where in the last step we define the ellipse $\mathcal{E}_{\chi}$
+    From Bernstein's theorem \refthm{thm:2-chebyshev-bernstein}
+    and the analyticity of \gls{smoothing-kernel} we know that
+    \begin{equation}
+        \sup_{s \in [-1, 1]} \left| g_{\sigma}(t - s) - g_{\sigma}^{(m)}(t - s) \right|
+        \leq n \frac{2}{\chi^{m}(\chi - 1)} \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
+    \end{equation}
+    where we can use any ellipse $\mathcal{E}_{\chi}$
     with foci $\{-1, 1\}$ and with sum of half-axes $\chi = a + b > 1$
     (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
-    Since $g_{\sigma}(t - \cdot)$ of the form \refequ{equ:1-introduction-def-gaussian-kernel}
-    is analytic in all of $\mathbb{C}$, $\chi$ may be chosen arbitrarily.
+    %Since $g_{\sigma}(t - \cdot)$ is of the form \refequ{equ:1-introduction-def-gaussian-kernel}
+    %is analytic in all of $\mathbb{C}$, $\chi$ may be chosen arbitrarily.
 
     Writing $z = x + \iota y$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Real(z)}$)
     \begin{equation}
@@ -474,15 +483,32 @@ work, we chose to reproduce it hereafter.
 
     Plugging this estimate into the expression from above, we get
     \begin{equation}
-        \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right|
-        \leq n \frac{2}{(1 + \alpha\sigma)^{m}\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
-        = \frac{C_1}{2 \sigma^2} (1 + C_2 \sigma)^{-m},
+        \left| g_{\sigma}(t) - g_{\sigma}^{(m)}(t) \right|
+        \leq \frac{2}{(1 + \alpha\sigma)^{m}\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
+        = \frac{C_1}{2 n \sigma^2} (1 + C_2 \sigma)^{-m},
         \label{equ:2-chebyshev-uniform-bound}
     \end{equation}
     where $C_1=\sqrt{\frac{8}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
+    This proves the first assertion.\\
 
-    Finally, Hölder's inequality \cite{klenke2013probability} and 
-    \refequ{equ:2-chebyshev-uniform-bound} allow us to show
+    For the second assertion, we may use basic properties of matrix functions to obtain
+    \begin{align*}
+        &\left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right| \notag \\
+        &= \left| \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) - \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right|
+        && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-chebyshev-expansion})} \notag \\
+        &= \left| \sum_{i=1}^n \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^{(m)}(t - \lambda_i)\right) \right|
+        && \text{($\lambda_1, \dots, \lambda_n$ eigenvalues of $\mtx{A}$)} \notag \\
+        &\leq n \sup_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^{(m)}(t - \lambda_i) \right|
+        && \text{(conservative upper bound)} \notag \\
+        &\leq n \sup_{s \in [-1, 1]} \left| g_{\sigma}(t - s) - g_{\sigma}^{(m)}(t - s) \right|
+        && \text{(extension of domain)} \notag \\
+        &\leq \frac{C_1}{2 \sigma^2} (1 + C_2 \sigma)^{-m}
+        && \text{(using \refequ{equ:2-chebyshev-uniform-bound})} \notag \\
+    \end{align*}
+    from which the result follows directly.\\
+
+    Finally, Hölder's inequality \cite{klenke2013probability} 
+    allows us to also show the last assertion with
     \begin{equation}
         \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1
             \leq 2 \sup_{t \in [-1, 1]} \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right|
@@ -497,11 +523,11 @@ result for the accuracy of the \gls{DGC} method.
 
 \begin{theorem}{$L^1$-error of Delta-Gauss-Chebyshev method}{2-delta-gauss-chebyshev}
     Let $\widetilde{\phi}_{\sigma}^{(m)}(t)$ be the result from running \refalg{alg:2-chebyshev-DGC}
-    on a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$ using
+    on a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$ using
     a Gaussian \glsfirst{smoothing-kernel} with
     \glsfirst{smoothing-parameter} $>0$, \glsfirst{chebyshev-degree} $\in \mathbb{N}$, and
     \glsfirst{num-hutchinson-queries} $\in \mathbb{N}$. For $\delta \in (0, e^{-1})$ it holds with
-    probability $1-\delta$, that
+    probability $\geq 1-\delta$, that
     %Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
     %$t \in [a, b]$, $\delta \in (0, e^{-1})$, and $n_{\Psi} \in \mathbb{N}$.
     %Let $\Hutch_{n_{\Psi}}(\mtx{B}(t))$ be the $n_{\Psi}$-query
@@ -512,7 +538,7 @@ result for the accuracy of the \gls{DGC} method.
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
         \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \frac{\sqrt{n} \log(1/\delta)}{\sqrt{n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
     \end{equation}
-    for some constants $C_1, C_2, C_{\Psi} \geq 0$.
+    for some constants $C_1$ and $C_2$ as in \reflem{lem:2-chebyshev-error} and $C_{\Psi} \geq 0$.
     %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
     %\begin{equation}
     %    \int |H_l(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
@@ -534,7 +560,7 @@ result for the accuracy of the \gls{DGC} method.
     \Reflem{lem:2-chebyshev-parameter-hutchinson} can be applied to the second term for
     \begin{align*}
         \lVert \phi_{\sigma}^{(m)} - \widetilde{\phi}_{\sigma}^{(m)} \rVert _1
-            &= \int_{-1}^{1} \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) - \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \mathrm{d}t && \text{(definitions)} \notag \\
+            &= \int_{-1}^{1} \left| \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) - \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right| \mathrm{d}t && \text{(definitions)} \notag \\
             &\leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{-1}^{1} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t && \text{(\reflem{lem:2-chebyshev-parameter-hutchinson})}
     \end{align*}
     %\begin{align}

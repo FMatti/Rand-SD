@@ -1,2 +1,60 @@
-\chapter{Appendix}
+\chapter{Spectral transformation}
 \label{chp:A-appendix}
+
+In \refsec{subsec:2-chebyshev-implementation-details} we have mentioned
+a way in which we can apply a \glsfirst{spectral-transformation} $: [a, b] \to [-1, 1]$
+to use our methods for computing spectral densities of matrices whose spectrum
+is contained in an interval $[a, b]$. The following derivations prove the validity
+of this approach.\\
+
+Let us call $\bar{\phi}$ the spectral density of $\bar{\mtx{A}} = \tau(\mtx{A})$. Then we can relate
+it to the \glsfirst{spectral-density} of $\mtx{A}$ through
+\begin{align*}
+    \phi(\tau^{-1}(t)) 
+    &= \frac{1}{n} \sum_{i=1}^{n} \delta(\tau^{-1}(t) - \lambda_i)
+    && \text{(definition \refequ{equ:1-introduction-def-spectral-density})} \notag \\
+    &= \frac{1}{n} \sum_{i=1}^{n} \delta(\tau^{-1}(t) - \tau^{-1}(\bar{\lambda}_i))
+    && \text{(transformed eigenvalues $\bar{\lambda}_i = \tau(\lambda_i)$)} \notag \\
+    &= \frac{1}{n} \sum_{i=1}^{n} \delta\left(\frac{b - a}{2}(t - \bar{\lambda}_i)\right)
+    && \text{(explicit form of $\tau^{-1}(s)=\frac{b-a}{2}s + \frac{b+a}{2}$)} \notag \\
+    &= \frac{2}{b - a} \frac{1}{n} \sum_{i=1}^{n} \delta(t - \bar{\lambda}_i)
+    && \text{(scaling property $\delta(c s) = \frac{1}{|c|}\delta(s), c \in \mathbb{R}$)} \notag \\
+    &= \frac{2}{b - a} \bar{\phi}(t)
+    && \text{(definition of $\bar{\phi}$)}
+\end{align*}
+such that finally $\phi = \frac{2}{b - a}\bar{\phi} \circ \tau$.
+Finding a relation between \gls{smooth-spectral-density} is a bit trickier.
+For this, we need to go back all the way to the definition of
+\gls{smooth-spectral-density} \refequ{equ:1-introduction-def-smooth-spectral-density}
+and evaluate the expression
+\begin{align*}
+    &\phi_{\sigma}(\tau^{-1}(t)) \notag \\
+    &= (\phi \ast g_{\sigma})(\tau^{-1}(t)) && \text{(definition of \gls{smooth-spectral-density})} \notag \\
+    &= \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(convolution)} \notag \\
+    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\tau(s)) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(identity $\phi = \frac{2}{b-a}\bar{\phi} \circ \tau$)} \notag \\
+    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t)-\tau^{-1}(\bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(substitution $\bar{s} = \tau(s)$)} \notag \\
+    %&= \int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t - \bar{s})\right) \frac{2}{b-a} \mathrm{d}\bar{s} && \text{(linearity of \gls{spectral-transformation})} \notag \\
+    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\frac{b-a}{2}(t - \bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(explicit form of $\tau^{-1}$)}
+\end{align*}
+%Therefore, we can
+%obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running the method
+%with 
+By identifying
+\begin{equation}
+    \bar{g}_{\sigma}(s) = g_{\sigma}\left(\frac{b-a}{2}s\right) \frac{b-a}{2}
+\end{equation}
+we see that $\phi_{\sigma}= \frac{2}{b-a}(\bar{\phi} \ast \bar{g}_{\sigma}) \circ \tau$.
+Therefore, we can obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running
+\refalg{alg:2-chebyshev-DGC} with $\bar{g}_{\sigma}$
+and $\bar{\mtx{A}}$ on the transformed evaluation points $\{ \tau(t_i) \}_{i=1}^{n_t}$,
+and rescale the result with $\frac{2}{b-a}$.
+Since all of the \glsfirst{smoothing-kernel} we consider in this thesis (Gaussian, Lorentzian) are of the form
+\gls{smoothing-kernel}$(s)=\frac{1}{\sigma}f(\frac{s}{\sigma})$ for some function $f$ independent of
+\gls{smoothing-parameter}, we only need to rescale the \glsfirst{smoothing-parameter} to
+\begin{equation}
+    \bar{\sigma} = \frac{2\sigma}{b - a}
+    \label{equ:A-appendix-sigma-transformation}
+\end{equation}
+to determine $\bar{g}_{\sigma}=g_{\bar{\sigma}}$.\\
+%which allow us, for most kernels (Gaussian, Lorentzian, ...) and up to multiplication
+%with a constant factor, to reconstruct the spectral density of $\mtx{A}$.

@@ -22,9 +22,9 @@ standard symmetric eigenvalue solver from the NumPy Python package: \url{https:/
     \frac{\sum_{i=1}^{n_t} |\widetilde{\phi}_{\sigma}^{(m)}(t_i) - \phi_{\sigma}(t_i)|}{\sum_{i=1}^{n_t} |\phi_{\sigma}(t_i)|}.
     \label{equ:5-experiments-L1-error}
 \end{equation}
-We always use $n_t=100$ evenly spaced evaluation points which cover the whole spectrum of
+We use $n_t=100$ evenly spaced evaluation points which cover the whole spectrum of
 $\mtx{A}$. The choice of this metric can be justified by the fact that this
-error roughly corresponds to the midpoint quadrature rule \cite[chapter~9.2.1]{quarteroni2007numerical}
+error roughly corresponds to the midpoint quadrature rule %\cite[chapter~9.2.1]{quarteroni2007numerical}
 applied to the continuous $L^1$-norm, for which our theoretical results hold.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,7 +94,9 @@ the \gls{NCPP} method.\\
     \end{subfigure}
     \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
     but fixed \gls{chebyshev-degree} we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
-    for the model problem with \gls{smoothing-parameter} $=0.05$.}
+    for the model problem with \gls{smoothing-parameter} $=0.05$.
+    We also indicate orders of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
+    as a function of the relative $L^1$ error $\varepsilon$.}
     \label{fig:5-experiments-electronic-structure-convergence-nv}
 \end{figure}
 
@@ -220,7 +222,7 @@ is provided in \reffig{fig:5-experiments-haydock-kernel}.\\
 %be efficiently evaluated for multiple $t$ by running Lanczos
 %on $\mtx{A}$ with starting vector $\vct{\psi}_j$
 %\begin{equation}
-%    \vct{\psi}_j^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{A})^{-1} \vct{\psi}_j% &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I} - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
+%    \vct{\psi}_j^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{A})^{-1} \vct{\psi}_j% &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
 %    \approx \cfrac{1}{(t - i\sigma) - \alpha_1 - \cfrac{\beta_2^2}{(t - i\sigma) - \alpha_2 - \dots}}
 %    \label{equ:5-experiments-haydock-recursion}
 %\end{equation}
@@ -246,7 +248,9 @@ between the methods in \reftab{tab:5-experiments-timing-haydock}.\\
     \caption{For increasing values of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
     but fixed \gls{chebyshev-degree} we plot the $L^1$ relative approximation error \refequ{equ:5-experiments-L1-error}
     for the model problem from \refsec{sec:5-experiments-density-function} with
-    the Lorentzian kernel with \gls{smoothing-parameter} $=0.05$.}
+    the Lorentzian kernel with \gls{smoothing-parameter} $=0.05$.
+    We also indicate orders of \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
+    as a function of the relative $L^1$ error $\varepsilon$.}
     \label{fig:5-experiments-haydock-convergence-nv}
 \end{figure}
 

@@ -1,4 +1,4 @@
-\chapter{Variance reduced trace estimation}
+\chapter{Improved trace estimation}
 \label{chp:4-nystromchebyshev}
 
 In \refsec{sec:2-chebyshev-stochastic-trace-estimation} we have introduced the
@@ -9,18 +9,18 @@ try to improve on this. They usually take a \enquote{hybrid} approach, combining
 low-rank approximation with stochastic trace estimation.\\
 
 This chapter will take the methods we have discussed in \refchp{chp:2-chebyshev}
-and \refchp{chp:3-nystrom} combine them to a variance reduced method which
+and \refchp{chp:3-nystrom} combine them to an improved trace estimatior which
 we call the \glsfirst{NCPP} method.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Fundamentals of variance reduced trace estimation}
+\section{Fundamentals of improved trace estimation}
 \label{sec:4-nystromchebyshev-hybrid}
 
 The initial idea from \cite{lin2017randomized} was to perform a low-rank
 approximation before the stochastic trace estimation to achieve a
-decrease of the variance which is inversely proportional to the number of
-matrix-vector products. Recent theoretical developments confirm the
+steeper decrease of the estimation error as the number of computed
+matrix-vector products increase. Recent theoretical developments confirm the
 efficacy of this approach \cite{meyer2021hutch,persson2022hutch}.
 We will first briefly discuss these results which are valid 
 for constant matrices.\\
@@ -88,8 +88,8 @@ with high probability. The key to this conclusion is the following theorem \cite
 \end{theorem}
 
 In \cite{meyer2021hutch} this theorem is applied to a low-rank factorization of
-the form \refequ{equ:3-nystrom-RSVD} to prove the $\mathcal{O}(\epsilon^{-1})$
-dependence of the number of matrix-vector multiplications on the relative probabilistic
+the form \refequ{equ:3-nystrom-RSVD} to prove the $\mathcal{O}(\epsilon^{-1})$-dependence
+of the number of matrix-vector multiplications on the relative probabilistic
 approximation error, which yielded the ubiquitous Hutch++ algorithm.
 \cite{lin2017randomized} uses and \cite{persson2022hutch} refines an analogous procedure for the
 case of the Nystr\"om approximation \refequ{equ:3-nystrom-nystrom}. In \cite[theorem~3.4]{persson2022hutch}
@@ -327,17 +327,70 @@ since by \refequ{equ:4-nystromchebyshev-generalized-eigenvector-xi} and the cycl
 \subsection{Theoretical analysis}
 \label{subsec:4-nystromchebyshev-analysis}
 
-From \refthm{thm:4-nystromchebyshev-final} it is possible
-to directly conclude that with probability $\geq 1-\delta$,
-\begin{equation}
-    \lVert \phi_{\sigma} - \breve{\phi}_{\sigma} \rVert _1 \leq \varepsilon,
-    \label{equ:4-nystromchebyshev-spectral-density-error}
-\end{equation}
-if we run the \gls{NCPP} method with \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $= \mathcal{O}(\log(1/\delta)/\varepsilon)$
-and assume the Chebyshev expansion to be exact. Due to the fact that in general the Chebyshev
-expansion is not exact and, hence, does not necessarily preserve the \gls{PSD} structure of a matrix function,
-a result similar to \refthm{thm:2-delta-gauss-chebyshev} for the \gls{DGC} method
-is out of reach for the \gls{NCPP} method for now.
+%From \refthm{thm:4-nystromchebyshev-final} it is possible
+%to directly conclude that with probability $\geq 1-\delta$,
+%\begin{equation}
+%    \lVert \phi_{\sigma} - \breve{\phi}_{\sigma} \rVert _1 \leq \varepsilon,
+%    \label{equ:4-nystromchebyshev-spectral-density-error}
+%\end{equation}
+%if we run the \gls{NCPP} method with \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $= \mathcal{O}(\log(1/\delta)/\varepsilon)$
+%and assume the Chebyshev expansion to be exact. Due to the fact that in general the Chebyshev
+%expansion is not exact and, hence, does not necessarily preserve the \gls{PSD} structure of a matrix function,
+%a result similar to \refthm{thm:2-delta-gauss-chebyshev} for the \gls{DGC} method
+%is out of reach for the \gls{NCPP} method for now.
+
+Similarly to \refsec{subsec:3-nystrom-theoretical-analysis}, we can again consider
+the shifted spectral density $\underline{g}_{\sigma} = g_{\sigma} + \rho$. For
+sufficiently large \gls{shift} $> 0$ we may then guarantee that $\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$
+is symmetric \gls{PSD}. Therefore, \refthm{thm:4-nystromchebyshev-final} can be
+employed to get the following result.
+
+\begin{theorem}{$L^1$-error of Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-nystromchebyshev-method}
+    Let $\breve{\underline{\phi}}_{\sigma}^{(m)}$ be the result from running
+    \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp} on a symmetric matrix
+    $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$
+    using a shifted Gaussian smoothing kernel $\underline{g}_{\sigma} = g_{\sigma} + \rho$
+    and with the parameters \gls{smoothing-parameter} $>0$, \gls{chebyshev-degree} $\in \mathbb{N}$, and
+    \gls{num-hutchinson-queries} $+$ \gls{sketch-size} $=\mathcal{O}(\log(1/\delta)/\varepsilon)$
+    and additionally \gls{sketch-size} $\geq 8 \log(1/\delta)$.
+    If \gls{shift} $\geq \frac{C_1}{2 n \sigma^2} (1 + C_2 \sigma)^{-m}$ for the constants
+    $C_1, C_2$ in \reflem{lem:2-chebyshev-error}, then
+    for $\delta \in (0, e^{-1})$ it holds with probability $\geq 1-\delta$, that
+    \begin{equation}
+        \lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
+        \leq (1 + \varepsilon) \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \varepsilon(1 + 2 n \rho).
+    \end{equation}
+\end{theorem}
+
+\begin{proof}
+    With the choice of \gls{shift} in the assumptions of the theorem, we
+    can conclude from \reflem{lem:2-chebyshev-error} that the expansion of the
+    shifted smoothing kernel $\underline{g}_{\sigma}^{(m)}$ is non-negative.
+    Therefore, the parameter-dependent matrix $\underline{g}_{\sigma}^{(m)}(t\mtx{I} - \mtx{A})$
+    is symmetric \gls{PSD}, and \refthm{thm:4-nystromchebyshev-final} can be
+    applied.\\
+
+    Thus, under the conditions of the theorem, we can conclude
+    \begin{align*}
+        &\lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1 \notag \\
+        &\leq \lVert \underline{\phi}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1 
+        + \lVert \underline{\phi}_{\sigma}^{(m)} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1 && \text{(triangle inequality)} \notag \\
+        &\leq \lVert \underline{\phi}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
+        + \varepsilon \lVert \underline{\phi}_{\sigma}^{(m)} \rVert _1 && \text{(\refthm{thm:4-nystromchebyshev-final})} \notag \\
+        &\leq (1 + \varepsilon) \lVert \underline{\phi}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
+        + \varepsilon \lVert \underline{\phi}_{\sigma} \rVert _1 && \text{(triangle inequality)} \notag \\
+        %&\leq \varepsilon \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \varepsilon (1 + 2 \rho) 
+        %+ \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)} \notag \\
+        &= (1 + \varepsilon) \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \varepsilon(1 + 2 n \rho) && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)}
+    \end{align*}
+    with probability $\geq 1-\delta$.
+\end{proof}
+
+As \gls{chebyshev-degree} gets smaller and smaller, the Chebyshev expansion gets
+more and more accurate, and the \glsfirst{shift} can be chosen smaller and smaller.
+However, the non-linearity of most low-rank factorizations make the estimator
+$\Tr^{++}$ non-linear, and disallow extending this error guarantee to
+$\lVert \phi_{\sigma} - \breve{\phi}_{\sigma}^{(m)} \rVert$.
 
 %These results now allow us to state an error guarantee for the output of the
 %\gls{NCPP} algorithm.
@@ -355,7 +408,7 @@ is out of reach for the \gls{NCPP} method for now.
 %
 %For RSVD ($k=2$), we use \cite[theorem~9.1]{halko2011finding}
 %\begin{equation}
-%    \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \leq \lVert \mtx{\Lambda}_2 \rVert _F + \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F.
+%    \lVert (\mtx{I}_n - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \leq \lVert \mtx{\Lambda}_2 \rVert _F + \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F.
 %\end{equation}
 %Result from parameter-dependent Nyström++
 %\begin{equation}
@@ -364,12 +417,12 @@ is out of reach for the \gls{NCPP} method for now.
 %\end{equation}
 %where $n_{\Omega}$ hence
 %\begin{equation}
-%    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert (\mtx{I} - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
+%    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert (\mtx{I}_n - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
 %    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}.
 %\end{equation}
 %By Markov's and Minkowski's inequalities we have for $n_{\Omega} \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
 %\begin{equation}
-%    \int_{a}^{b}\lVert  (\mtx{I} - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int_{a}^{b}\frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\Omega}}} \mathrm{d}t
+%    \int_{a}^{b}\lVert  (\mtx{I}_n - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int_{a}^{b}\frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\Omega}}} \mathrm{d}t
 %\end{equation}
 %
 %For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[lemma~5.2]{tropp2023randomized}
