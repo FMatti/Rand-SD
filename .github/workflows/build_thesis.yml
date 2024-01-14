@@ -49,7 +49,7 @@ jobs:
       - name: Generate thesis
         run: |
           echo "\begin{tikzpicture}" > "${{ env.THESIS_DIR }}/re-pro-badge.tex"
-          echo "    \draw[black, line width=3pt] (0.1, 0.95) to (\textwidth, 0.95) (0.1, -0.95) to (0.8\textwidth, -0.95);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
+          echo "    \draw[black, line width=3pt] (0.1, 0.95) to (0.8\textwidth, 0.95) (0.1, -0.95) to (\textwidth, -0.95);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
           echo "    \fill[white] (0, 1.1) to (1, 1.1) arc (90:-90:1.1) to (0, -1.1);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
           echo "    \fill[black] (1, 0) circle (1);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
           echo "    \draw[white, line width=1pt] (0.35, 0.55) arc(140:-80:0.45) to (1.1, -0.65) to (0.95, -0.65) (0.45, 0.45) arc(140:-110:0.31) to (0.58, -0.65) (1.35, -0.65) arc(270:20:0.35) to (1.35, -0.35) (1.35, -0.51) arc(270:50:0.21) (1.43, -0.65) rectangle (1.57, -0.51);" >> "${{ env.THESIS_DIR }}/re-pro-badge.tex"
@@ -62,7 +62,7 @@ jobs:
       - name: Generate slides
         run: |
           echo "\begin{tikzpicture}" > "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
-          echo "    \draw[black, line width=3pt] (0.1, 0.95) to (\textwidth, 0.95) (0.1, -0.95) to (0.8\textwidth, -0.95);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
+          echo "    \draw[black, line width=3pt] (0.1, 0.95) to (0.8\textwidth, 0.95) (0.1, -0.95) to (\textwidth, -0.95);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
           echo "    \fill[white] (0, 1.1) to (1, 1.1) arc (90:-90:1.1) to (0, -1.1);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
           echo "    \fill[black] (1, 0) circle (1);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
           echo "    \draw[white, line width=1pt] (0.35, 0.55) arc(140:-80:0.45) to (1.1, -0.65) to (0.95, -0.65) (0.45, 0.45) arc(140:-110:0.31) to (0.58, -0.65) (1.35, -0.65) arc(270:20:0.35) to (1.35, -0.35) (1.35, -0.51) arc(270:50:0.21) (1.43, -0.65) rectangle (1.57, -0.51);" >> "${{ env.SLIDES_DIR }}/re-pro-badge.tex"
@@ -75,7 +75,7 @@ jobs:
       - name: Generate poster
         run: |
           echo "\begin{tikzpicture}" > "${{ env.POSTER_DIR }}/re-pro-badge.tex"
-          echo "    \fill[white] (1, 0) circle (1.05);" > "${{ env.POSTER_DIR }}/re-pro-badge.tex"
+          echo "    \fill[white] (1, 0) circle (1.05);" >> "${{ env.POSTER_DIR }}/re-pro-badge.tex"
           echo "    \fill[darkblue] (1, 0) circle (1);" >> "${{ env.POSTER_DIR }}/re-pro-badge.tex"
           echo "    \draw[white, line width=1pt] (0.35, 0.55) arc(140:-80:0.45) to (1.1, -0.65) to (0.95, -0.65) (0.45, 0.45) arc(140:-110:0.31) to (0.58, -0.65) (1.35, -0.65) arc(270:20:0.35) to (1.35, -0.35) (1.35, -0.51) arc(270:50:0.21) (1.43, -0.65) rectangle (1.57, -0.51);" >> "${{ env.POSTER_DIR }}/re-pro-badge.tex"
           echo "    \node[anchor=west] at (2.1, 0.65) {\small This document is provably reproducible.};" >> "${{ env.POSTER_DIR }}/re-pro-badge.tex"
