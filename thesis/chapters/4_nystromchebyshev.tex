@@ -345,7 +345,7 @@ sufficiently large \gls{shift} $> 0$ we may then guarantee that $\underline{g}_{
 is symmetric \gls{PSD}. Therefore, \refthm{thm:4-nystromchebyshev-final} can be
 employed to get the following result.
 
-\begin{theorem}{$L^1$-error of Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-nystromchebyshev-method}
+\begin{theorem}{$L^1$-error of Nystr\"om-Chebyshev++ method with shift}{4-nystromchebyshev-nystromchebyshev-method}
     Let $\breve{\underline{\phi}}_{\sigma}^{(m)}$ be the result from running
     \refalg{alg:4-nystromchebyshev-nystrom-chebyshev-pp} on a symmetric matrix
     $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$
@@ -385,12 +385,6 @@ employed to get the following result.
     \end{align*}
     with probability $\geq 1-\delta$.
 \end{proof}
-
-As \gls{chebyshev-degree} gets smaller and smaller, the Chebyshev expansion gets
-more and more accurate, and the \glsfirst{shift} can be chosen smaller and smaller.
-However, the non-linearity of most low-rank factorizations make the estimator
-$\Tr^{++}$ non-linear, and disallow extending this error guarantee to
-$\lVert \phi_{\sigma} - \breve{\phi}_{\sigma}^{(m)} \rVert$.
 
 %These results now allow us to state an error guarantee for the output of the
 %\gls{NCPP} algorithm.

@@ -790,7 +790,11 @@ So if we instead interpolate the shifted kernel
 we may guarantee that for a large enough \gls{shift} $\geq 0$, its Chebyshev expansion
 $\underline{g}_{\sigma}^{(m)}$ will be non-negative. Furthermore, given
 the shifted smooth spectral density $\underline{\phi}_{\sigma}$ of a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$,
-we may retrieve \glsfirst{smooth-spectral-density} using the linearity of the trace:
+we may retrieve \glsfirst{smooth-spectral-density} using the linearity of the trace
+\footnote{For the \gls{NC} method, this correction will have to be adjust to
+$\widehat{\phi}_{\sigma}(t) = \underline{\phi}_{\sigma}(t) - \rho n_{\Omega}$
+since in the algorithm we compute the trace of an \gls{sketch-size} $\times$ \gls{sketch-size}
+matrix.}:
 \begin{equation}
     \phi_{\sigma}(t)
     = \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A}))
@@ -799,7 +803,7 @@ we may retrieve \glsfirst{smooth-spectral-density} using the linearity of the tr
     \label{equ:3-nystrom-revert-shift}
 \end{equation}
 For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove the following result.
-\begin{theorem}{$L^1$-error of Nystr\"om-Chebyshev method}{3-nystrom-nystrom-method}
+\begin{theorem}{$L^1$-error of Nystr\"om-Chebyshev method with shift}{3-nystrom-nystrom-method}
     Let $\widehat{\underline{\phi}}_{\sigma}^{(m)}$ be the result from running
     \refalg{alg:3-nystrom-nystrom-chebyshev} on a symmetric matrix
     $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$
@@ -866,11 +870,38 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
 \end{proof}
 
 For matrices $\mtx{A} \in \mathbb{R}^{n \times n}$ whose spectrum we know to be
-evenly distributed, we know that
+evenly distributed, we know from \refsec{sec:3-nystrom-numerical-rank}
+that
 \begin{equation}
     r_{\varepsilon, \ast}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \lessapprox n \sigma \sqrt{-2\log(\sqrt{2 \pi n} \sigma \varepsilon)},
 \end{equation}
-which gives a tractable expression for the choice of $r$ in \refthm{thm:3-nystrom-nystrom-method}.
+which gives a tractable expression for the choice of $r$ in \refthm{thm:3-nystrom-nystrom-method}.\\
+
+As \gls{chebyshev-degree} gets smaller and smaller, the Chebyshev expansion gets
+more and more accurate, and the \glsfirst{shift} can be chosen smaller and smaller.
+However, the non-linearity of most low-rank factorizations make this estimator
+non-linear, and disallow extending this error guarantee to
+$\lVert \phi_{\sigma} - \widehat{\phi}_{\sigma}^{(m)} \rVert$.\\
+
+From \refequ{fig:3-nystrom-shift} it is clear that adding the shift harms the
+convergence of the approximation. Therefore, this shifting operation is only
+useful to guarantee theoretical result, but in practice it seems like the
+non-negativity of the \glsfirst{smoothing-kernel} does not have a crucial
+impact on the performance of the Nystr\"om approximation of the matrix function
+$g_{\sigma}(t\mtx{I}_n - \mtx{A})$.
+
+\begin{figure}[ht]
+    \centering
+    \input{plots/kernel_shift.pgf}
+    \caption{For \gls{chebyshev-degree} $=2400$, we observe the influence of a
+        \glsfirst{shift} of the kernel on the convergence with respect to \gls{sketch-size}.
+        Here, we used the matrix described in \refsec{sec:5-experiments-density-function}
+        and ran the \gls{NC} method (including the algorithmic improvements
+        from \refsec{subsec:3-nystrom-implementation-details}) for a Gaussian \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$
+        and fixed \gls{sketch-size} $=80$. Once in the usual way and once with \gls{shift} $=10^{-7}$,
+        which is more than sufficient for the shifted kernel $\underline{g}_{\sigma}$ to be non-negative.}
+    \label{fig:3-nystrom-shift}
+\end{figure}
 
 %At the beginning of this section we have discussed the decay of $g_{\sigma}(t - \lambda_{(i)})$
 %as $i$ increases. These observations can be used to argue that the bound

@@ -20,7 +20,7 @@ from src.utils import continued_fraction
 sys.setrecursionlimit(5000)
 
 
-def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
+def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, rho=0, seed=0):
     """
     Delta-Gauss-Chebyshev method for estimating the spectral density.
 
@@ -38,6 +38,8 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
         Number of Hutchinson's queries.
     kernel : function
         The smoothing kernel applied to the spectral density.
+    rho : int or float > 0
+        The shift which is applied to the kernel before computation.
     seed : int >= 0
         The seed for generating the random matrix W.
 
@@ -59,17 +61,17 @@ def DGC(A, t, m, sigma, n_v, kernel=gaussian_kernel, seed=0):
     n = A.shape[0]
 
     # Polynomial expansion
-    g = lambda x: kernel(x, n=n, sigma=sigma)
+    g = lambda x: kernel(x, n=n, sigma=sigma) + rho
     mu = chebyshev_coefficients(t, m, function=g)
 
     # Compute recurrence from Chebyshev expansion
     Psi = np.random.randn(n, n_v)
     phi_tilde = chebyshev_recurrence(mu, A, T_0=Psi, L=lambda x: np.multiply(Psi, x).sum() / n_v)
 
-    return phi_tilde
+    return phi_tilde - rho * np.trace(Psi.T @ Psi) / n_v
 
 
-def NC(A, t, m, sigma, n_v, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", seed=0):
+def NC(A, t, m, sigma, n_v, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", eigenproblem="standard", rho=0, seed=0):
     """
     Nyström-Chebyshev method for estimating the spectral density.
 
@@ -107,6 +109,8 @@ def NC(A, t, m, sigma, n_v, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussia
          -> standard = As proposed in [1] (project out kern(K_1))
          -> direct = Directly solve the generalized eigenproblem
          -> pinv = Directly compute pseudoinverse
+    rho : int or float > 0
+        The shift which is applied to the kernel before computation.
     seed : int >= 0
         The seed for generating the random matrix W.
 
@@ -132,7 +136,7 @@ def NC(A, t, m, sigma, n_v, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussia
         t = np.array(t).reshape(-1)
 
     # Compute coefficients of Chebyshev expansion of the smoothing kernel
-    g = lambda x: kernel(x, n=n, sigma=sigma)
+    g = lambda x: kernel(x, n=n, sigma=sigma) + rho
     if square_coefficients == "interpolation":
         mu = chebyshev_coefficients(t, k * m, function=lambda x: g(x) ** k)
         nu = chebyshev_coefficients(t, (k + 1) * m, function=lambda x: g(x) ** (k + 1))
@@ -162,10 +166,10 @@ def NC(A, t, m, sigma, n_v, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussia
                 Xi = generalized_eigenproblem_standard(K_2[i], K_1[i], n=n, sigma=sigma, zeta=zeta, eta=eta)[0]
             phi_hat[i] = np.sum(Xi)
 
-    return phi_hat
+    return phi_hat - rho * n_v
 
 
-def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", seed=0):
+def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, zeta=1e-7, kappa=1e-5, eta=1e-3, kernel=gaussian_kernel, square_coefficients="transformation", rho=0, seed=0):
     """
     Nyström-Chebyshev++ method for estimating the spectral density.
 
@@ -200,6 +204,8 @@ def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, zeta=1e-7, kappa=1e-5, eta=1e
         Method by which the coefficients of the squared Gaussian are computed.
          -> transformation = Compute coefficients with discrete cosine transform
          -> interpolation = Interpolate the squared function
+    rho : int or float > 0
+        The shift which is applied to the kernel before computation.
     seed : int >= 0
         The seed for generating the random matrix W.
 
@@ -231,10 +237,10 @@ def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, zeta=1e-7, kappa=1e-5, eta=1e
         n_v_tilde = n_v // 2
         n_v = n_v // 2
     elif n_v_tilde == 0:
-        return NC(A, t, m, sigma, n_v, k, zeta, kappa, eta, kernel, square_coefficients, eigenproblem, seed)
+        return NC(A, t, m, sigma, n_v, k, zeta, kappa, eta, kernel, square_coefficients, seed=seed)
 
     # Compute coefficients of Chebyshev expansion of the smoothing kernel
-    g = lambda x: kernel(x, n=n, sigma=sigma)
+    g = lambda x: kernel(x, n=n, sigma=sigma) + rho
     if square_coefficients == "transformation":
         mu_1 = chebyshev_coefficients(t, m, function=g)
         mu = exponentiate_chebyshev_coefficients_cosine_transform(mu_1, k=k)
@@ -265,7 +271,7 @@ def NCPP(A, t, m, sigma, n_v, n_v_tilde=None, k=1, zeta=1e-7, kappa=1e-5, eta=1e
         T = np.trace(L_1[i] @ C_tilde @ C_tilde.conjugate().T @ L_2[i].T)
         phi_breve[i] = np.sum(xi_tilde) + (ell[i] - T) / n_v_tilde
 
-    return phi_breve
+    return phi_breve - rho * n
 
 
 def Lanczos(A, x, k, reorth_tol=0.7):
