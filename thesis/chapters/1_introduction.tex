@@ -24,7 +24,7 @@ research on spectral density approximations.
 In most applications, the studied matrices are real,
 i.e. $\mtx{A} \in \mathbb{R}^{n \times n}$, and symmetric, i.e. $\mtx{A}^{\top} = \mtx{A}$,
 such that their eigenvalues $\lambda_1, \dots, \lambda_n$ are all real.
-This allows us to define their spectral density on the real line.
+This allows us to define their spectral densities on the real line.
 \begin{definition}{Spectral density of a matrix}{1-introduction-spectral-density}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix with \glspl{eigenvalue}
     $\in \mathbb{R}, i=1, \dots, n$. We define the \gls{spectral-density} as
@@ -102,7 +102,7 @@ Commonly, \gls{smoothing-kernel} is chosen to be a Gaussian of width \gls{smooth
     g_{\sigma}(s) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{s^2}{2\sigma^2}},
     \label{equ:1-introduction-def-gaussian-kernel}
 \end{equation}
-due to its rapidly decaying tail and desirable interpolation properties \cite{lin2017randomized}.
+due to its rapidly decaying tail and desirable interpolation properties.
 There are many other choices possible for \gls{smoothing-kernel}. Ideally,
 \gls{smoothing-kernel} should be smooth, symmetric, non-negative, and tend -- in a weak sense --
 towards the \glsfirst{dirac-delta} in the limit of \gls{smoothing-parameter} $\to 0$. Another
@@ -118,7 +118,7 @@ is orthonormal, i.e. $\mtx{U}^{\top} \mtx{U} = \mtx{I}_n$ \cite[theorem~4.1.5]{h
 Thus, if we absorb the $1/n$ factor from \refequ{equ:1-introduction-def-smooth-spectral-density}
 in \gls{smoothing-kernel},
 use the definition of a smooth function $f$ applied to a symmetric matrix
-$f(\mtx{A}) = \mtx{U}^{\top} f(\mtx{\Lambda}) \mtx{U}$,
+$f(\mtx{A}) = \mtx{U} f(\mtx{\Lambda}) \mtx{U}^{\top}$,
 with $f(\mtx{\Lambda}) = \diag(f(\lambda_1), \dots, f(\lambda_n))$ \cite[definition~1.2]{higham2008functions},
 and finally use the invariance of the trace under orthonormal transformations, we may write
 \begin{equation}
@@ -145,15 +145,15 @@ as a product of smaller matrices, for which we can directly compute the trace.
 Finally, the \gls{NCPP} method combines the \gls{DGC} and \gls{NC} method
 by first factorizing the matrix and subsequently correcting for the approximation
 error by estimating the trace of the residual of this approximation with a stochastic trace estimator.
-In fact, if we denote with $\widetilde{\phi}_{\sigma}^{(m)}(t)$ the approximation
-of \gls{smooth-spectral-density} computed with the \gls{DGC} method, $\widehat{\phi}_{\sigma}^{(m)}(t)$ the
-one computed with the \gls{NC} method, and $\breve{\phi}_{\sigma}^{(m)}(t)$ the one
+In fact, if we denote with $\widetilde{\phi}_{\sigma}^{(m)}$ the approximation
+of \gls{smooth-spectral-density} computed with the \gls{DGC} method, $\widehat{\phi}_{\sigma}^{(m)}$ the
+one computed with the \gls{NC} method, and $\breve{\phi}_{\sigma}^{(m)}$ the one
 with \gls{NCPP}, we can show that
 \begin{equation}
-    \breve{\phi}_{\sigma}^{(m)}(t) = \widetilde{\phi}_{\sigma}^{(m)}(t) + \widehat{\phi}_{\sigma}^{(m)}(t) - \text{some additional term}
+    \breve{\phi}_{\sigma}^{(m)} = \widetilde{\phi}_{\sigma}^{(m)} + \widehat{\phi}_{\sigma}^{(m)} - \text{some additional term}.
     \label{equ:1-introduction-relation-methods}
 \end{equation}
-It will turn out that the additional term is determined by applying
+It will turn out that the additional term can be determined by applying
 the \gls{DGC} method to the matrix factorization produced in the \gls{NC} method.
 A schematic overview of the relation between these methods can be found
 in \reffig{fig:1-introduction-methods-overview}.
@@ -161,7 +161,7 @@ in \reffig{fig:1-introduction-methods-overview}.
 \begin{figure}[ht]
     \centering
     \input{figures/methods_overview.tex}
-    \caption{Overview of the techniques used in the three methods presented
+    \caption{Overview of the techniques used in the three methods developed
     in this thesis: the \glsfirst{DGC}, \glsfirst{NC}, and \glsfirst{NCPP} methods.}
     \label{fig:1-introduction-methods-overview}
 \end{figure}
@@ -199,9 +199,9 @@ illustrated overview of the methods):
 \begin{figure}[ht]
     \centering
     \input{figures/literature_overview.tex}
-    \caption{An overview of the most popular methods for approximating
+    \caption{An overview of some popular methods for approximating
         spectral densities of large symmetric matrices. For each method, the publication
-        where it was originally introduced, the type of smoothing it applies,
+        where we have encountered them in, the type of smoothing it applies,
         what kind of expansion is used, and how the trace in
         \refequ{equ:1-introduction-spectral-density-as-trace} is approximated
         are mentioned.
@@ -215,8 +215,7 @@ by first tridiagonalizing the matrix with a few iterations of the Lanczos algori
 \cite{lanczos1950iteration} and subsequently evaluating the matrix function using
 a continued fraction formula. The stochastic Lanczos quadrature \cite{lin2016review, ubaru2017lanczos,chen2021slq}
 also first tridiagonalizes the matrix. It then extracts the nodes and weights
-for the corresponding Gaussian quadrature to build an approximate spectral density.\\
-
+for the corresponding Gaussian quadrature to build an approximate spectral density.
 The expansion-based methods encompass the kernel polynomial methods \cite{silver1994kpm, wang1994kpm, weisse2006kpm}
 which involve the formal expansion of a suitable modification of \gls{spectral-density}
 in a basis of orthogonal polynomials. The Delta-Gauss-Legendre \cite{lin2016review}
@@ -253,12 +252,12 @@ main contributions to be
           by orders of magnitude at no loss of accuracy;
     \item the proposal of multiple algorithmic improvements and speed-ups
           for all methods from \cite{lin2017randomized};
-    %\item the derivation of an a priori guarantee for the number of matrix-vector
-    %      products needed to get an accurate approximation of the spectral
-    %      density under certain assumptions on the matrix;
-    \item an analogoue result for the reciprocal decrease of the approximation
-          error with the number of queries as seen in \cite[theorem~1]{meyer2021hutch}
-          but for the trace of parameter dependent matrices;
+    \item the derivation of an a priori guarantee for the number of matrix-vector
+          products needed to get an accurate approximation of the spectral
+          density under certain assumptions;
+    %\item an analogoue result for the reciprocal decrease of the approximation
+    %      error with the number of queries as seen in \cite[theorem~1]{meyer2021hutch}
+    %      but for the trace of parameter dependent matrices;
     \item proposal of a simple generalization of the presented methods to other
           commonly used randomized low-rank approximation schemes;
     \item a fast and rigorously documented implementation of all the algorithms
@@ -274,8 +273,8 @@ main contributions to be
 \label{sec:1-introduction-structure}
 
 This paragraph finishes off the introductory \refchp{chp:1-introduction}.
-In \refchp{chp:2-chebyshev} we introduce the Chebyshev expansion, present an
-efficient method for computing it, and study its convergence. We also take a
+In \refchp{chp:2-chebyshev} we discuss the Chebyshev expansion, present an
+efficient way of computing it, and study its convergence. We also take a
 look at stochastic trace estimation to then construct a first algorithm,
 the \glsfirst{DGC} method, using these tools.
 \Refchp{chp:3-nystrom} is dedicated to the use of randomized low-rank factorization

@@ -34,9 +34,9 @@ literature in this field. That is,
           $\lVert \mtx{A} \rVert _{(p)} = (\sum_{i=1}^n |\lambda_i|^p)^{1/p}$.
           We refer to the spectral norm as
           $\lVert \mtx{A} \rVert _2 = \lVert \mtx{A} \rVert _{(\infty)} = \max_{i=1,\dots,n}|\lambda_i|$,
-          the nuclear norm as $\lVert \mtx{A} \rVert _{\ast} = \lVert \mtx{A} \rVert _{(1)} = \sum_{i=1}^{n} \lambda_i$,
+          the nuclear norm as $\lVert \mtx{A} \rVert _{\ast} = \lVert \mtx{A} \rVert _{(1)} = \sum_{i=1}^{n} |\lambda_i|$,
           and the Frobenius norm
-          is $\lVert \mtx{A} \rVert _F = \lVert \mtx{A} \rVert _{(2)} = (\sum_{i=1}^{n} \lambda_i^2)^{\frac{1}{2}}$;
+          is $\lVert \mtx{A} \rVert _F = \lVert \mtx{A} \rVert _{(2)} = (\sum_{i=1}^{n} |\lambda_i|^2)^{\frac{1}{2}}$;
     \item the pseudoinverse of a matrix is denoted with $\mtx{A}^{\dagger}$. It
           satisfies $\mtx{A}^{\dagger}=(\mtx{A}^{\top} \mtx{A})^{\dagger} \mtx{A}^{\top}$,
           and if $\mtx{A}$ has linearly independent columns, it acts as a left inverse
@@ -54,12 +54,14 @@ literature in this field. That is,
           can be defined as $(f \ast g)(t) = \int_{-\infty}^{\infty}f(s)g(t-s)\mathrm{d}s$;
     \item the expected value is denoted with $\mathbb{E}$ and the variance with $\Var$;
     \item Euler's number is printed as $e$ and its corresponding natural logarithm as $\log$;
-    \item Dirac's delta distribution is written $\delta$ \cite[chapter~15]{dirac1947quantum}
-          and the Kronecker delta $\delta_{ij}$;
-    \item the trigonometric cosine function is denoted with $\cos$ and its inverse is $\arccos$.
+    \item Dirac's delta distribution is written as $\delta$ and satisfies
+          $\int_{-\infty}^{\infty} f(s)\delta(t-s) = f(t)$ as well as
+          $\delta(cs)=\frac{1}{|c|}\delta(s)$ for any $c \in \mathbb{R} \setminus {0}$ \cite[chapter~15]{dirac1947quantum}.
+          The Kronecker delta $\delta_{ij}$ is $1$ if $i=j$, otherwise $0$;
+    \item the trigonometric cosine function is denoted with $\cos$ and its inverse with $\arccos$.
     \item the real part of a complex number $z$ is $\Re(z)$ while its imaginary part is $\Im(z)$.
           The complex unit is printed as $\iota$;
-    \item we use $\mathcal{O}$ to describe the asymptotic lower- and upper bounds
+    \item we use $\mathcal{O}$ to describe the asymptotic lower and upper bounds
           on the complexity of a computation. For those more familiar with the
           Bachmann-Landau notation \cite[section~3.2]{cormen2009algorithms},
           please allow us -- for simplicity -- to use $\mathcal{O}$ as though it was $\Theta$;

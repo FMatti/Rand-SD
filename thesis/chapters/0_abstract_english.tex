@@ -1,18 +1,18 @@
 \chapter*{Summary}
 \label{chp:0-summary}
 
-We study a family of methods used to approximately compute the spectral density
+We develop a family of methods used to approximate the distribution of the eigenvalues -- the spectral density --
 of large symmetric matrices. These methods are based on the polynomial expansion
 of a smoothing function in combination with either a randomized trace estimation,
-a randomized low-rank approximation, or both simultaneously.\\
+a randomized low-rank factorization, or both simultaneously.\\
 
-Initially, we give an introduction and overview of procedures which are used
-to compute the spectral density of matrices. Then, we proceed to showing how
+Initially, we give an introduction and overview of procedures which are used in literature
+to compute the spectral density of matrices. Then, we proceed by showing how
 some matrix functions can efficiently be computed based on
-their Chebyshev expansion by computing discrete cosine transforms.
-The use of the Hutchinson's stochastic trace estimator leads to a first
-algorithm for approximating the spectral density, the Delta-Gauss-Chebyshev method.
-Subsequently, an analysis of the structure of the involved matrix function
+their Chebyshev expansion using the discrete cosine transformation.
+Together with the Hutchinson's stochastic trace estimator we construct a first
+algorithm for approximating the spectral density: the Delta-Gauss-Chebyshev method.
+Subsequently, an analysis of the structure of a matrix function involved in the computation
 motivates the usage of a Nystr\"om low-rank factorization for reducing the
 dimensionality of the problem, which leads us to the Nystr\"om-Chebyshev method.
 To circumvent the inefficiency of one and the lack of robustness of the other
@@ -26,6 +26,6 @@ of each method. In various experiments the analysis of our algorithms is
 numerically confirmed and their effectiveness is compared to other
 conventionally used methods.\\
 
-\textbf{Keywords:} Spectral density, Chebyshev expansion, stochastic trace estimation,
+\textbf{Keywords:} Spectral density, Chebyshev expansion, discrete cosine transform, stochastic trace estimation,
 Hutchinson's estimator, randomized low-rank factorization, Nystr\"om approximation,
 matrix functions, parameter dependent matrices

@@ -17,7 +17,7 @@ matplotlib.rcParams["font.size"] = 12
 np.random.seed(0)
 
 methods = NC
-labels = [r"$\rho=0$", r"$\rho=10^{-5}$"]
+labels = [r"$\rho=0$", r"$\rho=10^{-7}$"]
 fixed_parameters = [{"m": 2400, "sigma": 0.05, "rho": 0.0},
                     {"m": 2400, "sigma": 0.05, "rho": 1e-7}]
 variable_parameters = "n_v"

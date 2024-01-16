@@ -4,8 +4,8 @@
 In \refsec{subsec:2-chebyshev-implementation-details} we have mentioned
 a way in which we can apply a \glsfirst{spectral-transformation} $: [a, b] \to [-1, 1]$
 to use our methods for computing spectral densities of matrices whose spectrum
-is contained in an interval $[a, b]$. The following derivations prove the validity
-of this approach.\\
+is contained in a different interval $[a, b]$. The following derivations prove
+the validity of this approach.\\
 
 Let us call $\bar{\phi}$ the spectral density of $\bar{\mtx{A}} = \tau(\mtx{A})$. Then we can relate
 it to the \glsfirst{spectral-density} of $\mtx{A}$ through
@@ -23,7 +23,7 @@ it to the \glsfirst{spectral-density} of $\mtx{A}$ through
     && \text{(definition of $\bar{\phi}$)}
 \end{align*}
 such that finally $\phi = \frac{2}{b - a}\bar{\phi} \circ \tau$.
-Finding a relation between \gls{smooth-spectral-density} is a bit trickier.
+Finding an expression for \gls{smooth-spectral-density} is a bit trickier.
 For this, we need to go back all the way to the definition of
 \gls{smooth-spectral-density} \refequ{equ:1-introduction-def-smooth-spectral-density}
 and evaluate the expression

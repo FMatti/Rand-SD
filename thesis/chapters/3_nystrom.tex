@@ -57,7 +57,7 @@ where $\dimension$ is the dimension and $\range$ denotes the set of all elements
 which can be attained by right-multiplying $\mtx{B}$ with a vector from $\mathbb{R}^n$.\\
 
 To account for the finite precision of floating point operations
-and matrices which are almost low-rank matrices, we use the
+and for matrices which are almost low-rank matrices, we use the
 notion of the \gls{numerical-rank} \cite[definition~1.1]{noga2013rank}.
 \begin{definition}{Numerical rank of a matrix}{3-nystrom-numerical-rank}
     The \glsfirst{numerical-rank} of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
@@ -74,7 +74,7 @@ $\varepsilon$ is usually taken to be the double machine precision, i.e. $10^{-16
 For unitarily invariant norms $\lVert \cdot \rVert _{\cdot}$ and 
 symmetric \gls{PSD} matrices $\mtx{B}$, we may use
 \cite[theorem~5]{mirsky1960truncation} to express \gls{numerical-rank} in terms
-of its eigenvalues $\sigma_1, \dots, \sigma_n$.
+of its eigenvalues $\sigma_1 \geq \dots \geq \sigma_n \geq 0$.
 In particular, for the spectral norm $\lVert \cdot \rVert _2$ we have
 \begin{equation}
     r_{\varepsilon, 2}(\mtx{B}) = \min \{1 \leq r \leq n: \sigma_{r+1} \leq \varepsilon \},
@@ -82,7 +82,7 @@ In particular, for the spectral norm $\lVert \cdot \rVert _2$ we have
 \end{equation}
 for the nuclear norm $\lVert \cdot \rVert _{\ast}$
 \begin{equation}
-    r_{\varepsilon, \ast}(\mtx{B}) = \min \{1 \leq r \leq n: \sum_{j=r+1} \sigma_{j} \leq \varepsilon \},
+    r_{\varepsilon, \ast}(\mtx{B}) = \min \{1 \leq r \leq n: \sum_{j=r+1}^n \sigma_{j} \leq \varepsilon \},
     \label{equ:3-nystrom-numerical-rank-nuclear-norm}
 \end{equation}
 and for the Frobenius norm $\lVert \cdot \rVert _F$
@@ -127,7 +127,7 @@ i.e. the columns of the matrix $\mtx{V}_1$ fully capture the range of $\mtx{B}$.
 
 However, computing the spectral
 decomposition is often prohibitively expensive and usually not necessary for
-obtaining approximate factorizations of a matrix. There exist multiple approximate
+obtaining good approximate factorizations of a matrix. There exist multiple
 factorization methods for low-rank matrices, many of which are based on sketching.
 Sketching is a widely used technique for approximating the column space of a matrix
 \cite{halko2011finding,woodruff2014sketching,lin2017randomized,tropp2017sketching,tropp2023randomized}.
@@ -169,7 +169,8 @@ That is, $\mtx{B}\vct{\omega}$ is roughly aligned with the eigenvectors correspo
 to the largest eigenvalues: the dominant eigenvectors.
 When repeating this procedure for multiple $\vct{\omega}$ by right-multiplying $\mtx{B}$
 with a standard Gaussian \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$,
-it can be shown that
+it can be shown that $\mtx{B} \mtx{\Omega}$ approximates the range of $\mtx{B}$ well,
+and consequently
 \begin{equation}
     \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) (\mtx{B} \mtx{\Omega})^{\dagger} \mtx{B}
     \label{equ:3-nystrom-RSVD}
@@ -190,7 +191,7 @@ and by imposing $\widehat{\mtx{B}} = \mtx{B}$ we get
     \mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}) \mtx{K} (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\top}.
     \label{equ:3-nystrom-nystrom-unknown}
 \end{equation}
-By the properties of the pseudo-inverse of a matrix we see that
+By the properties of the pseudoinverse of a matrix we see that
 $\mtx{K} = (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger}$ satisfies this
 relation.
 This approximation is often referred to as the Nystr\"om approximation \cite{gittens2013nystrom}
@@ -202,12 +203,12 @@ It is shown in \cite[lemma~5.2]{tropp2023randomized} that for \gls{PSD} matrices
 the Nystr\"om approximation is at least as accurate as the approximation in
 \refequ{equ:3-nystrom-RSVD} when measured in the spectral
 and Frobenius norms. The following theorem quantifies the accuracy of the
-Nystr\"om approximation in the Frobenius norm \cite[lemma~3.2]{persson2022hutch}:
+Nystr\"om approximation in the Frobenius norm \cite[lemma~3.2]{persson2022hutch}.
 
 \begin{theorem}{Frobenius norm error of Nystr\"om approximation}{3-nystrom-nystrom-constant}
     Let $\mtx{B} \in \mathbb{R}^{n \times n}$ be a symmetric \gls{PSD} matrix. Its Nystr\"om approximation
     $\widehat{\mtx{B}}$ \refequ{equ:3-nystrom-nystrom} with standard Gaussian
-    \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$ of size
+    \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$ of even
     \gls{sketch-size} $\geq 10$
     satisfies with probability $\geq 1-6e^{-n_{\Omega}/2}$
     \begin{equation}
@@ -255,12 +256,12 @@ the $L^1$-norm is shown in a theorem from \cite{he2023parameter}.
     standard Gaussian \glsfirst{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$
     used in \refequ{equ:3-nystrom-nystrom} have
     $n_{\Omega} = r + p$ columns for some numbers $r \geq 2, p \geq 4$. Then
-    for all $\gamma \geq 1$, the inequality
+    for all $\gamma \geq 1$, the Nystr\"om approximation $\widehat{f}(\mtx{A}, t)$ satisfies
     \begin{equation}
         \int_{a}^{b} | \Tr(f(\mtx{A}, t)) - \Tr(\widehat{f}(\mtx{A}, t))| \mathrm{d}t
             \leq \gamma^2 (1 + r) \int_{a}^{b} \sum_{i = r+1}^n \sigma_i(t) \mathrm{d}t
     \end{equation}
-    holds with probability $\geq 1 - \gamma^{-p}$.
+    with probability $\geq 1 - \gamma^{-p}$.
 \end{theorem}
 Note that the \glsfirst{smooth-spectral-density} \refequ{equ:1-introduction-spectral-density-as-trace}
 is exactly a trace of such a matrix function, which means that we can directly
@@ -289,9 +290,9 @@ apply this theorem to it.
 
 Motivated by the observations from the beginning of this chapter, we now present
 an algorithm for estimating the \glsfirst{smooth-spectral-density}.
-Since all \gls{smoothing-kernel} we consider are symmetric
-and non-negative, the matrix function \refequ{equ:3-nystrom-matrix-function} is
-symmetric \gls{PSD}. Therefore, we opt for the Nystr\"om approximation \refequ{equ:3-nystrom-nystrom-parameter}
+Since all \gls{smoothing-kernel} we consider are non-negative, the matrix
+function \refequ{equ:3-nystrom-matrix-function} is symmetric \gls{PSD}.
+Therefore, we opt for the Nystr\"om approximation \refequ{equ:3-nystrom-nystrom-parameter}
 as our randomized low-rank factorization engine. Before we go into the details
 of the method, we need to quantify the \glsfirst{numerical-rank} of this matrix
 function, in order to get an a priori guarantee for the convergence of the 
@@ -307,15 +308,15 @@ where $\lambda_{(1)}, \dots, \lambda_{(n)}$ denote the
 eigenvalues of $\mtx{A}$ sorted by increasing
 distance from \gls{spectral-parameter}, such that $\sigma_1(t) \geq \dots \geq \sigma_n(t)$.
 Consequently, by using the closed-form expression of the eigenvalues \refequ{equ:3-nystrom-kernel-function-eigenvalues}
-and inserting it into \refequ{equ:3-nystrom-numerical-rank-frobenius-norm} or
-\refequ{equ:3-nystrom-numerical-rank-spectral-norm},
+and inserting it into
+\refequ{equ:3-nystrom-numerical-rank-spectral-norm}, \refequ{equ:3-nystrom-numerical-rank-nuclear-norm}, and \refequ{equ:3-nystrom-numerical-rank-frobenius-norm},
 we may upper bound the numerical rank of \refequ{equ:3-nystrom-matrix-function}
 for Gaussian \gls{smoothing-kernel} as
 \begin{equation}
-    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \leq \#\{1\leq i\leq n: |t - \lambda_{(i)}| \leq C_{\varepsilon, \cdot}(\sigma)\}
+    r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \leq \#\{1\leq i\leq n: |t - \lambda_i| < C_{\varepsilon, \cdot}(\sigma)\}
     \label{equ:3-nystrom-kernel-numerical-rank}
 \end{equation}
-where we define the constants
+with the eigenvalues $\lambda_1, \dots, \lambda_n$ of $\mtx{A}$ and the constants
 \begin{align}
     C_{\varepsilon, 2}(\sigma) = \sigma \sqrt{-2 \log(\sqrt{2 \pi} n \sigma \varepsilon)} && \text{(spectral norm)} \label{equ:3-nystrom-kernel-numerical-rank-spectral-constant} \\
     C_{\varepsilon, \ast}(\sigma) = \sigma \sqrt{-2 \log(\sqrt{2 \pi n} \sigma \varepsilon)} && \text{(nuclear norm)} \label{equ:3-nystrom-kernel-numerical-rank-nuclear-constant} \\
@@ -336,7 +337,7 @@ This is also illustrated in \reffig{fig:3-nystrom-numerical-rank-constant}.\\
     \input{figures/numerical_rank.tex}
     \caption{The numerical rank of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$ can be
         approximately computed by counting the number of eigenvalues
-        $\lambda_{(1)}, \dots, \lambda_{(n)}$ of the matrix $\mtx{A}$ which lie at most
+        $\lambda_{(1)}, \dots, \lambda_{(n)}$ of the matrix $\mtx{A}$ which lie less than
         a constant $C_{\varepsilon, \cdot}(\sigma)$ away from \gls{spectral-parameter}.}
     \label{fig:3-nystrom-numerical-rank-constant}
 \end{figure}
@@ -362,7 +363,8 @@ for Gaussian \gls{smoothing-kernel} to be
         \caption{Evenly distributed spectrum}
     \end{subfigure}
     \caption{Examples of an unevenly and an evenly distributed spectrum
-    with some comments about the numerical rank of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$.
+    with some comments about the expected numerical rank of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$
+    at a certain values of \gls{spectral-parameter}.
     The dots represent eigenvalues.}
     \label{fig:3-nystrom-evenly-distributed-spectrum}
 \end{figure}
@@ -416,8 +418,8 @@ squared \gls{smoothing-kernel} in a separate expansion
 \end{equation}
 as is suggested in \cite{lin2017randomized}, it is no longer guaranteed that
 the expansion of the squared matrix function $(g_{\sigma}(t\mtx{I}_n - \mtx{A})^2)^{(m)}$
-is the square of the expanded matrix function $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$.
-We have observed that this loss of the square relationship
+is equal to the square of the expanded matrix function $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$.
+We have observed that the loss of this square relationship
 decreases the numerical accuracy noticeably, which is
 shown in \reffig{fig:3-nystrom-interpolation-issue}.\\
 \begin{figure}[ht]
@@ -435,8 +437,8 @@ shown in \reffig{fig:3-nystrom-interpolation-issue}.\\
     \label{fig:3-nystrom-interpolation-issue}
 \end{figure}
 
-In order to circumvent the above mentioned issue, we propose a way of computing
-a consistent expansion for (\gls{smoothing-kernel})$^2$ which is consistent,
+In order to circumvent the above mentioned issue, we propose an alternative way of computing
+an expansion for (\gls{smoothing-kernel})$^2$ which is consistent,
 more accurate (see \reffig{fig:3-nystrom-interpolation-issue}) and significantly
 faster (see \reftab{tab:3-nystrom-timing-squared-interpolation}):
 The relation of the Chebyshev expansion to the \gls{DCT} shown in \refequ{equ:2-chebyshev-chebyshev-DCT}
@@ -461,13 +463,13 @@ The corresponding algorithm is presented hereafter.
 \end{algo}
 The complexity of this procedure is $\mathcal{O}(km \log(km))$ \cite{makhoul1980fct}.\\
 \begin{table}[ht]
-    \caption{Comparison of the runtime in milliseconds of the two approaches with which the coefficients
-    of the Chebyshev expansion of a function. We average over 7 runs of the
+    \caption{Comparison of the runtime in milliseconds of three approaches with which the coefficients
+    of the Chebyshev expansion of a function can be computed. We average over 7 runs of the
     algorithms and repeat these runs 100 times to form the mean and standard
     deviation which are given in the below table. We refer to the interpolation
     of (\gls{smoothing-kernel})$^{2}$ with \cite[algorithm~1]{lin2017randomized} as \enquote{quadrature},
     to the interpolation of (\gls{smoothing-kernel})$^{2}$ with \refalg{alg:2-chebyshev-chebyshev-expansion} as \enquote{DCT},
-    and finally to the fast squaring algorithm \refalg{alg:3-nystrom-chebyshev-exponentiation} as \enquote{squaring}.
+    and finally to the consistent squaring algorithm \refalg{alg:3-nystrom-chebyshev-exponentiation} as \enquote{squaring}.
     For each algorithm, we interpolate a Gaussian \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$,
     at \gls{num-evaluation-points} $=1000$ points, for various values of \gls{chebyshev-degree}.}
     \label{tab:3-nystrom-timing-squared-interpolation}
@@ -482,9 +484,10 @@ The algorithm gives us the consistent expansion
 This way of expanding the squared matrix function
 is exactly equivalent to the \glsfirst{SS}
 algorithm \cite[algorithm~5]{lin2017randomized}, but
-usually orders of magnitude faster because the generalized eigenvalue problem
-on line 13 of this algorithm does not have to be assembled from the
-product of two large matrices.\\
+usually orders of magnitude faster because the matrices involved in the
+generalized eigenvalue problem
+on line 13 of this algorithm do not have to be assembled from the
+product of two large matrices for every \gls{spectral-parameter}.\\
 
 %\todo{Maybe justify this with table/plot}
 
@@ -520,7 +523,7 @@ Hence, if $g_{\sigma}^{(m)}(t_i\mtx{I}_n - \mtx{A})$ is close to the zero matrix
 which we have seen in \refsec{sec:3-nystrom-nystrom-chebyshev} to happen when
 $t_i$ is far away from any of the eigenvalues of $\mtx{A}$, $\mtx{K}_1(t_i)$ will
 also be close to the zero matrix. In this case, it may not be a good idea to
-compute the pseudo-inverse of $\mtx{K}_1(t_i)$ in \reflin{lin:3-nystrom-pseudo-inverse}
+compute the pseudoinverse of $\mtx{K}_1(t_i)$ in \reflin{lin:3-nystrom-pseudo-inverse}
 of \refalg{alg:3-nystrom-nystrom-chebyshev}. Even less, since in that case we already know that
 \begin{equation}
     \phi_{\sigma}^{(m)}(t_i) = \Tr(g_{\sigma}^{(m)}(t_i\mtx{I}_n - \mtx{A})) \approx \Tr(\mtx{0}) = 0.
@@ -555,7 +558,7 @@ mechanism has on the approximation quality can be seen in \reffig{fig:3-nystrom-
     \label{fig:3-nystrom-short-circuit-mechanism}
 \end{figure}
 
-\paragraph{Pseudo-inverse via eigenvalue problem}
+\paragraph{Pseudoinverse via eigenvalue problem}
 
 There exists an alternative way of computing the result of \reflin{lin:3-nystrom-pseudo-inverse}
 in \refalg{alg:3-nystrom-nystrom-chebyshev}, namely traces of the form
@@ -564,12 +567,12 @@ in \refalg{alg:3-nystrom-nystrom-chebyshev}, namely traces of the form
     \label{equ:3-nystrom-trace-pseudo-inverse}
 \end{equation}
 
-Rather than explicitly forming the pseudo-inverse,
+Rather than explicitly forming the pseudoinverse,
 it converts the problem of computing such a trace into solving a generalized
 eigenvalue problem by making use of the following theorem \cite[theorem~3]{lin2017randomized}.
 
-\begin{theorem}{Generalized eigenvalue problem to compute pseudo-inverse}{3-nystrom-eigenvalue-problem}
-    Let $\mtx{B} \in \mathbb{R}^{n \times n}$ be symmetric \gls{PSD} with rank $r \ll n$ and
+\begin{theorem}{Generalized eigenvalue problem to compute pseudoinverse}{3-nystrom-eigenvalue-problem}
+    Let $\mtx{B} \in \mathbb{R}^{n \times n}$ be symmetric \gls{PSD} with rank $r < n$ and
     spectral decomposition \refequ{equ:3-nystrom-eigenvalue-decoposition}
     \begin{equation}
         \mtx{B}
@@ -602,12 +605,12 @@ eigenvalue problem by making use of the following theorem \cite[theorem~3]{lin20
 A proof of this theorem can be found in \cite[theorem~3]{lin2017randomized}. We
 choose to still include our own version which goes slightly more into detail.
 \begin{proof}
-    Since $\mtx{\Omega}^{\top} \mtx{V}_1$ has independent columns, its pseudo-inverse
-    is its left inverse, meaning 
+    Since $\mtx{\Omega}^{\top} \mtx{V}_1$ has linearly independent columns, its
+    pseudoinverse is its left inverse, meaning 
     $(\mtx{\Omega}^{\top} \mtx{V}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{V}_1) = ( \mtx{V}_1^{\top}\mtx{\Omega}) ( \mtx{V}_1^{\top}\mtx{\Omega})^{\dagger} = \mtx{I}_r$.
     We use $\mtx{B} = \mtx{V}_1 \mtx{\Sigma}_1 \mtx{V}_1^{\top}$ and insert
     $\mtx{C} = (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Theta}^{\top}$
-    and $\mtx{\Xi} = \mtx{\Theta} \mtx{\Sigma} \mtx{\Theta}^{\top}$ into the
+    and $\mtx{\Xi} = \mtx{\Theta} \mtx{\Sigma}_1 \mtx{\Theta}^{\top}$ into the
     left-hand side of \refequ{equ:3-nystrom-low-rank-eigenvalue-problem} to get
     \begin{equation}
         (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1^2 \underbrace{(\mtx{V}_1^{\top} \mtx{\Omega}) (\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger}}_{=\mtx{I}_r} \mtx{\Theta} = (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1^2 \mtx{\Theta},
@@ -624,7 +627,7 @@ choose to still include our own version which goes slightly more into detail.
 
     \refequ{equ:3-nystrom-low-rank-trace-equalities} can be shown by inserting the truncated
     spectral decomposition \refequ{equ:3-nystrom-eigenvalue-problem-spectral-decomposition}
-    and using the properties of the pseudo-inverse
+    and using the properties of the pseudoinverse
     \begin{align*}
         &\Tr((\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger}(\mtx{\Omega}^{\top} \mtx{B}^2 \mtx{\Omega})) \notag \\
             &= \Tr((\mtx{V}_1^{\top} \mtx{\Omega})^{\dagger} \mtx{\Sigma}_1^{-1} (\mtx{\Omega}^{\top} \mtx{V}_1)^{\dagger} (\mtx{\Omega}^{\top} \mtx{V}_1) \mtx{\Sigma}_1^2 (\mtx{V}_1^{\top} \mtx{\Omega})) &&\text{(spectral decomposition of $\mtx{B}$)} \notag \\
@@ -636,7 +639,7 @@ choose to still include our own version which goes slightly more into detail.
 \end{proof}
 
 A standard way of computing the generalized eigenvalue problem \refequ{equ:3-nystrom-low-rank-eigenvalue-problem}
-starts with taking a spectral decomposition
+starts with taking a spectral decomposition of the right-hand side
 \begin{equation}
     \mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega}
     = \mtx{W} \mtx{\Gamma} \mtx{W}^{\top}
@@ -644,8 +647,8 @@ starts with taking a spectral decomposition
     \begin{bmatrix} \mtx{\Gamma}_1 & \mtx{0} \\ \mtx{0} & \mtx{\Gamma}_2 \ \end{bmatrix} 
     \begin{bmatrix} \mtx{W}_1^{\top} \\ \mtx{W}_2^{\top} \end{bmatrix}
 \end{equation}
-where $\mtx{\Gamma}_1$ only contains those eigenvalues $\gamma_1, \dots, \gamma_n$
-which satisfy $\gamma_i \geq \zeta \max_{j} \gamma_j$ 
+where $\mtx{\Gamma}_1$ only contains those eigenvalues $\gamma_1, \dots, \gamma_{n_{\Omega}}$
+which satisfy $\gamma_i \geq \zeta \max_{j=1,\dots,n_{\Omega}} \gamma_j$ 
 for some \gls{threshold-factor} $>0$ and $\mtx{W}_1$ the corresponding
 eigenvectors. In our experiments, we choose \gls{threshold-factor} $=10^{-7}$.
 It allows us to approximate \refequ{equ:3-nystrom-low-rank-eigenvalue-problem}
@@ -696,7 +699,7 @@ filterings happening, which are visible as downward-spikes of the spectral densi
     \caption{The difference the filter tolerance can make when approximating
         a spectral density using \refalg{alg:3-nystrom-nystrom-chebyshev}. 
         Here, we used the matrix described in \refsec{sec:5-experiments-density-function}
-        and ran the \gls{NC} method with and without \glsfirst{filter-tolerance}
+        and ran the \gls{NC} method with and without filter tolerance.
         We use \glsfirst{filter-tolerance} $= 10^{-3}$,
         \gls{chebyshev-degree} $=2000$, \gls{sketch-size} $=80$, and a
         Gaussian \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$.}
@@ -717,7 +720,7 @@ not converged yet. This is shown with an example in \reffig{fig:3-nystrom-eigenv
 \begin{figure}[ht]
     \centering
     \input{plots/eigenvalue_problem.pgf}
-    \caption{The difference between directly computing the pseudo-inverse
+    \caption{The difference between directly computing the pseudoinverse
         in \reflin{lin:3-nystrom-pseudo-inverse} of \refalg{alg:2-chebyshev-DGC}
         versus solving the eigenvalue problem \refequ{equ:3-nystrom-converted-generalized-eigenvalue-problem}.
         Here, we used the matrix described in \refsec{sec:5-experiments-density-function}
@@ -732,7 +735,7 @@ In the end, we want to see the combined effect the above proposed algorithmic
 improvements have. To do so, we observe the accuracy in terms of the $L^1$-error
 of the approximated spectral density for changing \gls{chebyshev-degree}. Once
 for the raw \refalg{alg:3-nystrom-nystrom-chebyshev}, and once for \refalg{alg:3-nystrom-nystrom-chebyshev}
-with short-circuit mechanism, computation of the pseudo-inverse through
+with short-circuit mechanism, computation of the pseudoinverse through
 an eigenvalue problem, and added filter tolerance.
 
 \begin{figure}[ht]
@@ -743,9 +746,9 @@ an eigenvalue problem, and added filter tolerance.
         Here, we used the matrix described in \refsec{sec:5-experiments-density-function}
         and ran the \gls{NC} method for a Gaussian \gls{smoothing-kernel} with \gls{smoothing-parameter} $=0.05$
         and fixed \gls{sketch-size} $=80$. We use
-        \glsfirst{threshold-factor} $=10^7$,
-        \glsfirst{short-circuit-threshold} $=10^5$, and
-        \glsfirst{filter-tolerance} $=10^3$.}
+        \glsfirst{threshold-factor} $=10^{-7}$,
+        \glsfirst{short-circuit-threshold} $=10^{-5}$, and
+        \glsfirst{filter-tolerance} $=10^{-3}$.}
     \label{fig:3-nystrom-improved-algorithm}
 \end{figure}
 
@@ -780,7 +783,7 @@ Despite \gls{smoothing-kernel} being a non-negative function, its Chebyshev
 expansion $g_{\sigma}^{(m)}$ is not guaranteed to retain this property.
 Therefore, it can happen that the conditions from \refthm{thm:3-nystrom-frobenius-norm}
 are not verified any more.
-However, due to \refthm{lem:2-chebyshev-error}, we know that for large
+However, due to \reflem{lem:2-chebyshev-error}, we know that for large
 \gls{chebyshev-degree}, $g_{\sigma}^{(m)}$ will be very close to \gls{smoothing-kernel}.
 So if we instead interpolate the shifted kernel
 \begin{equation}
@@ -790,8 +793,8 @@ So if we instead interpolate the shifted kernel
 we may guarantee that for a large enough \gls{shift} $\geq 0$, its Chebyshev expansion
 $\underline{g}_{\sigma}^{(m)}$ will be non-negative. Furthermore, given
 the shifted smooth spectral density $\underline{\phi}_{\sigma}$ of a matrix $\mtx{A} \in \mathbb{R}^{n \times n}$,
-we may retrieve \glsfirst{smooth-spectral-density} using the linearity of the trace
-\footnote{For the \gls{NC} method, this correction will have to be adjust to
+we may retrieve the \glsfirst{smooth-spectral-density} using the linearity of the trace
+\footnote{For the \gls{NC} method, this correction will have to be adjusted to
 $\widehat{\phi}_{\sigma}(t) = \underline{\phi}_{\sigma}(t) - \rho n_{\Omega}$
 since in the algorithm we compute the trace of an \gls{sketch-size} $\times$ \gls{sketch-size}
 matrix.}:
@@ -816,7 +819,7 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
     $t \in [-1, 1]$, then for all $\gamma \geq 1$, the inequality
     \begin{equation}
         \lVert \underline{\phi}_{\sigma} - \widehat{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
-        \leq 2 \gamma^2(1 + r) ( \varepsilon + \rho (n - r) (n^{-1} + 1) )
+        \leq 2 \gamma^2(1 + r) (2 \varepsilon + 4 \rho (n-r))
         + \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}
     \end{equation}
     holds with probability $\geq 1-\gamma^{-p}$.
@@ -843,35 +846,60 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
         \label{equ:3-nystrom-nystrom-chebyshev-proof-triangle}
     \end{equation}
     Since the approximation error of the Chebyshev expansion remains invariant
-    under constant shifts, we deduce with \refthm{lem:2-chebyshev-error} that the
+    under constant shifts, we deduce with \reflem{lem:2-chebyshev-error} that the
     first term in \refequ{equ:3-nystrom-nystrom-chebyshev-proof-triangle} is bounded by
     \begin{equation}
-        \lVert \underline{\phi}_{\sigma}^{(m)} - \underline{\phi}_{\sigma} \rVert _1
-        = \lVert \phi_{\sigma}^{(m)} - \phi_{\sigma} \rVert _1
+        \lVert \underline{\phi}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
+        = \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1
         \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}
     \end{equation}
     The second term can be bounded with \refthm{thm:3-nystrom-frobenius-norm}:
+    \begin{equation}
+        \lVert \widehat{\underline{\phi}}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
+        \leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \underline{\sigma}_i^{(m)}(t) \mathrm{d}t
+        \label{equ:3-nystrom-nystrom-chebyshev-proof-bound}
+    \end{equation}
+    where $\underline{\sigma}_1^{(m)}(t) \geq \dots \geq \underline{\sigma}_n^{(m)}(t) \geq 0$
+    are the eigenvalues of $\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$.
+    From the explicit expression for these eigenvalues \refequ{equ:3-nystrom-kernel-function-eigenvalues}
+    and the condition on \gls{shift} based on the approximation error in 
+    \reflem{lem:2-chebyshev-error} we can deduce that for all \gls{spectral-parameter}
+    \begin{equation}
+        \underline{\sigma}_i^{(m)}(t) \leq \sigma^{(m)}_i(t) + \rho \leq \sigma_i(t) + 2\rho
+        \label{equ:3-nystrom-nystrom-chebyshev-proof-shifted-eigenvalues}
+    \end{equation}
+    where $\sigma^{(m)}_i(t)$ stand for the eigenvalues of $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$.
+    Consequently
     \begin{align*}
-        &\lVert \widehat{\underline{\phi}}_{\sigma}^{(m)} - \underline{\phi}_{\sigma} \rVert _1 \notag \\
-        &\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \mathrm{d}t
-        && \text{(\refthm{thm:3-nystrom-frobenius-norm})} \notag \\
-        &= \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) + \rho \mtx{I}_n) \mathrm{d}t
-        && \text{(definition of $\underline{g}_{\sigma}$)} \notag \\
-        &\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(g_{\sigma}(t\mtx{I}_n - \mtx{A}) + (\rho n^{-1} + \rho)\mtx{I}_n) \mathrm{d}t
-        && \text{(\reflem{lem:2-chebyshev-error})} \notag \\
+        \lVert \widehat{\underline{\phi}}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
+        &\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} (\sigma_i(t) + 2\rho) \mathrm{d}t
+        && \text{(\refequ{equ:3-nystrom-nystrom-chebyshev-proof-shifted-eigenvalues} into \refequ{equ:3-nystrom-nystrom-chebyshev-proof-bound})} \notag \\
         %&\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(g_{\sigma}(t\mtx{I}_n - \mtx{A})) + \rho(n^{-1} + 1) \mathrm{d}t \notag \\
-        &\leq \gamma^2(1 + r) \left( \int_{-1}^{1} \sum_{i=r+1}^{n} g_{\sigma}(t - \lambda_{(i)}) \mathrm{d}t + 2 \rho (n - r) (n^{-1} + 1) \right)
+        &\leq \gamma^2(1 + r) \left( \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(t) \mathrm{d}t + 4\rho(n-r) \right)
         && \text{(linearity)} \notag \\
-        &\leq 2 \gamma^2(1 + r) \left( \varepsilon + \rho (n - r) (n^{-1} + 1) \right)
-        && \text{(choice of $r$)}
+        &\leq 2 \gamma^2(1 + r) \left( 2\varepsilon + 4\rho(n-r) \right)
+        && \text{(choice of $r \geq r_{\varepsilon, \ast}$)}
     \end{align*}
-    The result follows by inserting these two bounds into
+    %\begin{align*}
+    %    &\lVert \widehat{\underline{\phi}}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1 \notag \\
+    %    &\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \mathrm{d}t
+    %    && \text{(\refthm{thm:3-nystrom-frobenius-norm})} \notag \\
+    %    &= \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) + \rho \mtx{I}_n) \mathrm{d}t
+    %    && \text{(definition of $\underline{g}_{\sigma}$)} \notag \\
+    %    &\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(g_{\sigma}(t\mtx{I}_n - \mtx{A}) + (\rho n^{-1} + \rho)\mtx{I}_n) \mathrm{d}t
+    %    && \text{(\reflem{lem:2-chebyshev-error})} \notag \\
+    %    %&\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(g_{\sigma}(t\mtx{I}_n - \mtx{A})) + \rho(n^{-1} + 1) \mathrm{d}t \notag \\
+    %    &\leq \gamma^2(1 + r) \left( \int_{-1}^{1} \sum_{i=r+1}^{n} g_{\sigma}(t - \lambda_{(i)}) \mathrm{d}t + 2 \rho (n - r) (n^{-1} + 1) \right)
+    %    && \text{(linearity)} \notag \\
+    %    &\leq 2 \gamma^2(1 + r) \left( \varepsilon + \rho (n - r) (n^{-1} + 1) \right)
+    %    && \text{(choice of $r$)}
+    %\end{align*}
+    The result follows by inserting the two derived bounds into
     \refequ{equ:3-nystrom-nystrom-chebyshev-proof-triangle}.
 \end{proof}
 
-For matrices $\mtx{A} \in \mathbb{R}^{n \times n}$ whose spectrum we know to be
-evenly distributed, we know from \refsec{sec:3-nystrom-numerical-rank}
-that
+For matrices $\mtx{A} \in \mathbb{R}^{n \times n}$ whose spectra are approximately
+evenly distributed, we know from \refsec{sec:3-nystrom-numerical-rank} that
 \begin{equation}
     r_{\varepsilon, \ast}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \lessapprox n \sigma \sqrt{-2\log(\sqrt{2 \pi n} \sigma \varepsilon)},
 \end{equation}
@@ -883,9 +911,9 @@ However, the non-linearity of most low-rank factorizations make this estimator
 non-linear, and disallow extending this error guarantee to
 $\lVert \phi_{\sigma} - \widehat{\phi}_{\sigma}^{(m)} \rVert$.\\
 
-From \refequ{fig:3-nystrom-shift} it is clear that adding the shift harms the
+From \reffig{fig:3-nystrom-shift} it is clear that adding the shift harms the
 convergence of the approximation. Therefore, this shifting operation is only
-useful to guarantee theoretical result, but in practice it seems like the
+useful to guarantee theoretical results, but in practice it seems like the
 non-negativity of the \glsfirst{smoothing-kernel} does not have a crucial
 impact on the performance of the Nystr\"om approximation of the matrix function
 $g_{\sigma}(t\mtx{I}_n - \mtx{A})$.
@@ -919,7 +947,7 @@ $g_{\sigma}(t\mtx{I}_n - \mtx{A})$.
 
 Notice that many other low-rank factorization methods \cite{halko2011finding,tropp2023randomized}
 also fit into the fast interpolation scheme used to approximate \refequ{equ:3-nystrom-spectral-density}.
-In fact, if we generalize
+In fact, we have found that if we generalize
 \begin{equation}
     \Tr^{k}(\widehat{\mtx{B}})
         = \Tr\left((\mtx{\Omega}^{\top} \mtx{B}^k \mtx{\Omega})^{\dagger} (\mtx{\Omega}^{\top} \mtx{B}^{k+1} \mtx{\Omega}) \right),
@@ -934,7 +962,7 @@ To see this, we rewrite it as
     \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) ((\mtx{B} \mtx{\Omega})^{\top} (\mtx{B} \mtx{\Omega}))^{\dagger} (\mtx{B} \mtx{\Omega})^{\top} \mtx{B},
     \label{equ:3-nystrom-RSVD-rewritten}
 \end{equation}
-using the definition of the pseudo-inverse.
+using the definition of the pseudoinverse.
 For $k=3$ we would obtain a scheme which theoretically coincides with the Nystr\"om
 approximation with subspace iteration \cite{tropp2023randomized}
 \begin{equation}

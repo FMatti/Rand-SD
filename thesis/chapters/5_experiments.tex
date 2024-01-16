@@ -127,12 +127,13 @@ we cannot hope for high accuracy approximations.
 \Reffig{fig:5-experiments-electronic-structure-convergence-nv-m2400} allows us to
 make an interesting observation: The approximation error for the \gls{NCPP} method
 first decays quite slowly compared to the \gls{NC} method.
-The convergence is approximately of order $\mathcal{O}(\varepsilon^{-1})$
+To achieve an $\varepsilon$-error we require \gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=\mathcal{O}(\varepsilon^{-1})$
 as suggested by \refthm{thm:4-nystromchebyshev-trace-correction-parameter-dependent}.
 However, after \gls{sketch-size} $+$ \gls{num-hutchinson-queries}
 exceeds a certain value, the approximation error shoots down quickly to where it
 saturates. The reason is that at this point \gls{sketch-size} starts exceeding
-the \glsfirst{numerical-rank} of the model matrix, which, as a consequence of
+the \glsfirst{numerical-rank} of the model matrix \reffig{fig:3-nystrom-singular-value-decay},
+which, as a consequence of
 \refthm{thm:3-nystrom-frobenius-norm}, means that the approximation error is
 expected to be significantly smaller than \refthm{thm:4-nystromchebyshev-final}
 guarantees in general. In fact, it seems that after this point, \gls{NC} and \gls{NCPP}
@@ -168,7 +169,7 @@ on one hand the low-rank approximation and on the other hand the
 trace estimation on the residual, is illustrated well in
 \reffig{fig:5-experiments-electronic-structure-matvec-mixture}.
 For various values of \gls{smoothing-parameter} and a simultaneously changing
-\gls{chebyshev-degree} $=120 / \sigma$ to keep an approximately equal interpolation
+\gls{chebyshev-degree} $=120 / \sigma$ to keep an approximately equal expansion
 accuracy, the behavior of the error for fixed \gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=80$ is plotted.
 
 \begin{figure}[ht]
@@ -283,10 +284,10 @@ as fast as it does in the Gaussian case according to \refthm{thm:2-chebyshev-ber
 Due to these reasons, the convergence of the \gls{NC} and \gls{NCPP} methods
 are slower than they used to be in \refsec{sec:5-experiments-density-function}.
 Nevertheless, this choice of \gls{smoothing-kernel} exhibits perfectly the 
-$\mathcal{O}(\varepsilon^{-1})$ and $\mathcal{O}(\varepsilon^{-2})$ convergence
-orders of the $L^1$ approximation error, which the Haydock and \gls{NCPP}
-methods respectively exhibit with respect to
-\gls{sketch-size} $+$ \gls{num-hutchinson-queries} in \reffig{fig:5-experiments-haydock-convergence-nv-m2400}.\\
+$\mathcal{O}(\varepsilon^{-1})$ and $\mathcal{O}(\varepsilon^{-2})$
+dependence of the $L^1$-approximation error on \gls{num-hutchinson-queries}
+and \gls{sketch-size}, which the Haydock and \gls{NCPP}
+methods respectively show in \reffig{fig:5-experiments-haydock-convergence-nv-m2400}.\\
 
 \begin{table}[ht]
     \caption{Comparison of the runtime in seconds of the algorithms applied to the model problem
@@ -314,7 +315,7 @@ the matrix ModES3D\_8, an $8000 \times 8000$ sparse matrix resulting
 from the same problem as in \refsec{sec:5-experiments-density-function} but with
 a larger computational domain \cite{lin2017randomized}; and
 Erdos992\footnote{Downloaded in the matrix marked format from: \url{https://sparse.tamu.edu/Pajek/Erdos992}.},
-an $6100 \times 6100$ sparse matrix representing the collaboration network of the
+a $6100 \times 6100$ sparse matrix representing the collaboration network of the
 Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}.
 %the matrix nd3k\footnote{\url{https://sparse.tamu.edu/ND/nd3k}},
 %an $9000 \times 9000$ matrix
@@ -325,7 +326,7 @@ matrices are symmetric. For all of them, we compute, for
 fixed \gls{chebyshev-degree} $=2400$ and increasing \gls{sketch-size} $+$ \gls{num-hutchinson-queries},
 the relative $L^1$ approximation error
 of the spectral density for a Gaussian \glsfirst{smoothing-kernel} with
-\gls{smoothing-parameter} $=0.05$. The resulting plots are printed in 
+\gls{smoothing-parameter} $=0.05$. The resulting plots are displayed in 
 \reffig{fig:5-experiments-multi-matrix-convergence}.\\ 
 
 We observe that for the two matrices which have an evenly distributed spectrum

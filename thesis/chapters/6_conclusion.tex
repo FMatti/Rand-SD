@@ -18,7 +18,7 @@ All these developments are illustrated and verified in multiple numerical experi
 which are all provably reproducible.\\
 
 What we have noticed is that the degree of the Chebyshev expansion usually needs
-to be quite high to achieve a decent interpolation accuracy, which slows down
+to be quite high to achieve an acceptable interpolation accuracy, which slows down
 our methods considerably. Looking out into the future, alternative ways of
 computing products of matrix functions with random vectors should be taken into
 consideration \cite{cortinovis2023speeding,ubaru2017lanczos}. Also, different ways
@@ -32,6 +32,7 @@ error bound analogous to \refthm{thm:2-delta-gauss-chebyshev} is of high priorit
 What hinders such a unification for now is the fact that the Chebyshev expansion
 is not guaranteed to be non-negative, which in turn breaks the \gls{PSD} property,
 which is fundamental to most theoretical results on the Nystr\"om approximation.
-A fix could be achieved by finding a way of restricting the Chebyshev expansion
-to only positive values. Otherwise, the theory will have to be extended to
-indefinite matrices.
+In \refsec{subsec:3-nystrom-theoretical-analysis} and \refsec{subsec:4-nystromchebyshev-analysis}
+we have shown a way around this problem by introducing a shift which guarantees
+the expansion to be non-negative. However, this shift significantly impairs the
+performance in practice.

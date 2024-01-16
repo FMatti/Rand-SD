@@ -39,7 +39,7 @@ be exploited to efficiently compute products of Chebyshev polynomials with
 vectors.\\
 
 At the foundation of Chebyshev interpolation lie the \glspl{chebyshev-polynomial}.
-They are defined as \cite[chapter~3]{trefethen2019chebyshev}
+They are defined for all $l \in \mathbb{N}$ as \cite[chapter~3]{trefethen2019chebyshev}
 \begin{equation}
     \begin{cases}
         T_l: [-1, 1] \to [-1, 1] \\
@@ -50,9 +50,9 @@ They are defined as \cite[chapter~3]{trefethen2019chebyshev}
 They satisfy the three-term recurrence relation
 \begin{equation}
     \begin{cases}
-        T_0(s) = 1, & l = 0 \\
-        T_1(s) = s, & l = 1 \\
-        T_{l}(s) = 2s T_{l-1}(s) - T_{l-2}(s), & l \geq 2,
+        T_0(s) = 1 & l = 0, \\
+        T_1(s) = s & l = 1, \\
+        T_{l}(s) = 2s T_{l-1}(s) - T_{l-2}(s) & l \geq 2,
     \end{cases}
     \label{equ:2-chebyshev-chebyshev-recursion}
 \end{equation}
@@ -60,21 +60,21 @@ which can be shown using their definition \refequ{equ:2-chebyshev-chebyshev-defi
 and a standard trigonometric identity.\\
 
 A function $f:[-1, 1] \to \mathbb{R}$ can be expanded in a basis of Chebyshev
-polynomials up to \gls{chebyshev-degree} \cite[chapter~3]{trefethen2019chebyshev}
+polynomials up to \gls{chebyshev-degree} $\in \mathbb{N}$ \cite[chapter~3]{trefethen2019chebyshev}
 \begin{equation}
     f^{(m)}(s) = \sum_{l=0}^{m} \mu_l T_l(s).
     \label{equ:2-chebyshev-chebyshev-expansion-general}
 \end{equation}
 For functions $f$ which can be analytically extended in a certain neighborhood
 of $[-1, 1]$ in the complex plane, Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}
-establishes that the convergence of this expansion in the supremum-norm is
+establishes that the convergence of this expansion in the $L^{\infty}$-norm is
 exponential.
 \begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
     Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
     with foci $\pm 1$ and sum of half axis lengths $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
     Then its Chebyshev expansion $f^{(m)}$ with \glsfirst{chebyshev-degree} $\geq 0$ satisfies
     \begin{equation}
-        \sup_{s \in [-1, 1]} |f(s) - f^{(m)}(s)| \leq \frac{2}{\chi^{m}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
+        \lVert f - f^{(m)} \rVert _{\infty} \leq \frac{2}{\chi^{m}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
         \label{equ:2-chebyshev-bernstein-convergence-result}
     \end{equation}
 \end{theorem}
@@ -95,7 +95,7 @@ However, we cannot find a good theoretical guarantee that this will be accurate
 and suspect that this approach only works well due to a lucky coincidence.
 Instead, we
 have found a significantly simpler, faster, and provably accurate way of
-computing the coefficients of the Chebyshev expansion of a function $f$:
+computing the coefficients of the Chebyshev expansion of a function $f:[-1,1] \to \mathbb{R}$:
 Note that polynomials of degree $m$ are uniquely defined by $m+1$
 evaluations of the polynomial at distinct points \cite{gauss1799demonstratio}.
 Hence, if we know the values $f^{(m)}(s_i)$ at some $m+1$ distinct points 
@@ -103,14 +103,14 @@ $\{s_i\}_{i=0}^m$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^{
 of this polynomial. For convenience, we may choose $s_i = \cos(\pi i/m), i=0,\dots,m$.
 In that case,
 \begin{equation}
-    f^{(m)}(s_i) = \sum_{l=0}^{m} \mu_l \cos\left(\frac{\pi l i}{m}\right),
+    f^{(m)}(s_i) = \sum_{l=0}^{m} \mu_l \cos\left(\frac{\pi i l}{m}\right),
     \label{equ:2-chebyshev-chebyshev-nodes-evaluation}
 \end{equation}
 which coincides with a \glsfirst{DCT}\footnote{There exist multiple conventions for the DCT.
 The one which we use is (up to scaling of the first and last coefficient)
 referred to as a type 1 DCT, and is efficiently implemented in the SciPy Python package:
 \url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.dct.html}.} of the coefficients $\{\mu_l\}_{l=0}^{m}$.
-If we collect the coefficients $\{\mu_l\}_{l=0}^{m}$ in a vector $\vct{\mu} \in \mathbb{R}^{m+1}$ 
+Thus, if we collect the coefficients $\{\mu_l\}_{l=0}^{m}$ in a vector $\vct{\mu} \in \mathbb{R}^{m+1}$ 
 and the function evaluations $\{f^{(m)}(s_i)\}_{i=0}^{m}$ in another
 vector $\vct{f} \in \mathbb{R}^{m+1}$, we find that
 \begin{equation}
@@ -180,10 +180,10 @@ $\mtx{B}$:
         &= \Var(\vct{\psi}^{\top} \mtx{U} \mtx{\Lambda} \mtx{U}^{\top} \vct{\psi}) && \text{(spectral decomposition of $\mtx{B}$)} \notag \\
         &= \Var(\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}}) && \text{($\mtx{U}^{\top}\vct{\psi} = \widetilde{\vct{\psi}} \sim \vct{\psi}$)} \notag \\
         &= \mathbb{E}[(\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}})^2] - \mathbb{E}[\widetilde{\vct{\psi}}^{\top} \mtx{\Lambda} \widetilde{\vct{\psi}}]^2 && \text{(definition of variance)} \notag \\
-        &= \mathbb{E}[(\sum_{i=1}^{n} \widetilde{\psi}_i^2 \lambda_i)^2] - \Tr(\mtx{B})^2 && \text{($\mtx{\Lambda}$ diagonal and \refequ{equ:2-chebyshev-DGC-hutchinson})} \notag \\
+        &= \mathbb{E}\bigg[\bigg(\sum_{i=1}^{n} \widetilde{\psi}_i^2 \lambda_i\bigg)^2\bigg] - \Tr(\mtx{B})^2 && \text{($\mtx{\Lambda}$ diagonal and \refequ{equ:2-chebyshev-DGC-hutchinson})} \notag \\
         &= \sum_{i=1}^{n} \lambda_i \sum_{j=1}^{n} \lambda_j \mathbb{E}[\widetilde{\psi}_i^2 \widetilde{\psi}_j^2] - \Tr(\mtx{B})^2 && \text{(linearity of $\mathbb{E}$)} \notag \\
         &= \sum_{i=1}^{n} \lambda_i \sum_{j=1}^{n} \lambda_j + 2 \sum_{i=1}^{n} \lambda_i^2 - \Tr(\mtx{B})^2 && \text{($\mathbb{E}[\widetilde{\psi}_i^2]=1$ and $\mathbb{E}[\widetilde{\psi}_i^4]=3$)} \notag \\
-        &= \Tr(\mtx{B})^2 + 2 \lVert \mtx{B} \rVert _F^2 - \Tr(\mtx{B})^2 && \text{(identity $\sum_{i=1}^{n} \lambda_i^2 = \lVert \mtx{B} \rVert _F^2$)} \notag \\
+        &= \Tr(\mtx{B})^2 + 2 \lVert \mtx{B} \rVert _F^2 - \Tr(\mtx{B})^2 && \text{($\sum_{i=1}^{n} \lambda_i = \Tr(\mtx{B})$, $\sum_{i=1}^{n} \lambda_i^2 = \lVert \mtx{B} \rVert _F^2$)} \notag \\
         &= 2 \lVert \mtx{B} \rVert _F^2.
 \end{align*}
 The idea of the Hutchinson's trace estimator is to compute multiple such estimates
@@ -214,7 +214,7 @@ estimator for parameter-dependent matrices
     \label{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}
 \end{equation}
 As the counterpart of the variance in the parametrized case, we measure the
-error of this estimate in the $1$-norm, for which we can use a result
+error of this estimate in the $L^1$-norm, for which we can use a result
 from \cite{he2023parameter}, which we will state in the following lemma:
 \begin{lemma}{$L^1$-error of parameter-dependent Hutchinson's estimator}{2-chebyshev-parameter-hutchinson}
     Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
@@ -386,14 +386,14 @@ of matrices which have eigenvalues outside of $[-1, 1]$.\\
 %in order to get a consistent result.\\
 
 A speed-up of \refalg{alg:2-chebyshev-DGC} can be achieved by smartly computing the trace of the 
-product of two matrices $\mtx{B}, \mtx{C} \in \mathbb{R}^{N \times M}$ in
+product $\mtx{E}^{\top}\mtx{F}$ of two matrices $\mtx{E}, \mtx{F} \in \mathbb{R}^{N \times M}$ in
 $\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$ time, due to the relation
 \begin{equation}
-    \Tr(\mtx{B}^{\top}\mtx{C}) = \sum_{i=1}^{N} \sum_{j=1}^{M} b_{ij} c_{ij}.
+    \Tr(\mtx{E}^{\top}\mtx{F}) = \sum_{i=1}^{N} \sum_{j=1}^{M} e_{ij} f_{ij}.
     \label{equ:2-chebyshev-fast-trace}
 \end{equation}
 This reduces the complexity of \reflin{lin:2-chebyshev-fast-trace}
-in \refalg{alg:2-chebyshev-DGC} from $\mathcal{O}(n^2n_{\Psi})$ to $\mathcal{O}(nn_{\Psi})$.
+in \refalg{alg:2-chebyshev-DGC} from $\mathcal{O}(nn_{\Psi}^2)$ to $\mathcal{O}(nn_{\Psi})$.
 Throughout this work, as has already be done for the complexity analysis
 of \refalg{alg:2-chebyshev-DGC}, we implicitly assume that all traces of this
 form are computed using this technique.
@@ -412,8 +412,8 @@ lemma.
 
 \begin{lemma}{$L^1$-error of Chebyshev expansion for Gaussian smoothing}{2-chebyshev-error}
     Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be a symmetric matrix whose spectrum
-    is contained in $[-1, 1]$. Then the expansion of the Gaussian \glsfirst{smoothing-kernel}
-    and the corresponding \glsfirst{smooth-spectral-density} satisfy
+    is contained in $[-1, 1]$. Then the expansion $g_{\sigma}^{(m)}$ of the Gaussian \glsfirst{smoothing-kernel}
+    and the corresponding expansion $\phi_{\sigma}^{(m)}$ of the \glsfirst{smooth-spectral-density} satisfy
     \begin{align}
         \lVert  g_{\sigma} - g_{\sigma}^{(m)} \rVert _{\infty} &\leq \frac{C_1}{2n\sigma^2}(1 + C_2 \sigma)^{-m}
         \label{equ:2-chebyshev-interpolation-sup-error-kernel} \\
@@ -439,10 +439,11 @@ However, since our result -- and more so the proof -- deviate from the aforement
 work, we chose to reproduce it hereafter.
 \begin{proof}
     From Bernstein's theorem \refthm{thm:2-chebyshev-bernstein}
-    and the analyticity of \gls{smoothing-kernel} we know that
+    and the analyticity of \gls{smoothing-kernel} we know that for all $t \in \mathbb{R}$
     \begin{equation}
-        \sup_{s \in [-1, 1]} \left| g_{\sigma}(t - s) - g_{\sigma}^{(m)}(t - s) \right|
-        \leq n \frac{2}{\chi^{m}(\chi - 1)} \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
+        \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
+        \leq \frac{2}{\chi^{m}(\chi - 1)} \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)|
+        \label{equ:2-chebyshev-convergence-proof-base}
     \end{equation}
     where we can use any ellipse $\mathcal{E}_{\chi}$
     with foci $\{-1, 1\}$ and with sum of half-axes $\chi = a + b > 1$
@@ -450,7 +451,7 @@ work, we chose to reproduce it hereafter.
     %Since $g_{\sigma}(t - \cdot)$ is of the form \refequ{equ:1-introduction-def-gaussian-kernel}
     %is analytic in all of $\mathbb{C}$, $\chi$ may be chosen arbitrarily.
 
-    Writing $z = x + \iota y$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Real(z)}$)
+    Writing $z = x + \iota y$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Re(z)}$)
     \begin{equation}
         |g_{\sigma}(t - (x + \iota y))| %&= \frac{1}{n \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
         = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{- \frac{(t - x)^2 - y^2}{2 \sigma^2}}
@@ -481,15 +482,16 @@ work, we chose to reproduce it hereafter.
         \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}.
     \end{equation}
 
-    Plugging this estimate into the expression from above, we get
+    Plugging this estimate into \refequ{equ:2-chebyshev-convergence-proof-base}
+    yields
     \begin{equation}
-        \left| g_{\sigma}(t) - g_{\sigma}^{(m)}(t) \right|
+        \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
         \leq \frac{2}{(1 + \alpha\sigma)^{m}\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
         = \frac{C_1}{2 n \sigma^2} (1 + C_2 \sigma)^{-m},
         \label{equ:2-chebyshev-uniform-bound}
     \end{equation}
     where $C_1=\sqrt{\frac{8}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
-    This proves the first assertion.\\
+    With $t=0$ this proves the first assertion.\\
 
     For the second assertion, we may use basic properties of matrix functions to obtain
     \begin{align*}
@@ -498,20 +500,22 @@ work, we chose to reproduce it hereafter.
         && \text{(definitions \refequ{equ:1-introduction-spectral-density-as-trace} and \refequ{equ:2-chebyshev-chebyshev-expansion})} \notag \\
         &= \left| \sum_{i=1}^n \left(g_{\sigma}(t - \lambda_i) - g_{\sigma}^{(m)}(t - \lambda_i)\right) \right|
         && \text{($\lambda_1, \dots, \lambda_n$ eigenvalues of $\mtx{A}$)} \notag \\
-        &\leq n \sup_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^{(m)}(t - \lambda_i) \right|
+        &\leq n \max_{i = 1, \dots, n} \left| g_{\sigma}(t - \lambda_i) - g_{\sigma}^{(m)}(t - \lambda_i) \right|
         && \text{(conservative upper bound)} \notag \\
-        &\leq n \sup_{s \in [-1, 1]} \left| g_{\sigma}(t - s) - g_{\sigma}^{(m)}(t - s) \right|
+        &\leq n \max_{s \in [-1, 1]} \left| g_{\sigma}(t - s) - g_{\sigma}^{(m)}(t - s) \right|
         && \text{(extension of domain)} \notag \\
+        &= n \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
+        && \text{(definition of $L^{\infty}$-norm)} \notag \\
         &\leq \frac{C_1}{2 \sigma^2} (1 + C_2 \sigma)^{-m}
         && \text{(using \refequ{equ:2-chebyshev-uniform-bound})} \notag \\
     \end{align*}
     from which the result follows directly.\\
 
     Finally, Hölder's inequality \cite{klenke2013probability} 
-    allows us to also show the last assertion with
+    allows us to also show the last assertion with what we have found above:
     \begin{equation}
         \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1
-            \leq 2 \sup_{t \in [-1, 1]} \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right|
+            \leq 2 \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _{\infty}
             \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}.
     \end{equation}
 \end{proof}
@@ -536,7 +540,7 @@ result for the accuracy of the \gls{DGC} method.
     %\int_{-1}^{1} \left| \phi_{\sigma}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t \notag \\
     \begin{equation}
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-        \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \frac{\sqrt{n} \log(1/\delta)}{\sqrt{n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
+        \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
     \end{equation}
     for some constants $C_1$ and $C_2$ as in \reflem{lem:2-chebyshev-error} and $C_{\Psi} \geq 0$.
     %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
@@ -576,17 +580,18 @@ result for the accuracy of the \gls{DGC} method.
     \begin{align*}
         &\lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \notag \\
         &\leq \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _F + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _F && \text{(triangle inequality)} \notag \\
-        &\leq \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(2)} + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(2)} && \text{(Schatten norm)} \notag \\
+        %&\leq \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(2)} + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(2)} && \text{(Schatten norm)} \notag \\
         %&\leq \sqrt{n} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(\infty)} + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(1)} && \text{(norm inequalities)} \notag \\
-        &\leq \sqrt{n} \sup_{s \in [-1, 1]} | g_{\sigma}^{(m)}(s) - g_{\sigma}(s) | + \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) && \text{(norm inequalities)} \notag \\
-        &\leq \sqrt{n} \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \phi_{\sigma}(t) && \text{(\reflem{lem:2-chebyshev-error})}
+        %&\leq \sqrt{n} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(\in)} + \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) && \text{(norm inequalities)} \notag \\
+        &\leq \sqrt{n} \lVert g_{\sigma}^{(m)} - g_{\sigma} \rVert _{\infty} + \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) && \text{(norm inequalities)} \notag \\
+        &\leq \frac{C_1}{2 \sqrt{n} \sigma^2} (1 + C_2 \sigma)^{-m} + \phi_{\sigma}(t) && \text{(\reflem{lem:2-chebyshev-error})}
     \end{align*}
     Putting all things together and using the normalization $\int_{-1}^{1} \phi_{\sigma}(t) \mathrm{d}t = 1$
     we end up with the desired result:
     \begin{align*}
         \lVert \phi_{\sigma}  - \widetilde{\phi}_{\sigma}^{(m)} \rVert _1
-        &\leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \left( 1 + 2 \sqrt{n} \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \right) \notag \\
-        &= \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \frac{\sqrt{n} \log(1/\delta)}{\sqrt{n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}.
+        &\leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \left( \frac{C_1}{\sqrt{n} \sigma^2} (1 + C_2 \sigma)^{-m} + 1 \right) \notag \\
+        &= \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}.
     \end{align*}
 \end{proof}
  

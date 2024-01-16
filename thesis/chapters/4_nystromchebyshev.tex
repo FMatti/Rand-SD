@@ -1,4 +1,4 @@
-\chapter{Improved trace estimation}
+\chapter{Variance reduced trace estimation}
 \label{chp:4-nystromchebyshev}
 
 In \refsec{sec:2-chebyshev-stochastic-trace-estimation} we have introduced the
@@ -6,7 +6,7 @@ classical approach for estimating the trace of a matrix using matrix-vector
 products. A drawback of this method is the rather slow, reciprocal decrease of
 the variance with \glsfirst{num-hutchinson-queries}. Variance reduced trace estimators
 try to improve on this. They usually take a \enquote{hybrid} approach, combining
-low-rank approximation with stochastic trace estimation.\\
+low-rank factorization with stochastic trace estimation.\\
 
 This chapter will take the methods we have discussed in \refchp{chp:2-chebyshev}
 and \refchp{chp:3-nystrom} combine them to an improved trace estimatior which
@@ -14,11 +14,11 @@ we call the \glsfirst{NCPP} method.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Fundamentals of improved trace estimation}
+\section{Fundamentals of variance reduced trace estimation}
 \label{sec:4-nystromchebyshev-hybrid}
 
 The initial idea from \cite{lin2017randomized} was to perform a low-rank
-approximation before the stochastic trace estimation to achieve a
+factorization before the stochastic trace estimation to achieve a
 steeper decrease of the estimation error as the number of computed
 matrix-vector products increase. Recent theoretical developments confirm the
 efficacy of this approach \cite{meyer2021hutch,persson2022hutch}.
@@ -57,7 +57,7 @@ criteria can be constructed. For instance, for a symmetric \gls{PSD} matrix $\mt
 of rank $r \ll n$, we can compute a factorization of the form
 $\mtx{B} = \mtx{V}_1 \mtx{\Sigma}_1 \mtx{V}_1^{\top}$ \refequ{equ:3-nystrom-eigenvalue-decoposition}.
 Since $\mtx{V}_1$ is orthonormal, $\Tr(\mtx{B}) = \Tr(\mtx{\Sigma}_1)$ by the
-cyclic property of the trace, which is immediate to compute. On the other hand,
+cyclic property of the trace, which is easy to compute. On the other hand,
 $\mtx{\Delta} = \mtx{B} - \widehat{\mtx{B}} = \mtx{0}$ which implies that the
 Hutchinson's estimator will trivially be exact. Thus, \refequ{equ:4-nystromchebyshev-hutch-pp}
 would yield an exact estimate. However, this factorization is -- in general -- prohibitively expensive
@@ -69,7 +69,7 @@ which is employed in the Hutch++ algorithm \cite[algorithm~1]{meyer2021hutch}.
 For \gls{PSD} matrices this algorithm was shown to give
 an estimate whose relative deviation from the actual trace is at most
 $\varepsilon$ by only using $\mathcal{O}(\varepsilon^{-1})$ matrix-vector multiplications,
-with high probability. The key to this conclusion is the following theorem \cite[theorem~1]{meyer2021hutch}:
+with high probability. The key to this conclusion is the following theorem \cite[theorem~1]{meyer2021hutch}.
 \begin{theorem}{Variance reduced trace estimation}{4-nystromchebyshev-trace-correction}
     Suppose $\mtx{B} \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}. Let $\widehat{\mtx{B}}$ and
     $\mtx{\Delta}$ be any matrices such that
@@ -79,7 +79,7 @@ with high probability. The key to this conclusion is the following theorem \cite
             \lVert \mtx{\Delta} \rVert _F \leq 2 \lVert \mtx{B} - \mtx{B}_{n_{\Omega}} \rVert _F.
         \end{cases}
     \end{equation}
-    where $\mtx{B}_{n_{\Omega}}$ is the best rank-k approximation to $\mtx{B}$.
+    where $\mtx{B}_{n_{\Omega}}$ is the best rank-$n_{\Omega}$ approximation to $\mtx{B}$.
     For fixed constants $c, C \geq 0$, if \gls{num-hutchinson-queries} $> c\log(1/\delta)$, then with probability $\geq 1 - \delta$,
     \begin{equation}
         |\Tr(\mtx{B}) - \Tr^{++}(\mtx{B})| \leq 2 C \sqrt{\frac{\log(1/\delta)}{n_{\Psi} n_{\Omega}}} \Tr(\mtx{B}).
@@ -88,9 +88,9 @@ with high probability. The key to this conclusion is the following theorem \cite
 \end{theorem}
 
 In \cite{meyer2021hutch} this theorem is applied to a low-rank factorization of
-the form \refequ{equ:3-nystrom-RSVD} to prove the $\mathcal{O}(\epsilon^{-1})$-dependence
-of the number of matrix-vector multiplications on the relative probabilistic
-approximation error, which yielded the ubiquitous Hutch++ algorithm.
+the form \refequ{equ:3-nystrom-RSVD} to prove the $\mathcal{O}(\varepsilon^{-1})$-dependence
+requirement on the number of matrix-vector multiplications to achieve the relative
+approximation error $\varepsilon$, which lead to the ubiquitous Hutch++ algorithm.
 \cite{lin2017randomized} uses and \cite{persson2022hutch} refines an analogous procedure for the
 case of the Nystr\"om approximation \refequ{equ:3-nystrom-nystrom}. In \cite[theorem~3.4]{persson2022hutch}
 it is shown that similarly to the Hutch++ algorithm, the following result holds:
@@ -114,7 +114,7 @@ the trace of a matrix $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ which depends con
 needs to be computed.\\
 
 With a matrix $\widehat{\mtx{B}}(t)$, the residual $\mtx{\Delta}(t) = \mtx{B}(t) - \widehat{\mtx{B}}(t)$,
-and the pararmeter-dependent \gls{num-hutchinson-queries}-query Hutchinson's estimator $\Hutch_{n_{\Psi}}$
+and the parameter-dependent \gls{num-hutchinson-queries}-query Hutchinson's estimator $\Hutch_{n_{\Psi}}$
 \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}, we define the estimator 
 \begin{equation}
     \Tr^{++}(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Hutch_{n_{\Psi}}(\mtx{\Delta}(t)).
@@ -132,7 +132,7 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
     Suppose $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
     and continuous in $t \in [a, b]$. Let $\widehat{\mtx{B}}(t)$ and
     $\mtx{\Delta}(t)$ be any
-    symmetric \gls{PSD} and continuous matrices which depend on \gls{sketch-size} such that
+    symmetric \gls{PSD} and continuous matrices such that
     \begin{equation}
         \begin{cases}
             \Tr(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}(t)); \\
@@ -144,8 +144,8 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
         \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq C \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
     In particular, if \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $=\mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$,
-    then $\Tr^{++}(\mtx{B}(t))$ is an $\varepsilon$-approximator of $\Tr(\mtx{B}(t))$
-    in the relative $L^1$ norm.
+    then $\Tr^{++}(\mtx{B}(t))$ is an $\varepsilon$-error approximation of $\Tr(\mtx{B}(t))$
+    in the relative $L^1$-norm.
 \end{theorem}
 
 \begin{proof}
@@ -153,20 +153,20 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
     \begin{align*}
         &\int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \notag \\
         &= \int_{a}^{b} |\Tr(\mtx{\Delta}(t)) - \Hutch_{n_{\Psi}}(\mtx{\Delta}(t))| \mathrm{d}t && \text{(definition of $\Tr^{++}$ and linearity of $\Tr$)}  \notag \\
-        &\geq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \notag \\
+        &\leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \notag \\
         &= C_{\Psi} C_{\Omega} \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}(t)$)} \notag \\
     \end{align*}
     Identifying $C=C_{\Psi} C_{\Omega}$, we get the desired result with probability $\geq 1 - \delta$.
 \end{proof}
 
 When compared to constant matrices (\refthm{thm:4-nystromchebyshev-trace-correction}),
-in the parameter-dependent case (\refthm{thm:4-nystromchebyshev-trace-correction-parameter-dependent})
-we require the residual $\mtx{\Delta}(t)$ to be bounded by
+the parameter-dependent case (\refthm{thm:4-nystromchebyshev-trace-correction-parameter-dependent})
+requires the residual $\mtx{\Delta}(t)$ to be bounded by
 (\gls{sketch-size})$^{-1/2}$ times the $L^1$-norm of the
 trace of $\mtx{B}(t)$, instead of the best approximation error.
 We also require an additional factor of $\sqrt{\log(1/\delta)}$ when choosing
 \gls{sketch-size} and \gls{num-hutchinson-queries} such that we can achieve
-a $(1 \pm \varepsilon)$ error.\\
+an $\varepsilon$ error.\\
 
 For the parameter-dependent Nystr\"om approximation in particular \refequ{equ:3-nystrom-nystrom-parameter},
 we can show that it is an approximation which satisfies the conditions
@@ -238,12 +238,12 @@ Hutchinson's estimator $\Hutch_{n_{\Psi}}$
 \end{align}
 It turns out that two of the three terms appearing in \refequ{equ:4-nystromchebyshev-spectral-density-decomposition}
 are already quite familiar to us: In \refchp{chp:2-chebyshev} we have seen
-how to compute $\widetilde{\phi}_{\sigma}^{(m)}(t)$ with the \gls{DGC} method, whereas
-in \refchp{chp:3-nystrom}, $\widehat{\phi}_{\sigma}^{(m)}(t)$ is computed with the \gls{NC}
+how to compute $\widetilde{\phi}_{\sigma}^{(m)}$ with the \gls{DGC} method, whereas
+in \refchp{chp:3-nystrom}, $\widehat{\phi}_{\sigma}^{(m)}$ is computed with the \gls{NC}
 method. Only the last term is new. Using the standard Gaussian \glsfirst{random-matrix}
 from the \gls{DGC} method, the \glsfirst{sketching-matrix} from the \gls{NC} method,
 and the definition of the Nystr\"om approximation
-$\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$ \refequ{equ:3-nystrom-nystrom-smoothing-kernel}
+$\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$ \refequ{equ:3-nystrom-nystrom-smoothing-kernel},
 we may rewrite it as
 \begin{align*}
     &\Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))\\
@@ -293,8 +293,8 @@ is that by identifying
     \mtx{D}(t) = \mtx{W}_1(t) \mtx{\Gamma}_1(t)^{-1/2} \mtx{X}(t),
     \label{equ:4-nystromchebyshev-generalized-eigenvector}
 \end{equation}
-(which contains, unlike suggested in \cite[algorithm~4]{lin2017randomized},
-not the generalized eigenvectors from \refequ{equ:3-nystrom-low-rank-eigenvalue-problem})
+which contains, unlike suggested in \cite[algorithm~4]{lin2017randomized},
+not the generalized eigenvectors from \refequ{equ:3-nystrom-low-rank-eigenvalue-problem},
 we can compute
 \begin{equation}
     \mtx{\Xi}(t) = \mtx{D}(t)^{\top} (\mtx{\Omega}^{\top} (g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))^2 \mtx{\Omega}) \mtx{D}(t),
@@ -341,7 +341,7 @@ since by \refequ{equ:4-nystromchebyshev-generalized-eigenvector-xi} and the cycl
 
 Similarly to \refsec{subsec:3-nystrom-theoretical-analysis}, we can again consider
 the shifted spectral density $\underline{g}_{\sigma} = g_{\sigma} + \rho$. For
-sufficiently large \gls{shift} $> 0$ we may then guarantee that $\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$
+sufficiently large \gls{shift} $\geq 0$ we may then guarantee that $\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$
 is symmetric \gls{PSD}. Therefore, \refthm{thm:4-nystromchebyshev-final} can be
 employed to get the following result.
 
@@ -352,10 +352,10 @@ employed to get the following result.
     using a shifted Gaussian smoothing kernel $\underline{g}_{\sigma} = g_{\sigma} + \rho$
     and with the parameters \gls{smoothing-parameter} $>0$, \gls{chebyshev-degree} $\in \mathbb{N}$, and
     \gls{num-hutchinson-queries} $+$ \gls{sketch-size} $=\mathcal{O}(\log(1/\delta)/\varepsilon)$
-    and additionally \gls{sketch-size} $\geq 8 \log(1/\delta)$.
+    with \gls{sketch-size} $\geq 8 \log(1/\delta)$.
     If \gls{shift} $\geq \frac{C_1}{2 n \sigma^2} (1 + C_2 \sigma)^{-m}$ for the constants
     $C_1, C_2$ in \reflem{lem:2-chebyshev-error}, then
-    for $\delta \in (0, e^{-1})$ it holds with probability $\geq 1-\delta$, that
+    for $\delta \in (0, e^{-1})$ with probability $\geq 1-\delta$
     \begin{equation}
         \lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
         \leq (1 + \varepsilon) \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \varepsilon(1 + 2 n \rho).
