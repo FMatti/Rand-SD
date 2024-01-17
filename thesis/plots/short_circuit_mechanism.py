@@ -17,7 +17,7 @@ matplotlib.rcParams["font.size"] = 12
 np.random.seed(0)
 
 methods = NC
-labels = ["no short-circuit", "short-circuit"]
+labels = ["no non-zero check", "non-zero check"]
 parameters = [{"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": -1},
               {"m": 2000, "sigma": 0.05, "n_v": 80, "kappa": 1e-5}]
 

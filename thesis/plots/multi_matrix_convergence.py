@@ -18,7 +18,7 @@ matplotlib.rcParams["font.size"] = 12
 
 fixed_parameters = {"m": 2400, "sigma": 0.05}
 variable_parameters = "n_v"
-variable_parameters_values = np.logspace(1.3, 2.6, 6).astype(int)
+variable_parameters_values = np.logspace(0.95, 2.6, 7).astype(int) 
 
 methods = [DGC, NC, NCPP]
 labels = ["DGC", "NC", "NC++"]
