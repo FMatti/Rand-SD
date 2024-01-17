@@ -13,7 +13,7 @@ $\mtx{A}$. A way around this problem is to refrain from trying to assemble the
 matrix function explicitly and instead use the fact that thanks to
 \refequ{equ:1-introduction-spectral-density-as-trace} we are only interested
 in its trace. Approximating the trace can be done by multiplying the matrix
-with random vectors, to then -- for example -- evaluate the Hutchinson's trace estimator \cite{hutchinson1990trace}.
+with random vectors, to then -- for example -- evaluate the Girard-Hutchinson trace estimator \cite{hutchinson1990trace}.
 The multiplication of a matrix function with a vector can
 often be determined quite efficiently using Krylov subspace methods
 \cite[chapter~13.2]{higham2008functions}. Another way in which products of matrix
@@ -69,23 +69,15 @@ For functions $f$ which can be analytically extended in a certain neighborhood
 of $[-1, 1]$ in the complex plane, Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}
 establishes that the convergence of this expansion in the $L^{\infty}$-norm is
 exponential.
-\begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
-    Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
-    with foci $\pm 1$ and sum of half axis lengths $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
-    Then its Chebyshev expansion $f^{(m)}$ with \glsfirst{chebyshev-degree} $\geq 0$ satisfies
-    \begin{equation}
-        \lVert f - f^{(m)} \rVert _{\infty} \leq \frac{2}{\chi^{m}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
-        \label{equ:2-chebyshev-bernstein-convergence-result}
-    \end{equation}
-\end{theorem}
-
-\begin{figure}[ht]
-    \centering
-    \input{figures/bernstein_ellipse.tex}
-    \caption{A Bernstein ellipse $\mathcal{E}_{\chi}$ with half axis lengths $a$ and
-        $b$ visualized in the complex plane $\mathbb{C}$.}
-    \label{fig:2-chebyshev-proof-bernstein-ellipse}
-\end{figure}
+%\begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
+%    Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
+%    with foci $\pm 1$ and sum of half axis lengths $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
+%    Then its Chebyshev expansion $f^{(m)}$ with \glsfirst{chebyshev-degree} $\geq 0$ satisfies
+%    \begin{equation}
+%        \lVert f - f^{(m)} \rVert _{\infty} \leq \frac{2}{\chi^{m}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
+%        \label{equ:2-chebyshev-bernstein-convergence-result}
+%    \end{equation}
+%\end{theorem}
 
 The coefficients $\{\mu_l\}_{l=0}^{m}$ in \refequ{equ:2-chebyshev-chebyshev-expansion-general}
 could be computed using the orthogonality of the Chebyshev polynomials with respect
@@ -155,7 +147,7 @@ explicitly, but products of this matrix with vectors can be computed
 efficiently. Examples of such scenarios are traces of matrix functions
 \cite{ubaru2017lanczos,epperly2023xtrace} or of implicit matrices which can only
 be queried through matrix-vector products \cite{ghorbani2019investigation,adepu2021hessian}.
-Most algorithms for stochastic trace estimation are based on the Hutchinson's
+Most algorithms for stochastic trace estimation are based on the Girard-Hutchinson
 trace estimator, which we will discuss in the following paragraphs.\\
 
 \subsection{Constant matrices}
@@ -174,7 +166,7 @@ is an unbiased estimate of the trace:
 \end{equation}
 Furthermore, the variance of this estimate is bounded by the Frobenius norm of the matrix
 $\mtx{B}$:
-%Variance of Hutchinson \cite[proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
+%Variance of Girard-Hutchinson \cite[proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
 \begin{align*}
     \Var(\vct{\psi}^{\top} \mtx{B} \vct{\psi})
         &= \Var(\vct{\psi}^{\top} \mtx{U} \mtx{\Lambda} \mtx{U}^{\top} \vct{\psi}) && \text{(spectral decomposition of $\mtx{B}$)} \notag \\
@@ -186,7 +178,7 @@ $\mtx{B}$:
         &= \Tr(\mtx{B})^2 + 2 \lVert \mtx{B} \rVert _F^2 - \Tr(\mtx{B})^2 && \text{($\sum_{i=1}^{n} \lambda_i = \Tr(\mtx{B})$, $\sum_{i=1}^{n} \lambda_i^2 = \lVert \mtx{B} \rVert _F^2$)} \notag \\
         &= 2 \lVert \mtx{B} \rVert _F^2.
 \end{align*}
-The idea of the Hutchinson's trace estimator is to compute multiple such estimates
+The idea of the Girard-Hutchinson trace estimator is to compute multiple such estimates
 for different, independent random vectors and take the average. This will again
 be an unbiased estimate of the trace, but with the reduced variance
 \begin{equation}
@@ -197,7 +189,7 @@ with the \gls{num-hutchinson-queries} $\in \mathbb{N}$.
 Collecting the \gls{num-hutchinson-queries} independent random vectors
 $\vct{\psi}_i \in \mathbb{R}^{n}$ in the standard Gaussian
 \glsfirst{random-matrix} $= [\vct{\psi}_1, \dots, \vct{\psi}_{n_{\Psi}}] \in \mathbb{R}^{n \times n_{\Psi}}$,
-we can then rewrite the Hutchinson's trace estimator as
+we can then rewrite the Girard-Hutchinson trace estimator as
 \begin{equation}
     \Hutch_{n_{\Psi}}(\mtx{B}) = \frac{1}{n_{\Psi}} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi}).
     \label{equ:2-chebyshev-DGC-hutchionson-estimator}
@@ -207,7 +199,7 @@ we can then rewrite the Hutchinson's trace estimator as
 \label{subsec:2-chebyshev-trace-parametrized}
 
 In the case where the matrix, or -- alternatively said -- all its entries, continuously depends on a
-parameter in a bounded interval, we can analogously define the Hutchinson's
+parameter in a bounded interval, we can analogously define the Girard-Hutchinson
 estimator for parameter-dependent matrices
 \begin{equation}
     \Hutch_{n_{\Psi}}(\mtx{B}(t)) = \frac{1}{n_{\Psi}} \Tr(\mtx{\Psi}^{\top} \mtx{B}(t) \mtx{\Psi}).
@@ -215,15 +207,15 @@ estimator for parameter-dependent matrices
 \end{equation}
 As the counterpart of the variance in the parametrized case, we measure the
 error of this estimate in the $L^1$-norm, for which we can use a result
-from \cite{he2023parameter}, which we will state in the following lemma:
-\begin{lemma}{$L^1$-error of parameter-dependent Hutchinson's estimator}{2-chebyshev-parameter-hutchinson}
+from \cite{he2023parameter}, which we will state in the following lemma.
+\begin{lemma}{$L^1$-error of parameter-dependent Girard-Hutchinson estimator}{2-chebyshev-parameter-hutchinson}
     Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
     $t \in [a, b]$, $\delta \in (0, e^{-1})$, and $n_{\Psi} \in \mathbb{N}$.
     Let $\Hutch_{n_{\Psi}}(\mtx{B}(t))$ be the $n_{\Psi}$-query
-    Hutchinson's estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}.
-    For a constant $C_{\Psi} \geq 0$, it holds with probability $\geq 1 - \delta$
+    Girard-Hutchinson estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}.
+    With the constant $c_{\Psi} = 24e$, it holds with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \left| \Tr(\mtx{B}(t)) - \Hutch_{n_{\Psi}}(\mtx{B}(t)) \right| \mathrm{d}t \leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
+        \int_{a}^{b} \left| \Tr(\mtx{B}(t)) - \Hutch_{n_{\Psi}}(\mtx{B}(t)) \right| \mathrm{d}t \leq c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
     \end{equation}
     %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
     %\begin{equation}
@@ -239,8 +231,8 @@ from \cite{he2023parameter}, which we will state in the following lemma:
 Now we have all the ingredients for constructing a first algorithm to approximate
 the expression \refequ{equ:1-introduction-spectral-density-as-trace}:
 the Chebyshev expansion of a function (\refalg{alg:2-chebyshev-chebyshev-expansion})
-and the Hutchinson's trace estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}.
-For a matrix symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ with eigenvalues
+and the Girard-Hutchinson trace estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}.
+For a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ with eigenvalues
 contained in $[-1, 1]$
 we expand the \glsfirst{smoothing-kernel} in terms of Chebyshev polynomials, such that
 \begin{equation}
@@ -307,7 +299,8 @@ with $\mathcal{O}(m n_t + n n_{\Psi})$ required additional storage.
 
 Expression \refequ{equ:2-chebyshev-chebyshev-expansion} is only well-defined for matrices whose spectra are fully
 contained in $[-1, 1]$. To also use the \gls{DGC} method on matrices $\mtx{A}$ whose
-spectra we know (or can estimate) to be within a different interval $[a, b] \subset \mathbb{R}$,
+spectra we know, or can estimate \cite{lin2016review, zhou2011spectrum}, to be
+within a different interval $[a, b] \subset \mathbb{R}$,
 we can define a \gls{spectral-transformation} as the linear mapping
 \begin{equation}
     \begin{cases}
@@ -415,14 +408,14 @@ lemma.
     is contained in $[-1, 1]$. Then the expansion $g_{\sigma}^{(m)}$ of the Gaussian \glsfirst{smoothing-kernel}
     and the corresponding expansion $\phi_{\sigma}^{(m)}$ of the \glsfirst{smooth-spectral-density} satisfy
     \begin{align}
-        \lVert  g_{\sigma} - g_{\sigma}^{(m)} \rVert _{\infty} &\leq \frac{C_1}{2n\sigma^2}(1 + C_2 \sigma)^{-m}
+        \lVert  g_{\sigma} - g_{\sigma}^{(m)} \rVert _{\infty} &\leq \frac{\sqrt{2}}{n \sigma^2} (1 + \sigma)^{-m},
         \label{equ:2-chebyshev-interpolation-sup-error-kernel} \\
-        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _{\infty} &\leq \frac{C_1}{2\sigma^2}(1 + C_2 \sigma)^{-m}
+        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _{\infty} &\leq \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m},
         \label{equ:2-chebyshev-interpolation-sup-error} \\
-        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 &\leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}
+        \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 &\leq \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}.
         \label{equ:2-chebyshev-interpolation-error}
     \end{align}
-    with constants $C_1, C_2 \geq 0$ independent of \gls{smoothing-parameter} and \gls{chebyshev-degree}.
+    for all \gls{smoothing-parameter} $>0$.
 \end{lemma}
 
 \begin{figure}[ht]
@@ -433,12 +426,12 @@ lemma.
     \label{fig:2-chebyshev-chebyshev-convergence}
 \end{figure}
 
-This result is a consequence of \refthm{thm:2-chebyshev-bernstein}.
+This result is a consequence of Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}.
 A proof of a similar result can be found in \cite[theorem~2]{lin2017randomized}.
 However, since our result -- and more so the proof -- deviate from the aforementioned
 work, we chose to reproduce it hereafter.
 \begin{proof}
-    From Bernstein's theorem \refthm{thm:2-chebyshev-bernstein}
+    From Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}
     and the analyticity of \gls{smoothing-kernel} we know that for all $t \in \mathbb{R}$
     \begin{equation}
         \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
@@ -451,6 +444,14 @@ work, we chose to reproduce it hereafter.
     %Since $g_{\sigma}(t - \cdot)$ is of the form \refequ{equ:1-introduction-def-gaussian-kernel}
     %is analytic in all of $\mathbb{C}$, $\chi$ may be chosen arbitrarily.
 
+    \begin{figure}[ht]
+        \centering
+        \input{figures/bernstein_ellipse.tex}
+        \caption{A Bernstein ellipse $\mathcal{E}_{\chi}$ with half axis lengths $a$ and
+            $b$ visualized in the complex plane $\mathbb{C}$.}
+        \label{fig:2-chebyshev-proof-bernstein-ellipse}
+    \end{figure}
+
     Writing $z = x + \iota y$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Re(z)}$)
     \begin{equation}
         |g_{\sigma}(t - (x + \iota y))| %&= \frac{1}{n \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
@@ -458,14 +459,14 @@ work, we chose to reproduce it hereafter.
         \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}.
     \end{equation}
 
-    Expressing $\chi = 1 + \alpha \sigma$ for any $\alpha > 0$,
+    Expressing $\chi = 1 + c \sigma$ for any $c > 0$,
     we can estimate
     \begin{equation}
-        \chi - \chi^{-1} \leq 2\alpha\sigma.
+        \chi - \chi^{-1} \leq 2c\sigma.
         \label{equ:2-chebyshev-bernstein-proof-estimate}
     \end{equation}
     This can be established by observing
-    $h(\chi) = 2\alpha\sigma - \chi + \chi^{-1} = 2(\chi - 1) - \chi + \chi^{-1} = \chi + \chi^{-1} - 2 \geq 0$
+    $h(\chi) = 2c\sigma - \chi + \chi^{-1} = 2(\chi - 1) - \chi + \chi^{-1} = \chi + \chi^{-1} - 2 \geq 0$
     for which $h(1) = 0$ and $h'(\chi) \geq 0$ for all $\chi > 1$.
     Furthermore, because $z$ is
     contained in $\mathcal{E}_{\chi}$ we know that the absolute value of its
@@ -473,25 +474,30 @@ work, we chose to reproduce it hereafter.
     which can be expressed in terms of $\chi$ to show with \refequ{equ:2-chebyshev-bernstein-proof-estimate}
     that
     \begin{equation}
-        |y| \leq b = \frac{\chi - \chi^{-1}}{2} \leq \alpha\sigma.
+        |y| \leq b = \frac{\chi - \chi^{-1}}{2} \leq c\sigma.
     \end{equation}
 
     Consequently, for all $t \in \mathbb{R}$
     \begin{equation}
         \sup_{z \in \mathcal{E}_{\chi}} |g_{\sigma}(t - z)| 
-        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}.
+        \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{c^2}{2}}.
     \end{equation}
 
     Plugging this estimate into \refequ{equ:2-chebyshev-convergence-proof-base}
     yields
     \begin{equation}
         \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
-        \leq \frac{2}{(1 + \alpha\sigma)^{m}\alpha \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{\alpha^2}{2}}
-        = \frac{C_1}{2 n \sigma^2} (1 + C_2 \sigma)^{-m},
+        \leq \frac{2}{(1 + c\sigma)^{m}c \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{c^2}{2}}
+        = \frac{\sqrt{2}}{n \sigma^2}  (1 + \sigma)^{-m},
+        \label{equ:2-chebyshev-uniform-bound-prelim}
+    \end{equation}
+    for every $c>0$. In particular, for $c=1$ we have
+    \begin{equation}
+        \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
+        \leq \frac{\sqrt{2}}{n \sigma^2}  (1 + \sigma)^{-m},
         \label{equ:2-chebyshev-uniform-bound}
     \end{equation}
-    where $C_1=\sqrt{\frac{8}{\pi}}\frac{1}{\alpha}e^{\frac{\alpha^2}{2}}$ and $C_2=\alpha$.
-    With $t=0$ this proves the first assertion.\\
+    which shows the first assertion with $t=0$.\\
 
     For the second assertion, we may use basic properties of matrix functions to obtain
     \begin{align*}
@@ -506,7 +512,7 @@ work, we chose to reproduce it hereafter.
         && \text{(extension of domain)} \notag \\
         &= n \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
         && \text{(definition of $L^{\infty}$-norm)} \notag \\
-        &\leq \frac{C_1}{2 \sigma^2} (1 + C_2 \sigma)^{-m}
+        &\leq \frac{\sqrt{2}}{\sigma^2}  (1 + \sigma)^{-m}
         && \text{(using \refequ{equ:2-chebyshev-uniform-bound})} \notag \\
     \end{align*}
     from which the result follows directly.\\
@@ -516,7 +522,7 @@ work, we chose to reproduce it hereafter.
     \begin{equation}
         \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1
             \leq 2 \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _{\infty}
-            \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}.
+            \leq \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}.
     \end{equation}
 \end{proof}
 
@@ -536,13 +542,13 @@ result for the accuracy of the \gls{DGC} method.
     %$t \in [a, b]$, $\delta \in (0, e^{-1})$, and $n_{\Psi} \in \mathbb{N}$.
     %Let $\Hutch_{n_{\Psi}}(\mtx{B}(t))$ be the $n_{\Psi}$-query
     %Hutchinson estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}.
-    %For a constant $C_{\Psi}$, it holds with probability $\geq 1 - \delta$
+    %For a constant $c_{\Psi}$, it holds with probability $\geq 1 - \delta$
     %\int_{-1}^{1} \left| \phi_{\sigma}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t \notag \\
     \begin{equation}
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-        \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
+        \leq \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
     \end{equation}
-    for some constants $C_1$ and $C_2$ as in \reflem{lem:2-chebyshev-error} and $C_{\Psi} \geq 0$.
+    for any $c>0$ and $c_{\Psi} \geq 0$.
     %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
     %\begin{equation}
     %    \int |H_l(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
@@ -565,13 +571,13 @@ result for the accuracy of the \gls{DGC} method.
     \begin{align*}
         \lVert \phi_{\sigma}^{(m)} - \widetilde{\phi}_{\sigma}^{(m)} \rVert _1
             &= \int_{-1}^{1} \left| \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) - \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right| \mathrm{d}t && \text{(definitions)} \notag \\
-            &\leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{-1}^{1} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t && \text{(\reflem{lem:2-chebyshev-parameter-hutchinson})}
+            &\leq c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{-1}^{1} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t && \text{(\reflem{lem:2-chebyshev-parameter-hutchinson})}
     \end{align*}
     %\begin{align}
     %    \int_{a}^{b} \left| \phi_{\sigma}^{(m)}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t
     %        &= \int_{a}^{b} \left| \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) - \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right| \mathrm{d}t \notag \\
-    %        &\leq C_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{a}^{b} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t \notag \\
-    %        %&\leq C_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{a}^{b} \phi_{\sigma}^{(m)}(t) \mathrm{d}t
+    %        &\leq c_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{a}^{b} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t \notag \\
+    %        %&\leq c_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{a}^{b} \phi_{\sigma}^{(m)}(t) \mathrm{d}t
     %\end{align}
     We proceed with bounding the involved integrand by first applying the triangle
     inequality, then exploiting properties of the Frobenius norm of a matrix function and
@@ -584,21 +590,21 @@ result for the accuracy of the \gls{DGC} method.
         %&\leq \sqrt{n} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(\infty)} + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(1)} && \text{(norm inequalities)} \notag \\
         %&\leq \sqrt{n} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(\in)} + \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) && \text{(norm inequalities)} \notag \\
         &\leq \sqrt{n} \lVert g_{\sigma}^{(m)} - g_{\sigma} \rVert _{\infty} + \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) && \text{(norm inequalities)} \notag \\
-        &\leq \frac{C_1}{2 \sqrt{n} \sigma^2} (1 + C_2 \sigma)^{-m} + \phi_{\sigma}(t) && \text{(\reflem{lem:2-chebyshev-error})}
+        &\leq  \frac{\sqrt{2}}{\sqrt{n}\sigma^2} (1 + \sigma)^{-m} + \phi_{\sigma}(t) && \text{(\reflem{lem:2-chebyshev-error})}
     \end{align*}
     Putting all things together and using the normalization $\int_{-1}^{1} \phi_{\sigma}(t) \mathrm{d}t = 1$
     we end up with the desired result:
     \begin{align*}
         \lVert \phi_{\sigma}  - \widetilde{\phi}_{\sigma}^{(m)} \rVert _1
-        &\leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \left( \frac{C_1}{\sqrt{n} \sigma^2} (1 + C_2 \sigma)^{-m} + 1 \right) \notag \\
-        &= \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}.
+        &\leq  \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \left( \frac{\sqrt{2}}{\sqrt{n}\sigma^2} (1 + \sigma)^{-m} + 1 \right) \notag \\
+        &=  \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}.
     \end{align*}
 \end{proof}
  
 We see that the first term in \refthm{thm:2-delta-gauss-chebyshev} will quickly
 vanish as \gls{chebyshev-degree} increases. What we are left with is the slowly
 decaying $\mathcal{O}(n_{\Psi}^{-1/2})$ term. In fact, this is what bottlenecks
-the \gls{DGC} method from achieving better accuracies: The Hutchinson's stochastic
+the \gls{DGC} method from achieving better accuracies: The Girard-Hutchinson stochastic
 trace estimator is not efficient enough for approximating spectral densities.
 Therefore, we will consider alternative ways of approximating \refequ{equ:1-introduction-spectral-density-as-trace}
 in the next two chapters.

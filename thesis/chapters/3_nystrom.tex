@@ -202,7 +202,7 @@ This approximation is often referred to as the Nystr\"om approximation \cite{git
 It is shown in \cite[lemma~5.2]{tropp2023randomized} that for \gls{PSD} matrices
 the Nystr\"om approximation is at least as accurate as the approximation in
 \refequ{equ:3-nystrom-RSVD} when measured in the spectral
-and Frobenius norms. The following theorem quantifies the accuracy of the
+and Frobenius norms. The following theorem gives an upper bound on the error of the
 Nystr\"om approximation in the Frobenius norm \cite[lemma~3.2]{persson2022hutch}.
 
 \begin{theorem}{Frobenius norm error of Nystr\"om approximation}{3-nystrom-nystrom-constant}
@@ -237,10 +237,10 @@ for the parameter-dependent case is shown:
     continuous in $t \in [a, b]$. Then the parameter-dependent Nystr\"om approximation
     $\widehat{\mtx{B}}(t)$ \refequ{equ:3-nystrom-nystrom-parameter} with standard
     Gaussian \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$,
-    $n_{\Omega} \geq 8 \log(1/\delta)$, and constant $C_{\Omega} \geq 0$,
+    $n_{\Omega} \geq 8 \log(1/\delta)$, and constant $c_{\Omega} \geq 0$,
     satisfies with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq c_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
 \end{lemma}
 
@@ -512,7 +512,7 @@ In this section, we propose a sequence of algorithmic improvements to
 \refalg{alg:3-nystrom-nystrom-chebyshev}, which make the said algorithm more
 robust and accurate.
 
-\paragraph{Short-circuiting}
+\paragraph{Non-zero checking}
 
 In \refalg{alg:3-nystrom-nystrom-chebyshev}, we have that
 \begin{equation}
@@ -529,8 +529,8 @@ of \refalg{alg:3-nystrom-nystrom-chebyshev}. Even less, since in that case we al
     \phi_{\sigma}^{(m)}(t_i) = \Tr(g_{\sigma}^{(m)}(t_i\mtx{I}_n - \mtx{A})) \approx \Tr(\mtx{0}) = 0.
     \label{equ:3-nystrom-short-circuit}
 \end{equation}
-Motivated by this observation we use a \enquote{short-circuit} mechanism which 
-computes the \gls{sketch-size}-query Hutchinson's estimate \refequ{equ:2-chebyshev-DGC-hutchionson-estimator}
+Motivated by this observation we use a \enquote{non-zero} check which 
+computes the \gls{sketch-size}-query Girard-Hutchinson estimate \refequ{equ:2-chebyshev-DGC-hutchionson-estimator}
 \begin{equation}
     \Hutch_{n_{\Omega}}(g_{\sigma}^{(m)}(t_i \mtx{I}_n - \mtx{A})) = \frac{1}{n_{\Omega}} \Tr(\mtx{K}_1(t_i))
     \label{equ:3-nystrom-short-circuit-hutchinson}
@@ -543,13 +543,13 @@ for this $t_i$. In order to not accidentally remove parts of the spectrum with e
 \gls{short-circuit-threshold} should not exceed $1/(n \sqrt{2\pi \sigma^2})$.
 We usually use \gls{short-circuit-threshold} $= 10^{-5}$. Since $\mtx{K}_1(t_i)$
 needs to be computed in any case in \refalg{alg:3-nystrom-nystrom-chebyshev},
-this check can be incorporated with minimal additional computational cost. The effect this short-circuit
+this check can be incorporated with minimal additional computational cost. The effect this non-zero check
 mechanism has on the approximation quality can be seen in \reffig{fig:3-nystrom-short-circuit-mechanism}.\\
 
 \begin{figure}[ht]
     \centering
     \input{plots/short_circuit_mechanism.pgf}
-    \caption{The difference the short-circuit mechanism can make when approximating
+    \caption{The difference the non-zero check can make when approximating
         a spectral density using \refalg{alg:3-nystrom-nystrom-chebyshev}. 
         Here, we used the matrix described in \refsec{sec:5-experiments-density-function}
         and ran the \gls{NC} method with and without \glsfirst{short-circuit-threshold} $= 10^{-5}$,
@@ -735,7 +735,7 @@ In the end, we want to see the combined effect the above proposed algorithmic
 improvements have. To do so, we observe the accuracy in terms of the $L^1$-error
 of the approximated spectral density for changing \gls{chebyshev-degree}. Once
 for the raw \refalg{alg:3-nystrom-nystrom-chebyshev}, and once for \refalg{alg:3-nystrom-nystrom-chebyshev}
-with short-circuit mechanism, computation of the pseudoinverse through
+with non-zero check, computation of the pseudoinverse through
 an eigenvalue problem, and added filter tolerance.
 
 \begin{figure}[ht]
@@ -813,14 +813,13 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
     using a shifted Gaussian smoothing kernel $\underline{g}_{\sigma} = g_{\sigma} + \rho$
     with \glsfirst{smoothing-parameter} $>0$, \glsfirst{chebyshev-degree} $\in \mathbb{N}$, and
     \gls{sketch-size} $=r + p$ for some numbers $r \geq 2$, $p \geq 4$.
-    If \gls{shift} $\geq \frac{C_1}{2n\sigma^2} (1 + C_2 \sigma)^{-m}$ for the constants
-    $C_1, C_2$ in \reflem{lem:2-chebyshev-error}
+    If \gls{shift} $\geq \frac{\sqrt{2}}{n \sigma^2}  (1 + \sigma)^{-m}$
     and $r \geq r_{\varepsilon, \ast}(g_{\sigma}(t\mtx{I}_n - \mtx{A}))$ for all
     $t \in [-1, 1]$, then for all $\gamma \geq 1$, the inequality
     \begin{equation}
         \lVert \underline{\phi}_{\sigma} - \widehat{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
         \leq 2 \gamma^2(1 + r) (2 \varepsilon + 4 \rho (n-r))
-        + \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}
+        + \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}
     \end{equation}
     holds with probability $\geq 1-\gamma^{-p}$.
 \end{theorem}
@@ -832,11 +831,11 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
     %    &\leq \lVert \widehat{\underline{\phi}}_{\sigma}^{(m)} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
     %    + \lVert \underline{\phi}_{\sigma}^{(m)} - \underline{\phi}_{\sigma} \rVert _1 && \text{(triangle inequality)} \notag \\
     %    &\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \sigma_i(\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \mathrm{d}t
-    %    + \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} && \text{(\refthm{thm:3-nystrom-frobenius-norm} and \reflem{lem:2-chebyshev-error})} \notag \\
+    %    + \sqrt{\frac{8}{\pi}} \frac{e^{\frac{c^2}{2}}}{c \sigma^2}  (1 + c \sigma)^{-m} && \text{(\refthm{thm:3-nystrom-frobenius-norm} and \reflem{lem:2-chebyshev-error})} \notag \\
     %    %&\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} (g_{\sigma}(t - \lambda_{(i)}) + 2\rho) \mathrm{d}t
-    %    %+ \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} && \text{(\textcolor{red}{TODO})} \notag \\
+    %    %+ \sqrt{\frac{8}{\pi}} \frac{e^{\frac{c^2}{2}}}{c \sigma^2}  (1 + c \sigma)^{-m} && \text{(\textcolor{red}{TODO})} \notag \\
     %    %&\leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} g_{\sigma}(t - \lambda_{(i)})\mathrm{d}t + \gamma^2(1 + r)4(n-r)\rho
-    %    %+ \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} && \text{(\textcolor{red}{TODO})} \notag \\
+    %    %+ \sqrt{\frac{8}{\pi}} \frac{e^{\frac{c^2}{2}}}{c \sigma^2}  (1 + c \sigma)^{-m} && \text{(\textcolor{red}{TODO})} \notag \\
     %\end{align*}
     %Whatever approximation, we may thu
     \begin{equation}
@@ -851,7 +850,7 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
     \begin{equation}
         \lVert \underline{\phi}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
         = \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1
-        \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m}
+        \leq  \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}
     \end{equation}
     The second term can be bounded with \refthm{thm:3-nystrom-frobenius-norm}:
     \begin{equation}
@@ -865,7 +864,7 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
     and the condition on \gls{shift} based on the approximation error in 
     \reflem{lem:2-chebyshev-error} we can deduce that for all \gls{spectral-parameter}
     \begin{equation}
-        \underline{\sigma}_i^{(m)}(t) \leq \sigma^{(m)}_i(t) + \rho \leq \sigma_i(t) + 2\rho
+        \underline{\sigma}_i^{(m)}(t) = \sigma^{(m)}_i(t) + \rho \leq \sigma_i(t) + 2\rho
         \label{equ:3-nystrom-nystrom-chebyshev-proof-shifted-eigenvalues}
     \end{equation}
     where $\sigma^{(m)}_i(t)$ stand for the eigenvalues of $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$.

@@ -246,7 +246,7 @@
             \begin{equation}
                 \Tr(\mtx{B}) = \mathbb{E}\left[\vct{\psi}^{\top} \mtx{B} \vct{\psi}\right].
             \end{equation}
-            The Hutchinson's trace estimator averages over $n_{\Psi} \in \mathbb{N}$
+            The Girard-Hutchinson's trace estimator averages over $n_{\Psi} \in \mathbb{N}$
             independent realizations of this estimate to construct
             \begin{equation}
                 \Hutch_{n_{\Psi}}(\mtx{B}) = \frac{1}{n_{\Psi}} \sum_{i=1}^{n_{\Psi}} \vct{\psi}_i^{\top} \mtx{B} \vct{\psi}_i.
@@ -261,7 +261,7 @@
                 $\mtx{A} \in \mathbb{R}^{n \times n}$ symmetric, then with high probability
                 \begin{equation*}
                     \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-                    \leq \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \sqrt{\frac{n}{n_{\Psi}}} \right) + \frac{C_{\Psi}}{\sqrt{n_{\Psi}}}.
+                    \leq \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 +  \frac{c_{\Psi}}{\sqrt{n n_{\Psi}}} \right) + \frac{c_{\Psi}}{\sqrt{n_{\Psi}}}.
                 \end{equation*}
             \end{thm}
         \end{block}
@@ -304,7 +304,7 @@
 
         \begin{block}{Nystr\"om-Chebyshev++}
             The Nystr\"om++ estimator is a variance reduced version
-            of the Hutchinson's estimator. It is defined as
+            of the Girard-Hutchinson's estimator. It is defined as
             \begin{equation}
                 \Tr^{++}(\mtx{B}) = \Tr(\widehat{\mtx{B}}) + \Hutch_{n_{\Psi}}(\mtx{\Delta})
             \end{equation}

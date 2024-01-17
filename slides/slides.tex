@@ -28,7 +28,7 @@
 \DeclareMathOperator{\range}{range}
 
 \usepackage{glossaries}
-\makeglossaries
+%\makeglossaries
 \input{../thesis/glossary.tex}
 
 \usepackage{beamertheme}
@@ -82,7 +82,7 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Implementation}
+\begin{frame}{Chebyshev expansion}
     \begin{columns}
         \begin{column}{0.55\textwidth}
             \begin{itemize}
@@ -106,10 +106,9 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Methods}
+\begin{frame}{Developed methods}
     \begin{columns}
         \begin{column}{0.55\textwidth}
-            Improvements to \cite{lin2017randomized}
             \begin{itemize}
                 \item \gls{DGC}
                 \begin{equation}
@@ -134,31 +133,14 @@
 
 \section{Theoretical analysis}
 
-\begin{frame}{Delta-Gauss-Chebyshev (ingredients)}
-    \begin{block}{Lemma: Chebyshev expansion (based on \cite{trefethen2008gauss})}
-        $\mtx{A} \in \mathbb{R}^{n \times n}$ symmetric with spectrum
-        in $[-1, 1]$. Then
-        \begin{equation}
-            \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}.
-        \end{equation}
-    \end{block}
-    \begin{block}{Lemma: Parameter-dependent Hutchinson \cite{he2023parameter}}
-        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
-        $t \in [a, b]$. With high probability
-        \begin{equation}
-            \int_{a}^{b} \left| \Tr(\mtx{B}(t)) - \Hutch_{n_{\Psi}}(\mtx{B}(t)) \right| \mathrm{d}t \leq C_{\Psi} \frac{1}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
-        \end{equation}
-    \end{block}
-\end{frame}
-
-\begin{frame}{Delta-Gauss-Chebyshev (error guarantee)}
-    \begin{block}{Theorem: Delta-Gauss-Chebyshev}
+\begin{frame}{Delta-Gauss-Chebyshev method}
+    \begin{block}{Theorem: Error of Delta-Gauss-Chebyshev method}
         $\widetilde{\phi}_{\sigma}^{(m)}(t)$ result from \gls{DGC} method
         on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$.
         With high probability
         \begin{equation}
             \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-            \leq \underbrace{\frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} \left( 1 + 2 C_{\Psi} \sqrt{\frac{n}{n_{\Psi}}} \right)}_{\text{interpolation error and bias}} + \underbrace{C_{\Psi} \frac{1}{\sqrt{n_{\Psi}}}}_{\text{trace estimation}}.
+            \leq \underbrace{ \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 + c_{\Psi} \frac{1}{\sqrt{n n_{\Psi}}} \right)}_{\text{interpolation error and bias}} + \underbrace{c_{\Psi} \frac{1}{\sqrt{n_{\Psi}}}}_{\text{trace estimation}}
         \end{equation}
     \end{block}
     \begin{itemize}
@@ -169,14 +151,16 @@
 \begin{frame}{Numerical rank}
     \begin{columns}
         \begin{column}{0.55\textwidth}
-            Numerical rank
+            \begin{itemize}
+            \item Numerical rank
             \begin{equation}
-                r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \leq \#\{i: |t - \lambda_{(i)}| \leq C_{\varepsilon, \cdot}(\sigma)\}
+                r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \leq \#\{i: |t - \lambda_i| < C_{\varepsilon, \cdot}(\sigma)\}
             \end{equation}
-            with constant (e.g. for spectral norm)
+            \item Constant (e.g. for nuclear norm)
             \begin{equation}
-                C_{\varepsilon, 2}(\sigma) = \sigma \sqrt{-2 \log(n \sqrt{2 \pi} \sigma \varepsilon)}
+                C_{\varepsilon, \ast}(\sigma) = \sigma \sqrt{-2 \log(\sqrt{2 \pi n} \sigma \varepsilon)}
             \end{equation}
+            \end{itemize}
         \end{column}
         \begin{column}{0.45\textwidth}
             \scalebox{0.6}{\input{../thesis/figures/singular_value_decay.tex}}
@@ -186,74 +170,59 @@
     \scalebox{1.0}{\input{../thesis/figures/numerical_rank.tex}}
 \end{frame}
 
-\begin{frame}{Nystr\"om-Chebyshev (error guarantee)}
-    \begin{itemize}
-        \item Parameter-dependent Nystr\"om approximation
-        \begin{equation}
-            \widehat{f}(\mtx{A}, t) = (f(\mtx{A}, t) \mtx{\Omega}) (\mtx{\Omega}^{\top} f(\mtx{A}, t) \mtx{\Omega})^{\dagger} (f(\mtx{A}, t) \mtx{\Omega})^{\top}
-        \end{equation}
-    \end{itemize}
-    \begin{block}{Theorem: Parameter-dependent Nystr\"om \cite{he2023parameter}}
-        $f(\mtx{A}, t)$ function of symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ which
-        continuously depends on $t \in [a,b]$. 
-        Standard Gaussian $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\Omega}}$
-        with $n_{\Omega} > r + 3$. With high probability
-        \begin{equation}
-            \int_{a}^{b} | \Tr(f(\mtx{A}, t)) - \Tr(\widehat{f}(\mtx{A}, t))| \mathrm{d}t
-                < C (1 + r) \int_{a}^{b} \sum_{i = r+1}^n \sigma_i(t) \mathrm{d}t
-        \end{equation}
-        where $\sigma_i(t)$ are the (ordered) eigenvalues of $f(\mtx{A}, t)$ at $t$.
-    \end{block}
+\begin{frame}{Shift}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            \begin{itemize}
+                \item Most results for Nystr\"om approximation only valid for PSD matrices
+                \item Problem: Chebyshev expansion $g_{\sigma}^{(m)}$ may be negative
+                \item Solution: Expand shifted kernel
+                    \begin{equation}
+                        \underline{g}_{\sigma} = g_{\sigma} + \rho
+                    \end{equation}
+                    which is non-negative for large enough $\rho$
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \scalebox{0.65}{\input{../thesis/plots/kernel_shift.pgf}}
+        \end{column}
+    \end{columns}   
 \end{frame}
 
-\begin{frame}{Nystr\"om-Chebyshev++ (ingredients)}
-    \begin{itemize}
-        \item Goal: prove $\mathcal{O}(\varepsilon^{-1})$ result for Nystr\"om-Chebyshev++ method
-    \end{itemize}
-    \begin{block}{Lemma: Parameter-dependent Nystr\"om 2.0 \cite{he2023parameter}}
-        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric \gls{PSD} and
-        continuous in $t \in [a, b]$. With high probability
-        \begin{equation}
-            \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
-        \end{equation}
-    \end{block}
-\end{frame}
-
-\begin{frame}{Nystr\"om-Chebyshev++ (main theorem)}
-    \begin{itemize}
-        \item Parameter-dependent result for \cite{meyer2021hutch}
-        \begin{equation}
-            \Tr^{++}(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Hutch_{n_{\Psi}}(\mtx{\Delta}(t))
-        \end{equation}
-    \end{itemize}
-    \begin{block}{Theorem: Parmeter-dependent trace estimation}
-        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
-        and continuous in $t \in [a, b]$, and
-        \begin{equation}
-            \Tr(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}(t)) \text{ and } \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
-        \end{equation}
-        With high probability
-        \begin{equation}
-            \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq C \frac{1}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
-        \end{equation}
-        %In particular, if \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $=\mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$,
-        %then $\Tr^{++}(\mtx{B}(t))$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
-    \end{block}
-\end{frame}
-
-\begin{frame}{Nystr\"om-Chebyshev++ (error guarantee)}
-    \begin{block}{Corollary: Parameter dependent Nystr\"om++}
-        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
-        and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
+\begin{frame}{Nystr\"om-Chebyshev method}
+    \begin{block}{Theorem: Error of Nystr\"om-Chebyshev method with shift}
+        $\underline{\widehat{\phi}}_{\sigma}^{(m)}(t)$ result from \gls{NC} method
+        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$.
+        Shifted smoothing kernel $\underline{g}_{\sigma}=g_{\sigma} + \rho$.
+        If $\rho \geq 0$ large enough and $r \geq r_{\varepsilon, \ast}(g_{\sigma}(t\mtx{I}_n - \mtx{A}))$,
         then with high probability
         \begin{equation}
-            \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+            \lVert \underline{\phi}_{\sigma} - \widehat{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
+            \leq \underbrace{\frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}}_{\text{interpolation error}}
+             + \underbrace{2 \gamma^2(1 + r) (2 \varepsilon + 4 \rho (n-r))}_{\text{biased approximation error}}
         \end{equation}
     \end{block}
-    \begin{itemize}
-        \item Caveat: only applies to NC++ if we assume Chebyshev expansion to be exact
-        \item Loss of positive semi-definiteness in expansion is the problem
-    \end{itemize}
+    %\begin{itemize}
+    %    \item Even for \enquote{good} Chebyshev expansion, only $\mathcal{O}(\varepsilon^{-2})$ approximation
+    %\end{itemize}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev++ method}
+    \begin{block}{Theorem: Error of Nystr\"om-Chebyshev++ method with shift}
+        $\underline{\breve{\phi}}_{\sigma}^{(m)}(t)$ result from \gls{NCPP} method
+        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$.
+        Shifted smoothing kernel $\underline{g}_{\sigma}=g_{\sigma} + \rho$.
+        If $\rho \geq 0$ large enough and $n_{\Psi} + n_{\Omega} = \mathcal{O}(\log(1/\delta)/\varepsilon)$,
+        then with high probability
+        \begin{equation}
+            \lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
+            \leq \underbrace{(1 + \varepsilon) \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}}_{\text{interpolation error}}
+            + \underbrace{\varepsilon(1 + 2 n \rho)}_{\text{approximation error}}
+        \end{equation}
+    \end{block}
+    %\begin{itemize}
+    %    \item Even for \enquote{good} Chebyshev expansion, only $\mathcal{O}(\varepsilon^{-2})$ approximation
+    %\end{itemize}
 \end{frame}
 
 \section{Algorithmic improvements}
@@ -262,7 +231,12 @@
     \begin{columns}
         \begin{column}{0.55\textwidth}
             \begin{itemize}
-                \item Fast interpolation in \gls{NC} for
+                \item Expansion $f^{(m)}(s) = \sum_{l=0}^m \mu_l T_l(s)$
+                with \gls{DCT}
+                \begin{equation}
+                    \big\{ f(\cos(\pi i / m)) \big\}_{i=0}^m \stackrel{\DCT}{\longleftrightarrow} \{ \mu_l \}_{l=0}^m 
+                \end{equation}
+                \item Fast expansion in \gls{NC} for
                 \begin{equation}
                     \widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\mtx{K}_1(t)^{\dagger} \mtx{K}_2(t))
                 \end{equation}
@@ -271,11 +245,6 @@
                     \mtx{K}_1(t) = \mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \mtx{\Omega} \\
                     \mtx{K}_2(t) = \mtx{\Omega}^{\top} (g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))^2 \mtx{\Omega}
                 \end{align}
-                \item \Gls{DCT}
-                \begin{equation}
-                    \vct{\mu} \stackrel{\DCT}{\longleftrightarrow} \vct{g}
-                \end{equation}
-                with $\{g_i = g_{\sigma}(t - \cos(\pi i / m))\}_{i=0}^m$.
             \end{itemize}
         \end{column}
         \begin{column}{0.45\textwidth}
@@ -284,7 +253,7 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Short-circuit mechanism}
+\begin{frame}{Non-zero check}
     \begin{itemize}
         \item Problem: If $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \approx \mtx{0}$, pseudo-inverse $\mtx{K}_1(t)^{\dagger}$ bad idea
         \item Solution: If $\frac{1}{n_{\Omega}} \Tr(\mtx{K}_1(t)) < \kappa$ $\implies$ set $\widehat{\phi}_{\sigma}^{(m)}(t) = 0$
@@ -345,7 +314,7 @@
     \begin{itemize}
         \item Lorentzian smoothing kernel $\implies$ Haydock method \cite{lin2016review}
     \begin{equation}
-        g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2} = -\frac{1}{\pi} \Im\left\{ \frac{1}{s + \iota \sigma} \right\}
+        g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2}
     \end{equation}
     \end{itemize}
     \centering
@@ -377,12 +346,102 @@
     \end{itemize}
     Outlook
     \begin{itemize}
-        \item Incorporate Chebyshev expansion in analysis
+        \item Theoretical analysis without shift
     \end{itemize}
 \end{frame}
 
 \begin{frame}[allowframebreaks]{Bibliography}
     \bibliographystyle{apalike}\bibliography{../thesis/bibliography.bib}
+\end{frame}
+
+\appendix
+\section{Additional slides}
+
+\begin{frame}{Delta-Gauss-Chebyshev (ingredients)}
+    \begin{block}{Lemma: Chebyshev expansion (based on \cite{trefethen2008gauss})}
+        $\mtx{A} \in \mathbb{R}^{n \times n}$ symmetric with spectrum
+        in $[-1, 1]$. Then
+        \begin{equation}
+            \lVert  \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \frac{C_1}{\sigma^2}(1 + C_2 \sigma)^{-m}.
+        \end{equation}
+    \end{block}
+    \begin{block}{Lemma: Parameter-dependent Girard-Hutchinson \cite{he2023parameter}}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
+        $t \in [a, b]$. With high probability
+        \begin{equation}
+            \int_{a}^{b} \left| \Tr(\mtx{B}(t)) - \Hutch_{n_{\Psi}}(\mtx{B}(t)) \right| \mathrm{d}t \leq c_{\Psi} \frac{1}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
+        \end{equation}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev (error guarantee)}
+    \begin{itemize}
+        \item Parameter-dependent Nystr\"om approximation
+        \begin{equation}
+            \widehat{f}(\mtx{A}, t) = (f(\mtx{A}, t) \mtx{\Omega}) (\mtx{\Omega}^{\top} f(\mtx{A}, t) \mtx{\Omega})^{\dagger} (f(\mtx{A}, t) \mtx{\Omega})^{\top}
+        \end{equation}
+    \end{itemize}
+    \begin{block}{Theorem: Parameter-dependent Nystr\"om \cite{he2023parameter}}
+        $f(\mtx{A}, t)$ function of symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ which
+        continuously depends on $t \in [a,b]$. 
+        Standard Gaussian $\mtx{\Omega} \in \mathbb{R}^{n \times n_{\Omega}}$
+        with $n_{\Omega} > r + 3$. With high probability
+        \begin{equation}
+            \int_{a}^{b} | \Tr(f(\mtx{A}, t)) - \Tr(\widehat{f}(\mtx{A}, t))| \mathrm{d}t
+                < c (1 + r) \int_{a}^{b} \sum_{i = r+1}^n \sigma_i(t) \mathrm{d}t
+        \end{equation}
+        where $\sigma_i(t)$ are the (ordered) eigenvalues of $f(\mtx{A}, t)$ at $t$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev++ (ingredients)}
+    \begin{itemize}
+        \item Goal: prove $\mathcal{O}(\varepsilon^{-1})$ result for Nystr\"om-Chebyshev++ method
+    \end{itemize}
+    \begin{block}{Lemma: Parameter-dependent Nystr\"om 2.0 \cite{he2023parameter}}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric \gls{PSD} and
+        continuous in $t \in [a, b]$. With high probability
+        \begin{equation}
+            \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq c_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \end{equation}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev++ (main theorem)}
+    \begin{itemize}
+        \item Parameter-dependent result for \cite{meyer2021hutch}
+        \begin{equation}
+            \Tr^{++}(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Hutch_{n_{\Psi}}(\mtx{\Delta}(t))
+        \end{equation}
+    \end{itemize}
+    \begin{block}{Theorem: Parmeter-dependent trace estimation}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
+        and continuous in $t \in [a, b]$, and
+        \begin{equation}
+            \Tr(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}(t)) \text{ and } \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t \leq c_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \end{equation}
+        With high probability
+        \begin{equation}
+            \int_{a}^{b} |\Tr^{++}(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq c \frac{1}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \end{equation}
+        %In particular, if \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $=\mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$,
+        %then $\Tr^{++}(\mtx{B}(t))$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B}(t))$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev++ (error guarantee)}
+    \begin{block}{Corollary: Parameter dependent Nystr\"om++}
+        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
+        and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
+        then with high probability
+        \begin{equation}
+            \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+        \end{equation}
+    \end{block}
+    \begin{itemize}
+        \item Caveat: only applies to NC++ if we assume Chebyshev expansion to be exact
+        \item Loss of positive semi-definiteness in expansion is the problem
+    \end{itemize}
 \end{frame}
 
 \end{document}

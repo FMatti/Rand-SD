@@ -37,6 +37,7 @@
 % Color definitions
 \definecolor{darkblue}{HTML}{2F455C}
 \colorlet{lightblue}{darkblue!10!white}
+\colorlet{linkcolor}{darkblue}
 
 % Text color assignments
 \setbeamercolor{title}{fg = white}
@@ -70,6 +71,11 @@
 \setbeamercolor{enumerate item}{fg = darkblue}
 \setbeamercolor{enumerate subitems}{fg = darkblue}
 
+% Bibliography
+%\setbeamercolor{bibliography item}{parent=palette primary}
+\setbeamercolor{bibliography entry author}{fg = darkblue}
+\setbeamertemplate{bibliography item}{\scriptsize\raise1.25pt\hbox{\scalebox{1.35}{\donotcoloroutermaths$\blacktriangleright$}}}
+\setbeamercolor{bibliography item}{fg = darkblue}
 
 %%% FLOATS
 
@@ -101,6 +107,8 @@
 \usepackage{url}
 \urlstyle{same}
 
+%\let\oldcite\cite
+%\renewcommand{\cite}[2][]{\textcolor{linkcolor}{\oldcite{#2}}}
 
 %%% INNER THEME
 
@@ -125,6 +133,8 @@
 
 % Frametitle formatting
 \setbeamertemplate{frametitle}{
+
+    \nointerlineskip
 
     \begin{beamercolorbox}[wd=\paperwidth, ht=1.1cm]{}
 
@@ -167,6 +177,7 @@
 
 \AtBeginSection[]{
   \begin{frame}
+    \nointerlineskip
     \begin{beamercolorbox}[wd=\paperwidth, ht=\paperheight]{}
     \begin{tikzpicture}
 

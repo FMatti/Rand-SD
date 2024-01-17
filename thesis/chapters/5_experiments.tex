@@ -139,7 +139,7 @@ expected to be significantly smaller than \refthm{thm:4-nystromchebyshev-final}
 guarantees in general. In fact, it seems that after this point, \gls{NC} and \gls{NCPP}
 behave almost identically, with the exception that the \gls{NC} uses 
 an \gls{sketch-size} which is twice as large as the one in \gls{NCPP} by design
-of the experiment, while the contribution from the Hutchinson's correction part
+of the experiment, while the contribution from the Girard-Hutchinson correction part
 in the \gls{NCPP} method \refequ{equ:4-nystromchebyshev-hutch-pp} seems to be
 insignificant.\\
 
@@ -177,7 +177,7 @@ accuracy, the behavior of the error for fixed \gls{sketch-size} $+$ \gls{num-hut
     \input{plots/electronic_structure_matvec_mixture.pgf}
     \caption{The \gls{NCPP} method for different ways of allocations a 
     total of \gls{sketch-size} $+$ \gls{num-hutchinson-queries} $=80$ random vectors
-    to either the Nystr\"om low-rank approximation or the Hutchinson's trace estimation
+    to either the Nystr\"om low-rank approximation or the Girard-Hutchinson trace estimation
     for the Gaussian \gls{smoothing-kernel} with multiple different values of
     the \gls{smoothing-parameter}. We make the approximation error made in the
     Chebyshev expansion negligible by rescaling \gls{chebyshev-degree} $=120 / \sigma$.}
@@ -212,7 +212,7 @@ is provided in \reffig{fig:5-experiments-haydock-kernel}.\\
 %    \label{equ:5-experiments-haydock-trace}
 %\end{equation}
 %Similarly to the \gls{DGC} method (see \refsec{sec:2-chebyshev-delta-gauss-chebyshev}),
-%the Hutchinson's trace estimator with standard Gaussian random vectors
+%the Girard-Hutchinson trace estimator with standard Gaussian random vectors
 %$\vct{\psi} \in \mathbb{R}^n$ is used to
 %approximate the trace
 %\begin{equation}
@@ -280,7 +280,7 @@ is not as effective as it was for the Gaussian case, since the decay to zero
 is noticeably slower (see \reffig{fig:5-experiments-haydock-kernel}). On the
 other, the Lorentzian \gls{smoothing-kernel} has a pole at $s = \pm \iota$, which
 has as a consequence that the Chebyshev expansion is not guaranteed to converge
-as fast as it does in the Gaussian case according to \refthm{thm:2-chebyshev-bernstein}.
+as fast as it does in the Gaussian case.% according to \refthm{thm:2-chebyshev-bernstein}.
 Due to these reasons, the convergence of the \gls{NC} and \gls{NCPP} methods
 are slower than they used to be in \refsec{sec:5-experiments-density-function}.
 Nevertheless, this choice of \gls{smoothing-kernel} exhibits perfectly the 

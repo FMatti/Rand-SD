@@ -40,7 +40,7 @@ $\widehat{\mtx{B}}$ can be computed efficiently and
 $\lVert \mtx{B} - \widehat{\mtx{B}} \rVert _F$ is small,
 then we can compute the first term in \refequ{equ:4-nystromchebyshev-trace-decomposition}
 exactly and the second term can be approximated well using
-the \gls{num-hutchinson-queries}-query Hutchinson's
+the \gls{num-hutchinson-queries}-query Girard-Hutchinson
 trace estimator $\Hutch_{n_{\Psi}}$ \refequ{equ:2-chebyshev-DGC-hutchionson-estimator}
 due to its small Frobenius norm \refequ{equ:2-chebyshev-hutchinson-mse}.
 That is,
@@ -59,7 +59,7 @@ $\mtx{B} = \mtx{V}_1 \mtx{\Sigma}_1 \mtx{V}_1^{\top}$ \refequ{equ:3-nystrom-eige
 Since $\mtx{V}_1$ is orthonormal, $\Tr(\mtx{B}) = \Tr(\mtx{\Sigma}_1)$ by the
 cyclic property of the trace, which is easy to compute. On the other hand,
 $\mtx{\Delta} = \mtx{B} - \widehat{\mtx{B}} = \mtx{0}$ which implies that the
-Hutchinson's estimator will trivially be exact. Thus, \refequ{equ:4-nystromchebyshev-hutch-pp}
+Girard-Hutchinson estimator will trivially be exact. Thus, \refequ{equ:4-nystromchebyshev-hutch-pp}
 would yield an exact estimate. However, this factorization is -- in general -- prohibitively expensive
 to compute.\\
 
@@ -80,9 +80,9 @@ with high probability. The key to this conclusion is the following theorem \cite
         \end{cases}
     \end{equation}
     where $\mtx{B}_{n_{\Omega}}$ is the best rank-$n_{\Omega}$ approximation to $\mtx{B}$.
-    For fixed constants $c, C \geq 0$, if \gls{num-hutchinson-queries} $> c\log(1/\delta)$, then with probability $\geq 1 - \delta$,
+    For fixed constants $c_1, c_2 > 0$, if \gls{num-hutchinson-queries} $> c_1\log(1/\delta)$, then with probability $\geq 1 - \delta$,
     \begin{equation}
-        |\Tr(\mtx{B}) - \Tr^{++}(\mtx{B})| \leq 2 C \sqrt{\frac{\log(1/\delta)}{n_{\Psi} n_{\Omega}}} \Tr(\mtx{B}).
+        |\Tr(\mtx{B}) - \Tr^{++}(\mtx{B})| \leq 2 c_2 \sqrt{\frac{\log(1/\delta)}{n_{\Psi} n_{\Omega}}} \Tr(\mtx{B}).
     \end{equation}
     In particular, if $n_{\Omega}=n_{\Psi}=\mathcal{O}\left( \sqrt{\log(1/\delta)}/ \varepsilon + \log(1/\delta) \right)$, $\Tr^{++}(\mtx{B})$ is a $(1 \pm \varepsilon)$ error approximation to $\Tr(\mtx{B})$.
 \end{theorem}
@@ -114,7 +114,7 @@ the trace of a matrix $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ which depends con
 needs to be computed.\\
 
 With a matrix $\widehat{\mtx{B}}(t)$, the residual $\mtx{\Delta}(t) = \mtx{B}(t) - \widehat{\mtx{B}}(t)$,
-and the parameter-dependent \gls{num-hutchinson-queries}-query Hutchinson's estimator $\Hutch_{n_{\Psi}}$
+and the parameter-dependent \gls{num-hutchinson-queries}-query Girard-Hutchinson estimator $\Hutch_{n_{\Psi}}$
 \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}, we define the estimator 
 \begin{equation}
     \Tr^{++}(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Hutch_{n_{\Psi}}(\mtx{\Delta}(t)).
@@ -136,12 +136,12 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
     \begin{equation}
         \begin{cases}
             \Tr(\mtx{B}(t)) = \Tr(\widehat{\mtx{B}}(t)) + \Tr(\mtx{\Delta}(t)); \\
-            \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+            \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t \leq c_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
         \end{cases}
     \end{equation}
-    for some constant $C_{\Omega} \geq 0$. Then, for a fixed constant $C \geq 0$ and $\delta \in (0, e^{-1})$, with probability $\geq 1 - \delta$,
+    for some constant $c_{\Omega} > 0$. Then, for a fixed constant $c \geq 0$ and $\delta \in (0, e^{-1})$, with probability $\geq 1 - \delta$,
     \begin{equation}
-        \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq C \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq c \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
     In particular, if \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $=\mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$,
     then $\Tr^{++}(\mtx{B}(t))$ is an $\varepsilon$-error approximation of $\Tr(\mtx{B}(t))$
@@ -153,10 +153,10 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
     \begin{align*}
         &\int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \notag \\
         &= \int_{a}^{b} |\Tr(\mtx{\Delta}(t)) - \Hutch_{n_{\Psi}}(\mtx{\Delta}(t))| \mathrm{d}t && \text{(definition of $\Tr^{++}$ and linearity of $\Tr$)}  \notag \\
-        &\leq C_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \notag \\
-        &= C_{\Psi} C_{\Omega} \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}(t)$)} \notag \\
+        &\leq c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t && \text{(using \reflem{lem:2-chebyshev-parameter-hutchinson})} \notag \\
+        &= c_{\Psi} c_{\Omega} \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t && \text{(assumption on $\mtx{\Delta}(t)$)} \notag \\
     \end{align*}
-    Identifying $C=C_{\Psi} C_{\Omega}$, we get the desired result with probability $\geq 1 - \delta$.
+    Identifying $c=c_{\Psi} c_{\Omega}$, we get the desired result with probability $\geq 1 - \delta$.
 \end{proof}
 
 When compared to constant matrices (\refthm{thm:4-nystromchebyshev-trace-correction}),
@@ -195,7 +195,7 @@ convergence property of the parameter-dependent Nystr\"om approximation.
     \end{equation}
     for all $t \in [a, b]$ and with probability $\geq 1 - \delta$
     \begin{equation}
-        \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq C_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
+        \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t = \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq c_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
     The latter follows from \reflem{lem:3-nystrom-parameter-nystrom}. Finally,
     the choice of \gls{sketch-size} and \gls{num-hutchinson-queries} follows
@@ -221,7 +221,7 @@ As mentioned at the start of this chapter, this method improves
 upon the \gls{NC} method by correcting it with an estimate of the trace of the
 residual $\mtx{\Delta}(t) = g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - \widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$
 of the Nystr\"om approximation. To this purpose, the \gls{num-hutchinson-queries}-query
-Hutchinson's estimator $\Hutch_{n_{\Psi}}$
+Girard-Hutchinson estimator $\Hutch_{n_{\Psi}}$
 \refequ{equ:2-chebyshev-DGC-hutchionson-estimator} is employed as follows:
 \begin{align}
     \breve{\phi}_{\sigma}^{(m)}(t)
@@ -305,7 +305,7 @@ to form $\widehat{\phi}_{\sigma}^{(m)}(t)$ from the Nystr\"om approximation of
 $\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$.
 For consistency between all the terms in \refequ{equ:4-nystromchebyshev-spectral-density-decomposition},
 it is crucial to compute the correction term $\Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))$
-using the same Hutchinson's estimator, i.e. the same \gls{random-matrix}, which was already used to compute the
+using the same Girard-Hutchinson estimator, i.e. the same \gls{random-matrix}, which was already used to compute the
 second term $\widetilde{\phi}_{\sigma}^{(m)}(t)$, i.e.
 \begin{equation}
     \Hutch_{n_{\Psi}}(\mtx{\Xi}(t)) = \frac{1}{n_{\Psi}} \Tr(\mtx{\Psi}^{\top} \mtx{\Xi}(t) \mtx{\Psi}).
@@ -353,12 +353,11 @@ employed to get the following result.
     and with the parameters \gls{smoothing-parameter} $>0$, \gls{chebyshev-degree} $\in \mathbb{N}$, and
     \gls{num-hutchinson-queries} $+$ \gls{sketch-size} $=\mathcal{O}(\log(1/\delta)/\varepsilon)$
     with \gls{sketch-size} $\geq 8 \log(1/\delta)$.
-    If \gls{shift} $\geq \frac{C_1}{2 n \sigma^2} (1 + C_2 \sigma)^{-m}$ for the constants
-    $C_1, C_2$ in \reflem{lem:2-chebyshev-error}, then
+    If \gls{shift} $\geq \frac{\sqrt{2}}{n\sigma^2} (1 + \sigma)^{-m}$, then
     for $\delta \in (0, e^{-1})$ with probability $\geq 1-\delta$
     \begin{equation}
         \lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
-        \leq (1 + \varepsilon) \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \varepsilon(1 + 2 n \rho).
+        \leq (1 + \varepsilon)  \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} + \varepsilon(1 + 2 n \rho).
     \end{equation}
 \end{theorem}
 
@@ -379,9 +378,9 @@ employed to get the following result.
         + \varepsilon \lVert \underline{\phi}_{\sigma}^{(m)} \rVert _1 && \text{(\refthm{thm:4-nystromchebyshev-final})} \notag \\
         &\leq (1 + \varepsilon) \lVert \underline{\phi}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
         + \varepsilon \lVert \underline{\phi}_{\sigma} \rVert _1 && \text{(triangle inequality)} \notag \\
-        %&\leq \varepsilon \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \varepsilon (1 + 2 \rho) 
-        %+ \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)} \notag \\
-        &= (1 + \varepsilon) \frac{C_1}{\sigma^2} (1 + C_2 \sigma)^{-m} + \varepsilon(1 + 2 n \rho) && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)}
+        %&\leq \varepsilon \sqrt{\frac{8}{\pi}} \frac{e^{\frac{c^2}{2}}}{c \sigma^2}  (1 + c \sigma)^{-m} + \varepsilon (1 + 2 \rho) 
+        %+ \sqrt{\frac{8}{\pi}} \frac{e^{\frac{c^2}{2}}}{c \sigma^2}  (1 + c \sigma)^{-m} && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)} \notag \\
+        &= (1 + \varepsilon) \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} + \varepsilon(1 + 2 n \rho) && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)}
     \end{align*}
     with probability $\geq 1-\delta$.
 \end{proof}
