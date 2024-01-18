@@ -68,7 +68,7 @@ polynomials up to \gls{chebyshev-degree} $\in \mathbb{N}$ \cite[chapter~3]{trefe
 For functions $f$ which can be analytically extended in a certain neighborhood
 of $[-1, 1]$ in the complex plane, Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}
 establishes that the convergence of this expansion in the $L^{\infty}$-norm is
-exponential.
+exponential.\\
 %\begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
 %    Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
 %    with foci $\pm 1$ and sum of half axis lengths $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
@@ -82,29 +82,31 @@ exponential.
 The coefficients $\{\mu_l\}_{l=0}^{m}$ in \refequ{equ:2-chebyshev-chebyshev-expansion-general}
 could be computed using the orthogonality of the Chebyshev polynomials with respect
 to a certain inner product, and some authors indeed suggest approximating the
-involved integral using a quadrature rule \cite[equation~8, algorithm~1]{lin2017randomized}.
-However, we cannot find a good theoretical guarantee that this will be accurate
-and suspect that this approach only works well due to a lucky coincidence.
-Instead, we
-have found a significantly simpler, faster, and provably accurate way of
-computing the coefficients of the Chebyshev expansion of a function $f:[-1,1] \to \mathbb{R}$:
-Note that polynomials of degree $m$ are uniquely defined by $m+1$
-evaluations of the polynomial at distinct points \cite{gauss1799demonstratio}.
-Hence, if we know the values $f^{(m)}(s_i)$ at some $m+1$ distinct points 
-$\{s_i\}_{i=0}^m$, we can uniquely determine the coefficients $\{\mu_l\}_{l=0}^{m}$
-of this polynomial. For convenience, we may choose $s_i = \cos(\pi i/m), i=0,\dots,m$.
-In that case,
+involved integral using a quadrature rule with evenly spaced nodes
+\cite[equation~8]{lin2017randomized}.
+However, we cannot find a good theoretical guarantee that this will be accurate.
+%and suspect that this approach only works well due to a lucky coincidence.
+Instead, we use a significantly simpler, faster, and provably accurate way of
+computing the coefficients of the Chebyshev expansion of a function
+$f:[-1,1] \to \mathbb{R}$ \cite{trefethen2019chebyshev, ahmed1970chebyshev}:
+% Note that polynomials of degree $m$ are uniquely defined by $m+1$
+% evaluations of the polynomial at distinct points \cite{gauss1799demonstratio}.
+If the values $f^{(m)}(s_i)$ at some $m+1$ distinct points $\{s_i\}_{i=0}^m$ are
+known, the coefficients $\{\mu_l\}_{l=0}^{m}$ of this polynomial are
+uniquely determined \cite{gauss1799demonstratio}. For the choice $s_i = \cos(\pi i/m), i=0,\dots,m$,
+\refequ{equ:2-chebyshev-chebyshev-expansion-general} reads
 \begin{equation}
     f^{(m)}(s_i) = \sum_{l=0}^{m} \mu_l \cos\left(\frac{\pi i l}{m}\right),
     \label{equ:2-chebyshev-chebyshev-nodes-evaluation}
 \end{equation}
-which coincides with a \glsfirst{DCT}\footnote{There exist multiple conventions for the DCT.
+which coincides with a \glsfirst{DCT}\footnote{There exist multiple conventions for the \gls{DCT}.
 The one which we use is (up to scaling of the first and last coefficient)
-referred to as a type 1 DCT, and is efficiently implemented in the SciPy Python package:
+referred to as a type I \gls{DCT}, and is efficiently implemented in the SciPy Python package:
 \url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.dct.html}.} of the coefficients $\{\mu_l\}_{l=0}^{m}$.
 Thus, if we collect the coefficients $\{\mu_l\}_{l=0}^{m}$ in a vector $\vct{\mu} \in \mathbb{R}^{m+1}$ 
 and the function evaluations $\{f^{(m)}(s_i)\}_{i=0}^{m}$ in another
-vector $\vct{f} \in \mathbb{R}^{m+1}$, we find that
+vector $\vct{f} \in \mathbb{R}^{m+1}$, we can pass back and forth between the
+two with
 \begin{equation}
     \vct{f} = \DCT \{ \vct{\mu} \} \implies \vct{\mu} = \DCT^{-1}\{ \vct{f} \}.
     \label{equ:2-chebyshev-chebyshev-DCT}
@@ -294,7 +296,7 @@ with $\mathcal{O}(m n_t + n n_{\Psi})$ required additional storage.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Implementation-details}
+\subsection{Implementation details}
 \label{subsec:2-chebyshev-implementation-details}
 
 Expression \refequ{equ:2-chebyshev-chebyshev-expansion} is only well-defined for matrices whose spectra are fully
@@ -313,7 +315,7 @@ The \gls{DGC} method can then be applied to $\bar{\mtx{A}} = \tau(\mtx{A})$ whos
 spectrum is contained in $[-1, 1]$.\\
 
 However, retrieving the \glsfirst{smooth-spectral-density} of the original
-matrix $\mtx{A}$ after this transformation is not straight forward
+matrix $\mtx{A}$ after this transformation is not straight-forward
 and is usually swept under the rug in literature.
 Let us call $\bar{\phi}$ the spectral density of $\bar{\mtx{A}}$.
 Based on a derivation from \refapp{chp:A-appendix}, it turns out that in order
@@ -467,7 +469,7 @@ work, we chose to reproduce it hereafter.
     \end{equation}
     This can be established by observing
     $h(\chi) = 2c\sigma - \chi + \chi^{-1} = 2(\chi - 1) - \chi + \chi^{-1} = \chi + \chi^{-1} - 2 \geq 0$
-    for which $h(1) = 0$ and $h'(\chi) \geq 0$ for all $\chi > 1$.
+    because $h(1) = 0$ and $h'(\chi) \geq 0$ for all $\chi > 1$.
     Furthermore, because $z$ is
     contained in $\mathcal{E}_{\chi}$ we know that the absolute value of its
     imaginary part $y$ is upper bound by the length of the imaginary half axis $b$,
@@ -488,10 +490,9 @@ work, we chose to reproduce it hereafter.
     \begin{equation}
         \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
         \leq \frac{2}{(1 + c\sigma)^{m}c \sigma} \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{c^2}{2}}
-        = \frac{\sqrt{2}}{n \sigma^2}  (1 + \sigma)^{-m},
         \label{equ:2-chebyshev-uniform-bound-prelim}
     \end{equation}
-    for every $c>0$. In particular, for $c=1$ we have
+    for every $c>0$. In particular, for $c=1$ and with $\sqrt{e/\pi} \leq 1$ we have
     \begin{equation}
         \lVert g_{\sigma}(t - \cdot) - g_{\sigma}^{(m)}(t - \cdot) \rVert _{\infty}
         \leq \frac{\sqrt{2}}{n \sigma^2}  (1 + \sigma)^{-m},
@@ -517,7 +518,7 @@ work, we chose to reproduce it hereafter.
     \end{align*}
     from which the result follows directly.\\
 
-    Finally, Hölder's inequality \cite{klenke2013probability} 
+    Finally, H\"older's inequality \cite{klenke2013probability} 
     allows us to also show the last assertion with what we have found above:
     \begin{equation}
         \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1
@@ -546,9 +547,9 @@ result for the accuracy of the \gls{DGC} method.
     %\int_{-1}^{1} \left| \phi_{\sigma}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t \notag \\
     \begin{equation}
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-        \leq \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
+        \leq \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 2 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
     \end{equation}
-    for any $c>0$ and $c_{\Psi} \geq 0$.
+    for $c_{\Psi} \geq 24e$.
     %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
     %\begin{equation}
     %    \int |H_l(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
@@ -597,7 +598,7 @@ result for the accuracy of the \gls{DGC} method.
     \begin{align*}
         \lVert \phi_{\sigma}  - \widetilde{\phi}_{\sigma}^{(m)} \rVert _1
         &\leq  \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \left( \frac{\sqrt{2}}{\sqrt{n}\sigma^2} (1 + \sigma)^{-m} + 1 \right) \notag \\
-        &=  \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}.
+        &=  \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 2 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}.
     \end{align*}
 \end{proof}
  

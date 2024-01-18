@@ -1,9 +1,24 @@
 \chapter{Numerical experiments}
 \label{chp:5-experiments}
 
-In the previous chapters we have introduced multiple methods for approximating the
-spectral density of a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$. Now,
-our goal is to compare these methods with each other and with other related methods
+In the previous chapters we have developed three methods for approximating the
+spectral density of a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$.
+All methods compute the trace in \refequ{equ:2-chebyshev-spectral-density-as-trace-expansion}
+in slightly different ways. The \glsfirst{DGC} method uses the Girard-Hutchinson
+stochastic trace estimator (\refsec{sec:2-chebyshev-delta-gauss-chebyshev}), the
+\glsfirst{NC} method computes a randomized low-rank factorization of the matrix
+function (\refsec{sec:3-nystrom-nystrom-chebyshev}), while the \glsfirst{NCPP}
+method combines the two aforementioned approaches into a variance-reduced
+stochastic trace estimator (\refsec{sec:4-nystromchebyshev-nystromchebyshev-pp}).
+For each of these methods we have presented a number of algorithmic improvements,
+which distinguish them from the methods of \cite{lin2017randomized}.
+In the following numerical experiments -- where applicable -- we use these improvements with
+\glsfirst{threshold-factor} $=10^{-7}$, \glsfirst{filter-tolerance} $=10^{-3}$, and
+\glsfirst{short-circuit-threshold} $=10^{-5}$ (\refsec{subsec:3-nystrom-implementation-details}),
+as we have seen them to be crucial for obtaining a reasonable approximation
+on the full spectrum \reffig{fig:3-nystrom-improved-algorithm}.\\
+
+Our goal is to compare these methods with each other and with other related methods
 in terms of their accuracy and speed. In order to do so, we apply these algorithms
 in multiple scenarios. We first consider a model problem from density functional theory
 \cite{lin2017randomized} and discuss the convergence properties of our algorithms
@@ -47,8 +62,8 @@ potential
     \label{equ:5-experiments-gaussian-cell}
 \end{equation}
 with $\alpha = -4$, $\beta = 2$ is located. The computational domain is chosen
-to span $c \in \mathbb{N}$ primitive cells in every spatial dimension, hence, yielding
-discretization matrices which are growing in size with $c$. In our experiments
+to span $n_c \in \mathbb{N}$ primitive cells in every spatial dimension, hence, yielding
+discretization matrices which are growing in size with $n_c$. In our experiments
 we consider the three-dimensional case, but for visualization purposes, we
 illustrate the potential in \reffig{fig:5-experiments-periodic-gaussian-well}
 in two dimensions.\\
@@ -56,25 +71,25 @@ in two dimensions.\\
 \begin{figure}[ht]
     \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/periodic_gaussian_well_1.pgf}
-        \caption{$c=1$}
+        \caption{$n_c=1$}
         \label{fig:5-experiments-periodic-gaussian-well-1}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/periodic_gaussian_well_2.pgf}
-        \caption{$c=2$}
+        \caption{$n_c=2$}
         \label{fig:5-experiments-periodic-gaussian-well-2}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\columnwidth}
         \input{plots/periodic_gaussian_well_5.pgf}
-        \caption{$c=5$}
+        \caption{$n_c=5$}
         \label{fig:5-experiments-periodic-gaussian-well-5}
     \end{subfigure}
-    \caption{Two dimensional periodic potential $V$ for different sizes $c$ of the computational domain.}
+    \caption{Two dimensional periodic potential $V$ for different sizes $n_c$ of the computational domain.}
     \label{fig:5-experiments-periodic-gaussian-well}
 \end{figure}
 
 For Gaussian \gls{smoothing-kernel} \refequ{equ:1-introduction-def-gaussian-kernel}
-with \gls{smoothing-parameter} $=0.05$ we plot for two choices of \gls{chebyshev-degree}
+with \gls{smoothing-parameter} $=0.05$ we plot for $n_c=1$ and two choices of \gls{chebyshev-degree}
 the convergence of the error with \gls{sketch-size} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}
 and equally for two choices of \gls{sketch-size} $+$ \gls{num-hutchinson-queries} the convergence of the
 error with \gls{chebyshev-degree} in \reffig{fig:5-experiments-electronic-structure-convergence-nv}.
@@ -231,7 +246,10 @@ is provided in \reffig{fig:5-experiments-haydock-kernel}.\\
 We repeat the same experiments as in \refsec{sec:5-experiments-density-function}
 but this time for a Lorentzian kernel with Haydock's method to demonstrate that
 also in the case of non-Gaussian \gls{smoothing-kernel} our theoretical guarantees
-apply. We plot the results in \reffig{fig:5-experiments-haydock-convergence-nv} and
+apply. In this method, we use Lanczos with reorthogonalization and
+fix the number of Lanczos iterations to \gls{chebyshev-degree}
+and the amount of random vectors used in the Monte-Carlo estimate to \gls{sketch-size} $+$ \gls{num-hutchinson-queries}.
+We plot the results in \reffig{fig:5-experiments-haydock-convergence-nv} and
 \reffig{fig:5-experiments-haydock-convergence-m}, and compare the wall-clock time
 between the methods in \reftab{tab:5-experiments-timing-haydock}.\\
 
@@ -313,7 +331,7 @@ GOE, a matrix $\mtx{A} = (\mtx{G} + \mtx{G}^{\top})/\sqrt{2}$ with standard
 normal $\mtx{G} \in \mathbb{R}^{1000 \times 1000}$ from the Gaussian Orthogonal Ensemble;
 the matrix ModES3D\_8, an $8000 \times 8000$ sparse matrix resulting
 from the same problem as in \refsec{sec:5-experiments-density-function} but with
-a larger computational domain \cite{lin2017randomized}; and
+$n_c=2$, i.e. a larger computational domain \cite{lin2017randomized}; and
 Erdos992\footnote{Downloaded in the matrix marked format from: \url{https://sparse.tamu.edu/Pajek/Erdos992}.},
 a $6100 \times 6100$ sparse matrix representing the collaboration network of the
 Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}.

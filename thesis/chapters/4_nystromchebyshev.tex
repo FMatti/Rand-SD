@@ -1,20 +1,20 @@
-\chapter{Variance reduced trace estimation}
+\chapter{Variance-reduced trace estimation}
 \label{chp:4-nystromchebyshev}
 
 In \refsec{sec:2-chebyshev-stochastic-trace-estimation} we have introduced the
 classical approach for estimating the trace of a matrix using matrix-vector
 products. A drawback of this method is the rather slow, reciprocal decrease of
-the variance with \glsfirst{num-hutchinson-queries}. Variance reduced trace estimators
+the variance with \glsfirst{num-hutchinson-queries}. Variance-reduced trace estimators
 try to improve on this. They usually take a \enquote{hybrid} approach, combining
 low-rank factorization with stochastic trace estimation.\\
 
 This chapter will take the methods we have discussed in \refchp{chp:2-chebyshev}
-and \refchp{chp:3-nystrom} combine them to an improved trace estimatior which
+and \refchp{chp:3-nystrom} combine them to an improved trace estimator which
 we call the \glsfirst{NCPP} method.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Fundamentals of variance reduced trace estimation}
+\section{Fundamentals of variance-reduced trace estimation}
 \label{sec:4-nystromchebyshev-hybrid}
 
 The initial idea from \cite{lin2017randomized} was to perform a low-rank
@@ -70,7 +70,7 @@ For \gls{PSD} matrices this algorithm was shown to give
 an estimate whose relative deviation from the actual trace is at most
 $\varepsilon$ by only using $\mathcal{O}(\varepsilon^{-1})$ matrix-vector multiplications,
 with high probability. The key to this conclusion is the following theorem \cite[theorem~1]{meyer2021hutch}.
-\begin{theorem}{Variance reduced trace estimation}{4-nystromchebyshev-trace-correction}
+\begin{theorem}{Variance-reduced trace estimation}{4-nystromchebyshev-trace-correction}
     Suppose $\mtx{B} \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}. Let $\widehat{\mtx{B}}$ and
     $\mtx{\Delta}$ be any matrices such that
     \begin{equation}
@@ -109,7 +109,7 @@ it is shown that similarly to the Hutch++ algorithm, the following result holds:
 \label{subsec:4-nystromchebyshev-reduction-parametrized-matrices}
 
 Similarly to the techniques introduced in \refchp{chp:2-chebyshev} and \refchp{chp:3-nystrom},
-also the variance reduced trace estimation can be extended to the case where
+also the variance-reduced trace estimation can be extended to the case where
 the trace of a matrix $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ which depends continuously on a parameter $t$
 needs to be computed.\\
 
@@ -128,7 +128,7 @@ we can -- under certain conditions -- derive an analogous result
 to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
 \refequ{equ:4-nystromchebyshev-hutch-pp} in the parameter-dependent case.
 
-\begin{theorem}{Variance reduced parameter-dependent trace estimation}{4-nystromchebyshev-trace-correction-parameter-dependent}
+\begin{theorem}{Variance-reduced parameter-dependent trace estimation}{4-nystromchebyshev-trace-correction-parameter-dependent}
     Suppose $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
     and continuous in $t \in [a, b]$. Let $\widehat{\mtx{B}}(t)$ and
     $\mtx{\Delta}(t)$ be any
@@ -139,7 +139,7 @@ to \refthm{thm:4-nystromchebyshev-nystrom-pp} for any trace estimate of the form
             \int_{a}^{b} \lVert \mtx{\Delta}(t) \rVert _F \mathrm{d}t \leq c_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
         \end{cases}
     \end{equation}
-    for some constant $c_{\Omega} > 0$. Then, for a fixed constant $c \geq 0$ and $\delta \in (0, e^{-1})$, with probability $\geq 1 - \delta$,
+    for some constant $c_{\Omega} \geq 0$. Then, for a fixed constant $c \geq 0$ and $\delta \in (0, e^{-1})$, with probability $\geq 1 - \delta$,
     \begin{equation}
         \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq c \frac{\log(1/\delta)}{\sqrt{n_{\Psi} n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
     \end{equation}
@@ -177,7 +177,7 @@ convergence property of the parameter-dependent Nystr\"om approximation.
 \begin{theorem}{$L^1$-error of the parameter-dependent Nystr\"om++ trace estimator}{4-nystromchebyshev-final}
     The parameter-dependent Nystr\"om++ computed with
     $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \log(1/\delta) / \varepsilon \right)$
-    and $n_{\Omega} \geq 8 \log(1/\delta)$,
+    and even $n_{\Omega} \geq 8 \log(1/\delta)$,
     satisfies for any symmetric \gls{PSD} matrix $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ which continuously
     depends on $t \in [a, b]$, and $\delta \in (0, e^{-1})$, with probability
     $\geq 1 - \delta$
@@ -352,7 +352,7 @@ employed to get the following result.
     using a shifted Gaussian smoothing kernel $\underline{g}_{\sigma} = g_{\sigma} + \rho$
     and with the parameters \gls{smoothing-parameter} $>0$, \gls{chebyshev-degree} $\in \mathbb{N}$, and
     \gls{num-hutchinson-queries} $+$ \gls{sketch-size} $=\mathcal{O}(\log(1/\delta)/\varepsilon)$
-    with \gls{sketch-size} $\geq 8 \log(1/\delta)$.
+    with even \gls{sketch-size} $\geq 8 \log(1/\delta)$.
     If \gls{shift} $\geq \frac{\sqrt{2}}{n\sigma^2} (1 + \sigma)^{-m}$, then
     for $\delta \in (0, e^{-1})$ with probability $\geq 1-\delta$
     \begin{equation}

@@ -237,7 +237,7 @@ for the parameter-dependent case is shown:
     continuous in $t \in [a, b]$. Then the parameter-dependent Nystr\"om approximation
     $\widehat{\mtx{B}}(t)$ \refequ{equ:3-nystrom-nystrom-parameter} with standard
     Gaussian \gls{sketching-matrix} $\in \mathbb{R}^{n \times n_{\Omega}}$,
-    $n_{\Omega} \geq 8 \log(1/\delta)$, and constant $c_{\Omega} \geq 0$,
+    even $n_{\Omega} \geq 8 \log(1/\delta)$, and constant $c_{\Omega} \geq 0$,
     satisfies with probability $\geq 1 - \delta$
     \begin{equation}
         \int_{a}^{b} \lVert \mtx{B}(t) - \widehat{\mtx{B}}(t) \rVert _F \mathrm{d}t \leq c_{\Omega} \frac{1}{\sqrt{n_{\Omega}}} \int_{a}^{b} \Tr(\mtx{B}(t)) \mathrm{d}t.
@@ -406,7 +406,7 @@ we may use the cyclic property of the trace to obtain
     \label{equ:3-nystrom-spectral-density}
 \end{equation}\\
 
-The interpolation framework introducted in \refsec{sec:2-chebyshev-interpolation},
+The interpolation framework introduced in \refsec{sec:2-chebyshev-interpolation},
 allows us to interpolate the matrices $\mtx{K}_1(t) \in \mathbb{R}^{n_{\Omega} \times n_{\Omega}}$
 and $\mtx{K}_2(t) \in \mathbb{R}^{n_{\Omega} \times n_{\Omega}}$,
 which appear inside the trace, efficiently.
@@ -456,7 +456,7 @@ and subsequently computing
     \vct{\nu} = \DCT^{-1}\left\{ \DCT\left\{\widehat{\vct{\mu}}\right\}^{k} \right\}
     \label{equ:3-nystrom-chebyshev-potentiate-coefficients}
 \end{equation}
-where the exponentiation of a vector is understood elementwise.
+where the exponentiation of a vector is understood element-wise.
 The corresponding algorithm is presented hereafter.
 \begin{algo}{Fast and exact exponentiation of Chebyshev expansions}{3-nystrom-chebyshev-exponentiation}
     \input{algorithms/chebyshev_exponentiation.tex}
@@ -970,7 +970,7 @@ approximation with subspace iteration \cite{tropp2023randomized}
 \end{equation}
 and so on.\\
 
-Generalizing \refalg{alg:3-nystrom-nystrom-chebyshev} is straight forward and
+Generalizing \refalg{alg:3-nystrom-nystrom-chebyshev} is straight-forward and
 due to the efficient exponentiation of Chebyshev polynomials using
 \refalg{alg:3-nystrom-chebyshev-exponentiation}, remains of the same
 computational and storage complexity, provided we consider $k$ as a small constant.\\

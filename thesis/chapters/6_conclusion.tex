@@ -18,15 +18,15 @@ methods building on \cite{he2023parameter}.
 All these developments are illustrated and verified in multiple numerical experiments
 which are all provably reproducible.\\
 
-What we have noticed is that the degree of the Chebyshev expansion usually needs
-to be quite high to achieve an acceptable interpolation accuracy, which slows down
-our methods considerably. Looking out into the future, alternative ways of
+We have noticed that the degree of the Chebyshev expansion needs
+to be quite high to achieve an acceptable expansion accuracy, which slows down
+our methods considerably. Alternative ways of
 computing products of matrix functions with random vectors should be taken into
 consideration \cite{cortinovis2023speeding,ubaru2017lanczos}. Also, different ways
 of evaluating \reflin{lin:3-nystrom-pseudo-inverse} in \refalg{alg:3-nystrom-nystrom-chebyshev}
 may still improve the accuracy and stability of our methods. For example
 \cite[algorithm~5.6]{tropp2023randomized} may help, but a way of making this
-compatible with the fast interpolation framework has not been found yet.\\
+compatible with our expansion framework has not been found yet.\\
 
 On the theoretical side, the incorporation of the Chebyshev expansion into the
 error bound analogous to \refthm{thm:2-delta-gauss-chebyshev} is of high priority.
