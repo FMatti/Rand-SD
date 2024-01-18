@@ -25,6 +25,8 @@ efficacy of this approach \cite{meyer2021hutch,persson2022hutch}.
 We will first briefly discuss these results which are valid 
 for constant matrices.\\
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Constant matrices}
 \label{subsec:4-nystromchebyshev-reduction-constant-matrices}
 
@@ -104,6 +106,8 @@ it is shown that similarly to the Hutch++ algorithm, the following result holds:
     \end{equation}
     holds with probability $\geq 1-\delta$.
 \end{theorem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Parameter-dependent matrices}
 \label{subsec:4-nystromchebyshev-reduction-parametrized-matrices}
@@ -225,8 +229,6 @@ Girard-Hutchinson estimator $\Hutch_{n_{\Psi}}$
 \refequ{equ:2-chebyshev-DGC-hutchionson-estimator} is employed as follows:
 \begin{align}
     \breve{\phi}_{\sigma}^{(m)}(t)
-    %&= \Tr(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))
-    %- \Hutch_{n_{\Psi}}(\underbrace{g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) + \widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})}_{=\mtx{\Delta}(t)}) \notag \\
     &= \Tr(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))
     + \Hutch_{n_{\Psi}}(\mtx{\Delta}(t)) \notag \\
     &= \Tr(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))
@@ -327,18 +329,6 @@ since by \refequ{equ:4-nystromchebyshev-generalized-eigenvector-xi} and the cycl
 \subsection{Theoretical analysis}
 \label{subsec:4-nystromchebyshev-analysis}
 
-%From \refthm{thm:4-nystromchebyshev-final} it is possible
-%to directly conclude that with probability $\geq 1-\delta$,
-%\begin{equation}
-%    \lVert \phi_{\sigma} - \breve{\phi}_{\sigma} \rVert _1 \leq \varepsilon,
-%    \label{equ:4-nystromchebyshev-spectral-density-error}
-%\end{equation}
-%if we run the \gls{NCPP} method with \gls{sketch-size} $=$ \gls{num-hutchinson-queries} $= \mathcal{O}(\log(1/\delta)/\varepsilon)$
-%and assume the Chebyshev expansion to be exact. Due to the fact that in general the Chebyshev
-%expansion is not exact and, hence, does not necessarily preserve the \gls{PSD} structure of a matrix function,
-%a result similar to \refthm{thm:2-delta-gauss-chebyshev} for the \gls{DGC} method
-%is out of reach for the \gls{NCPP} method for now.
-
 Similarly to \refsec{subsec:3-nystrom-theoretical-analysis}, we can again consider
 the shifted spectral density $\underline{g}_{\sigma} = g_{\sigma} + \rho$. For
 sufficiently large \gls{shift} $\geq 0$ we may then guarantee that $\underline{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})$
@@ -378,48 +368,7 @@ employed to get the following result.
         + \varepsilon \lVert \underline{\phi}_{\sigma}^{(m)} \rVert _1 && \text{(\refthm{thm:4-nystromchebyshev-final})} \notag \\
         &\leq (1 + \varepsilon) \lVert \underline{\phi}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
         + \varepsilon \lVert \underline{\phi}_{\sigma} \rVert _1 && \text{(triangle inequality)} \notag \\
-        %&\leq \varepsilon \sqrt{\frac{8}{\pi}} \frac{e^{\frac{c^2}{2}}}{c \sigma^2}  (1 + c \sigma)^{-m} + \varepsilon (1 + 2 \rho) 
-        %+ \sqrt{\frac{8}{\pi}} \frac{e^{\frac{c^2}{2}}}{c \sigma^2}  (1 + c \sigma)^{-m} && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)} \notag \\
         &= (1 + \varepsilon) \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} + \varepsilon(1 + 2 n \rho) && \text{(\reflem{lem:2-chebyshev-error} and $\lVert \phi_{\sigma} \rVert _1=1$)}
     \end{align*}
     with probability $\geq 1-\delta$.
 \end{proof}
-
-%These results now allow us to state an error guarantee for the output of the
-%\gls{NCPP} algorithm.
-%\begin{theorem}{Convergence of Nystr\"om-Chebyshev++ method}{4-nystromchebyshev-spectral-density}
-%    The \gls{NCPP} method with $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \frac{\sqrt{\log(2/\delta)}}{\varepsilon} + \log(1/\delta) \right)$
-%    satisfies with probability $1 - \delta$
-%    \begin{equation}
-%        \lVert \phi_{\sigma}(t) - \breve{\phi}_{\sigma}^{(m)}(t) \rVert _1 \leq.
-%    \end{equation}
-%\end{theorem}
-
-%\Refthm{thm:4-nystromchebyshev-trace-correction-parameter-dependent} allows us to almost immediately
-%also conclude $1/\varepsilon$ result for the higher order approximations
-%\refequ{equ:3-nystrom-trace-generalization}.
-%
-%For RSVD ($k=2$), we use \cite[theorem~9.1]{halko2011finding}
-%\begin{equation}
-%    \lVert (\mtx{I}_n - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \leq \lVert \mtx{\Lambda}_2 \rVert _F + \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F.
-%\end{equation}
-%Result from parameter-dependent Nyström++
-%\begin{equation}
-%    %\mathbb{E}^n_{\Omega}\left[ \lVert \mtx{\Omega}_1^{\dagger} \rVert _F^2 \right] \leq C
-%    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert \mtx{\Lambda}_2 \mtx{\Omega}_2 \mtx{\Omega}_1^{\dagger} \rVert _F \right] \leq C(\sqrt{n_{\Omega}} \lVert \mtx{\Lambda}_2 \rVert _2 + \lVert \mtx{\Lambda}_2 \rVert _F),% \leq 2 C \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}
-%\end{equation}
-%where $n_{\Omega}$ hence
-%\begin{equation}
-%    \mathbb{E}^{n_{\Omega}/2} \left[ \lVert (\mtx{I}_n - \Pi_{\mtx{B}\mtx{\Omega}}) \mtx{B} \rVert _F \right]
-%    \leq (1 + 2C) \cdot \frac{\operatorname{Tr}(\mtx{B})}{\sqrt{n_{\Omega}}}.
-%\end{equation}
-%By Markov's and Minkowski's inequalities we have for $n_{\Omega} \geq 2 \log(1/\delta)$ with probability $\geq 1 - \delta$
-%\begin{equation}
-%    \int_{a}^{b}\lVert  (\mtx{I}_n - \Pi_{\mtx{B}(t)\mtx{\Omega}}) \mtx{B}(t) \rVert _F \mathrm{d}t \leq (1 + 2C) e \int_{a}^{b}\frac{\operatorname{Tr}(\mtx{B}(t))}{\sqrt{n_{\Omega}}} \mathrm{d}t
-%\end{equation}
-%
-%For Nystr\"om with one subspace iteration ($k=3$) we apply \cite[lemma~5.2]{tropp2023randomized}
-%to directly conclude from the RSVD case.
-%
-%Have result for all $k \geq 1$, but issue with implementation, since we do not
-%have access to column sketch (whose QR-factorization is crucial for stability).

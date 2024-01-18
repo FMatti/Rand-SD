@@ -39,7 +39,7 @@ standard symmetric eigenvalue solver from the NumPy Python package: \url{https:/
 \end{equation}
 We use $n_t=100$ evenly spaced evaluation points which cover the whole spectrum of
 $\mtx{A}$. The choice of this metric can be justified by the fact that this
-error roughly corresponds to the midpoint quadrature rule %\cite[chapter~9.2.1]{quarteroni2007numerical}
+error roughly corresponds to the midpoint quadrature rule
 applied to the continuous $L^1$-norm, for which our theoretical results hold.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -208,7 +208,7 @@ accuracy, the behavior of the error for fixed \gls{sketch-size} $+$ \gls{num-hut
 Haydock's method \cite{haydock1972electronic,lin2016review} is a specialized technique for approximating \gls{smooth-spectral-density}
 in the case where a Lorentzian smoothing kernel
 \begin{equation}
-    g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2}% = -\frac{1}{\pi} \Im\left\{ \frac{1}{s + \iota \sigma} \right\}
+    g_{\sigma}(s) = \frac{1}{\pi} \frac{\sigma}{s^2 + \sigma^2}
     \label{equ:5-experiments-cauchy-kernel}
 \end{equation}
 is used. A comparison of this kernel with the Gaussian kernel \refequ{equ:1-introduction-def-gaussian-kernel}
@@ -220,28 +220,6 @@ is provided in \reffig{fig:5-experiments-haydock-kernel}.\\
         for \gls{smoothing-parameter} $=0.05$.}
     \label{fig:5-experiments-haydock-kernel}
 \end{figure}
-%Estimating \gls{smooth-spectral-density} then becomes the
-%trace estimation problem
-%\begin{equation}
-%    \phi_{\sigma}(t) = \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) = - \frac{1}{n \pi} \Im \left\{ \Tr\left[((t + i\sigma)I - A)^{-1}\right]  \right\}.
-%    \label{equ:5-experiments-haydock-trace}
-%\end{equation}
-%Similarly to the \gls{DGC} method (see \refsec{sec:2-chebyshev-delta-gauss-chebyshev}),
-%the Girard-Hutchinson trace estimator with standard Gaussian random vectors
-%$\vct{\psi} \in \mathbb{R}^n$ is used to
-%approximate the trace
-%\begin{equation}
-%    \Tr\left[((t + i\sigma)I - A)^{-1}\right] \approx \frac{1}{n_{\Omega}} \sum_{j=1}^{n_{\Omega}} \left( \vct{\psi}_j \right)^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{A})^{-1} \vct{\psi}_j.
-%    \label{equ:5-experiments-haydock-hutchinson}
-%\end{equation}
-%It turns out that each summand in \refequ{5-experiments-haydock-hutchinson} can
-%be efficiently evaluated for multiple $t$ by running Lanczos
-%on $\mtx{A}$ with starting vector $\vct{\psi}_j$
-%\begin{equation}
-%    \vct{\psi}_j^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{A})^{-1} \vct{\psi}_j% &\approx \vct{e}_1^{\top} ((t - i\sigma)\mtx{I}_n - \mtx{H}_k)^{-1} \vct{e}_1 \notag \\
-%    \approx \cfrac{1}{(t - i\sigma) - \alpha_1 - \cfrac{\beta_2^2}{(t - i\sigma) - \alpha_2 - \dots}}
-%    \label{equ:5-experiments-haydock-recursion}
-%\end{equation}
 
 We repeat the same experiments as in \refsec{sec:5-experiments-density-function}
 but this time for a Lorentzian kernel with Haydock's method to demonstrate that
@@ -298,7 +276,7 @@ is not as effective as it was for the Gaussian case, since the decay to zero
 is noticeably slower (see \reffig{fig:5-experiments-haydock-kernel}). On the
 other, the Lorentzian \gls{smoothing-kernel} has a pole at $s = \pm \iota$, which
 has as a consequence that the Chebyshev expansion is not guaranteed to converge
-as fast as it does in the Gaussian case.% according to \refthm{thm:2-chebyshev-bernstein}.
+as fast as it does in the Gaussian case.
 Due to these reasons, the convergence of the \gls{NC} and \gls{NCPP} methods
 are slower than they used to be in \refsec{sec:5-experiments-density-function}.
 Nevertheless, this choice of \gls{smoothing-kernel} exhibits perfectly the 
@@ -335,10 +313,6 @@ $n_c=2$, i.e. a larger computational domain \cite{lin2017randomized}; and
 Erdos992\footnote{Downloaded in the matrix marked format from: \url{https://sparse.tamu.edu/Pajek/Erdos992}.},
 a $6100 \times 6100$ sparse matrix representing the collaboration network of the
 Hungarian mathematician P\'al Erd\H{o}s from \cite{chen2021slq}.
-%the matrix nd3k\footnote{\url{https://sparse.tamu.edu/ND/nd3k}},
-%an $9000 \times 9000$ matrix
-%which originates from modelling the vibrational modes of a polyethylene molecule
-%with 3000 atoms \cite{lin2016review},
 All these
 matrices are symmetric. For all of them, we compute, for
 fixed \gls{chebyshev-degree} $=2400$ and increasing \gls{sketch-size} $+$ \gls{num-hutchinson-queries},
@@ -354,7 +328,6 @@ the \gls{NC} method by itself can achieve a good approximation once \gls{sketch-
 exceeds the numerical rank of the matrix. On the other hand, for matrices where
 the spectrum is very concentrated around a certain point (\reffig{fig:5-experiments-multi-matrix-convergence-Erdos})
 or approximately describes a semi-circle (\reffig{fig:5-experiments-multi-matrix-convergence-goe}) \cite{wigner1958distribution},
-%or exhibits large gaps (\reffig{fig:5-experiments-multi-matrix-convergence-nd3k}),
 the \gls{NC} is not as effective, and the correction part in the \gls{NCPP} makes
 a significant difference.
 

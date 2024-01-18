@@ -69,15 +69,6 @@ For functions $f$ which can be analytically extended in a certain neighborhood
 of $[-1, 1]$ in the complex plane, Bernstein's theorem \cite[theorem~4.3]{trefethen2008gauss}
 establishes that the convergence of this expansion in the $L^{\infty}$-norm is
 exponential.\\
-%\begin{theorem}{Bernstein's theorem}{2-chebyshev-bernstein}
-%    Let $f:[-1, 1] \to \mathbb{R}$ be analytic and bounded in the ellipse $\mathcal{E}_{\chi} \subset \mathbb{C}$
-%    with foci $\pm 1$ and sum of half axis lengths $\chi = a + b$ (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
-%    Then its Chebyshev expansion $f^{(m)}$ with \glsfirst{chebyshev-degree} $\geq 0$ satisfies
-%    \begin{equation}
-%        \lVert f - f^{(m)} \rVert _{\infty} \leq \frac{2}{\chi^{m}(\chi-1)} \sup_{z \in \mathcal{E}_{\chi}} |f(z)|.
-%        \label{equ:2-chebyshev-bernstein-convergence-result}
-%    \end{equation}
-%\end{theorem}
 
 The coefficients $\{\mu_l\}_{l=0}^{m}$ in \refequ{equ:2-chebyshev-chebyshev-expansion-general}
 could be computed using the orthogonality of the Chebyshev polynomials with respect
@@ -85,12 +76,9 @@ to a certain inner product, and some authors indeed suggest approximating the
 involved integral using a quadrature rule with evenly spaced nodes
 \cite[equation~8]{lin2017randomized}.
 However, we cannot find a good theoretical guarantee that this will be accurate.
-%and suspect that this approach only works well due to a lucky coincidence.
 Instead, we use a significantly simpler, faster, and provably accurate way of
 computing the coefficients of the Chebyshev expansion of a function
 $f:[-1,1] \to \mathbb{R}$ \cite{trefethen2019chebyshev, ahmed1970chebyshev}:
-% Note that polynomials of degree $m$ are uniquely defined by $m+1$
-% evaluations of the polynomial at distinct points \cite{gauss1799demonstratio}.
 If the values $f^{(m)}(s_i)$ at some $m+1$ distinct points $\{s_i\}_{i=0}^m$ are
 known, the coefficients $\{\mu_l\}_{l=0}^{m}$ of this polynomial are
 uniquely determined \cite{gauss1799demonstratio}. For the choice $s_i = \cos(\pi i/m), i=0,\dots,m$,
@@ -152,6 +140,8 @@ be queried through matrix-vector products \cite{ghorbani2019investigation,adepu2
 Most algorithms for stochastic trace estimation are based on the Girard-Hutchinson
 trace estimator, which we will discuss in the following paragraphs.\\
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Constant matrices}
 \label{subsec:2-chebyshev-trace-constant}
 
@@ -168,7 +158,6 @@ is an unbiased estimate of the trace:
 \end{equation}
 Furthermore, the variance of this estimate is bounded by the Frobenius norm of the matrix
 $\mtx{B}$:
-%Variance of Girard-Hutchinson \cite[proposition~1]{hutchinson1990trace} \textcolor{red}{(only for Rademacher, else 2 times Frobenius norm)}
 \begin{align*}
     \Var(\vct{\psi}^{\top} \mtx{B} \vct{\psi})
         &= \Var(\vct{\psi}^{\top} \mtx{U} \mtx{\Lambda} \mtx{U}^{\top} \vct{\psi}) && \text{(spectral decomposition of $\mtx{B}$)} \notag \\
@@ -195,7 +184,9 @@ we can then rewrite the Girard-Hutchinson trace estimator as
 \begin{equation}
     \Hutch_{n_{\Psi}}(\mtx{B}) = \frac{1}{n_{\Psi}} \Tr(\mtx{\Psi}^{\top} \mtx{B} \mtx{\Psi}).
     \label{equ:2-chebyshev-DGC-hutchionson-estimator}
-\end{equation}\\
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Parameter-dependent matrices}
 \label{subsec:2-chebyshev-trace-parametrized}
@@ -219,10 +210,6 @@ from \cite{he2023parameter}, which we will state in the following lemma.
     \begin{equation}
         \int_{a}^{b} \left| \Tr(\mtx{B}(t)) - \Hutch_{n_{\Psi}}(\mtx{B}(t)) \right| \mathrm{d}t \leq c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{a}^{b} \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
     \end{equation}
-    %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
-    %\begin{equation}
-    %    \int |H_l(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
-    %\end{equation}
 \end{lemma}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,53 +320,6 @@ multiply the resulting approximation with $\frac{2}{b-a}$.
 In all our examples, this procedure will be used to compute spectral densities
 of matrices which have eigenvalues outside of $[-1, 1]$.\\
 
-%From \refequ{equ:1-introduction-def-spectral-density}
-%it can be deduced that $\phi = \frac{2}{b - a}\bar{\phi} \circ \tau$ due to the scaling properties
-%of the \glsfirst{dirac-delta}. Finding a relation between \gls{smooth-spectral-density}
-%and $\bar{\phi}_{\sigma}$ is not entirely obvious, and is usually swept under
-%the rug in literature. For this, we need to go back all the way to the definition of
-%\gls{smooth-spectral-density} \refequ{equ:1-introduction-def-smooth-spectral-density}
-%and evaluate the expression
-%\begin{align*}
-%    &\phi_{\sigma}(\tau^{-1}(t)) \notag \\
-%    &= (\phi \ast g_{\sigma})(\tau^{-1}(t)) && \text{(definition of \gls{smooth-spectral-density})} \notag \\
-%    &= \int_{-\infty}^{\infty} \phi(s) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(convolution $\ast$)} \notag \\
-%    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\tau(s)) g_{\sigma}(\tau^{-1}(t)-s) \mathrm{d}s && \text{(identity $\phi = \frac{2}{b-a}\bar{\phi} \circ \tau$)} \notag \\
-%    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t)-\tau^{-1}(\bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(substitution $\bar{s} = \tau(s)$)} \notag \\
-%    %&= \int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\tau^{-1}(t - \bar{s})\right) \frac{2}{b-a} \mathrm{d}\bar{s} && \text{(linearity of \gls{spectral-transformation})} \notag \\
-%    &= \frac{2}{b-a}\int_{-\infty}^{\infty} \bar{\phi}(\bar{s}) g_{\sigma}\left(\frac{b-a}{2}(t - \bar{s})\right) \frac{b-a}{2} \mathrm{d}\bar{s} && \text{(explicit form of $\tau^{-1}$)}
-%\end{align*}
-%%Therefore, we can
-%%obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running the method
-%%with 
-%By identifying
-%\begin{equation}
-%    \bar{g}_{\sigma}(s) = g_{\sigma}\left(\frac{b-a}{2}s\right) \frac{b-a}{2}
-%\end{equation}
-%we see that $\phi_{\sigma}= \frac{2}{b-a}(\bar{\phi} \ast \bar{g}_{\sigma}) \circ \tau$.
-%Therefore, we can obtain \gls{smooth-spectral-density} of $\mtx{A}$ by running
-%\refalg{alg:2-chebyshev-DGC} with $\bar{g}_{\sigma}$
-%and $\bar{\mtx{A}}$ on the transformed evaluation points $\{ \tau(t_i) \}_{i=1}^{n_t}$,
-%and rescale the result with $\frac{2}{b-a}$.
-%Since all of the \glsfirst{smoothing-kernel} we consider in this thesis (Gaussian, Lorentzian) are of the form
-%\gls{smoothing-kernel}$(s)=\frac{1}{\sigma}f(\frac{s}{\sigma})$ for some function $f$ independent of
-%\gls{smoothing-parameter}, we only need to rescale the \glsfirst{smoothing-parameter} to
-
-%which allow us, for most kernels (Gaussian, Lorentzian, ...) and up to multiplication
-%with a constant factor, to reconstruct the spectral density of $\mtx{A}$.
-%In all our examples, this procedure will be used to compute spectral densities
-%of matrices which have eigenvalues outside of $[-1, 1]$.\\
-%and instead expand $\bar{g}_{\bar{\sigma}}^{(m)} = g_{\sigma}^{(m)} \circ \tau^{-1}$ 
-%from which we can retrieve $g_{\sigma}^{(m)} = \bar{g}_{\bar{\sigma}}^{(m)} \circ \tau$.
-%\todo{Clean up this mess}
-%Note that under this transformation also the \gls{smoothing-parameter} needs to be
-%rescaled to
-%\begin{equation}
-%    \bar{\sigma} = |\tau'| \sigma = \frac{2\sigma}{b - a}
-%    \label{equ:2-chebyshev-sigma-transformation}
-%\end{equation}
-%in order to get a consistent result.\\
-
 A speed-up of \refalg{alg:2-chebyshev-DGC} can be achieved by smartly computing the trace of the 
 product $\mtx{E}^{\top}\mtx{F}$ of two matrices $\mtx{E}, \mtx{F} \in \mathbb{R}^{N \times M}$ in
 $\mathcal{O}(MN)$ instead of $\mathcal{O}(M^2N)$ time, due to the relation
@@ -392,6 +332,8 @@ in \refalg{alg:2-chebyshev-DGC} from $\mathcal{O}(nn_{\Psi}^2)$ to $\mathcal{O}(
 Throughout this work, as has already be done for the complexity analysis
 of \refalg{alg:2-chebyshev-DGC}, we implicitly assume that all traces of this
 form are computed using this technique.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Theoretical analysis}
 \label{subsec:2-chebyshev-theoretical-analysis}
@@ -443,8 +385,6 @@ work, we chose to reproduce it hereafter.
     where we can use any ellipse $\mathcal{E}_{\chi}$
     with foci $\{-1, 1\}$ and with sum of half-axes $\chi = a + b > 1$
     (see \reffig{fig:2-chebyshev-proof-bernstein-ellipse}).
-    %Since $g_{\sigma}(t - \cdot)$ is of the form \refequ{equ:1-introduction-def-gaussian-kernel}
-    %is analytic in all of $\mathbb{C}$, $\chi$ may be chosen arbitrarily.
 
     \begin{figure}[ht]
         \centering
@@ -456,7 +396,7 @@ work, we chose to reproduce it hereafter.
 
     Writing $z = x + \iota y$ for $x,y \in \mathbb{R}$, we estimate (using $|e^z| = e^{\Re(z)}$)
     \begin{equation}
-        |g_{\sigma}(t - (x + \iota y))| %&= \frac{1}{n \sqrt{2 \pi \sigma^2}} \left| e^{- \frac{(t - (x + iy))^2}{2 \sigma^2}} \right| \notag \\
+        |g_{\sigma}(t - (x + \iota y))|
         = \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{- \frac{(t - x)^2 - y^2}{2 \sigma^2}}
         \leq \frac{1}{n \sqrt{2 \pi \sigma^2}} e^{\frac{y^2}{2 \sigma^2}}.
     \end{equation}
@@ -539,21 +479,11 @@ result for the accuracy of the \gls{DGC} method.
     \glsfirst{smoothing-parameter} $>0$, \glsfirst{chebyshev-degree} $\in \mathbb{N}$, and
     \glsfirst{num-hutchinson-queries} $\in \mathbb{N}$. For $\delta \in (0, e^{-1})$ it holds with
     probability $\geq 1-\delta$, that
-    %Let $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ symmetric and continuous in
-    %$t \in [a, b]$, $\delta \in (0, e^{-1})$, and $n_{\Psi} \in \mathbb{N}$.
-    %Let $\Hutch_{n_{\Psi}}(\mtx{B}(t))$ be the $n_{\Psi}$-query
-    %Hutchinson estimator \refequ{equ:2-chebyshev-DGC-hutchionson-estimator-parameter}.
-    %For a constant $c_{\Psi}$, it holds with probability $\geq 1 - \delta$
-    %\int_{-1}^{1} \left| \phi_{\sigma}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t \notag \\
     \begin{equation}
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
         \leq \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 2 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
     \end{equation}
     for $c_{\Psi} \geq 24e$.
-    %So, if $n_{\Psi} = \mathcal{O}\left( \frac{\log(2/\delta)}{\varepsilon^2} \right)$ then, with probability $\geq 1 - \delta$
-    %\begin{equation}
-    %    \int |H_l(\mtx{B}(t)) - \Tr(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int \lVert \mtx{B}(t) \rVert _F \mathrm{d}t.
-    %\end{equation}
 \end{theorem}
 
 \begin{proof}
@@ -562,11 +492,6 @@ result for the accuracy of the \gls{DGC} method.
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)} \rVert _1
             \leq \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 + \lVert \phi_{\sigma}^{(m)} - \widetilde{\phi}_{\sigma}^{(m)} \rVert _1.
     \end{equation}
-    %\begin{equation}
-    %    \int_{a}^{b} \left| \phi_{\sigma}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t
-    %        \leq \int_{a}^{b} \left| \phi_{\sigma}(t) - \phi_{\sigma}^{(m)}(t) \right| \mathrm{d}t + \int_{a}^{b} \left| \phi_{\sigma}^{(m)}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t
-    %\end{equation}
-
     The first term can be dealt with using \reflem{lem:2-chebyshev-error}.
     \Reflem{lem:2-chebyshev-parameter-hutchinson} can be applied to the second term for
     \begin{align*}
@@ -574,12 +499,6 @@ result for the accuracy of the \gls{DGC} method.
             &= \int_{-1}^{1} \left| \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) - \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right| \mathrm{d}t && \text{(definitions)} \notag \\
             &\leq c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}} \int_{-1}^{1} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t && \text{(\reflem{lem:2-chebyshev-parameter-hutchinson})}
     \end{align*}
-    %\begin{align}
-    %    \int_{a}^{b} \left| \phi_{\sigma}^{(m)}(t) - \widetilde{\phi}_{\sigma}^{(m)}(t) \right| \mathrm{d}t
-    %        &= \int_{a}^{b} \left| \Tr(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) - \Hutch_{n_{\Psi}}(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})) \right| \mathrm{d}t \notag \\
-    %        &\leq c_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{a}^{b} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \mathrm{d}t \notag \\
-    %        %&\leq c_{\Psi} \sqrt{\frac{\log(2/\delta)}{n_{\Psi}}} \int_{a}^{b} \phi_{\sigma}^{(m)}(t) \mathrm{d}t
-    %\end{align}
     We proceed with bounding the involved integrand by first applying the triangle
     inequality, then exploiting properties of the Frobenius norm of a matrix function and
     the positivity of \gls{smoothing-kernel}, and finally using the result from the proof
@@ -587,9 +506,6 @@ result for the accuracy of the \gls{DGC} method.
     \begin{align*}
         &\lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \rVert _F \notag \\
         &\leq \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _F + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _F && \text{(triangle inequality)} \notag \\
-        %&\leq \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(2)} + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(2)} && \text{(Schatten norm)} \notag \\
-        %&\leq \sqrt{n} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(\infty)} + \lVert g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(1)} && \text{(norm inequalities)} \notag \\
-        %&\leq \sqrt{n} \lVert g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) - g_{\sigma}(t\mtx{I}_n - \mtx{A}) \rVert _{(\in)} + \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) && \text{(norm inequalities)} \notag \\
         &\leq \sqrt{n} \lVert g_{\sigma}^{(m)} - g_{\sigma} \rVert _{\infty} + \Tr(g_{\sigma}(t\mtx{I}_n - \mtx{A})) && \text{(norm inequalities)} \notag \\
         &\leq  \frac{\sqrt{2}}{\sqrt{n}\sigma^2} (1 + \sigma)^{-m} + \phi_{\sigma}(t) && \text{(\reflem{lem:2-chebyshev-error})}
     \end{align*}

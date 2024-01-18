@@ -16,10 +16,6 @@ For the spectral norm $\lVert \cdot \rVert _2$, we calculate
     && \text{(definition \refequ{equ:3-nystrom-numerical-rank-spectral-norm})} \notag \\
     &= \min\left\{1 \leq r \leq n: \frac{1}{n \sqrt{2 \pi \sigma^2}}e^{-\frac{(t - \lambda_{(r+1)})^2}{2\sigma^2}} \leq \varepsilon \right\}
     && \text{(expression \refequ{equ:3-nystrom-kernel-function-eigenvalues})} \notag \\
-    %&= \min\{1 \leq r \leq n: e^{-\frac{(t - \lambda_{(r)})^2}{2\sigma^2}} \leq \varepsilon n \sqrt{2 \pi \sigma^2} \}
-    %&& \text{(explicit form of $\sigma_{r+1}(t)$ \refequ{equ:3-nystrom-kernel-function-eigenvalues})}\notag \\
-    %&= \min\{1 \leq r \leq n: -(t - \lambda_{(r)})^2 \leq 2\sigma^2 \log(\varepsilon  n \sqrt{2 \pi \sigma^2}) \}
-    %&& \text{(algebraic rearrangements)} \notag \\
     &= \min\left\{1 \leq r \leq n: |t - \lambda_{(r+1)}| \geq \sigma \sqrt{-2 \log(\varepsilon  n \sqrt{2 \pi \sigma^2})} \right\}
     && \text{(rearrangement)} \notag \\
     &= \#\left\{1\leq i \leq n: |t - \lambda_i| < \sigma \sqrt{-2 \log(\varepsilon  n \sqrt{2 \pi \sigma^2})} \right\}
