@@ -134,7 +134,7 @@
 \draw[white,line width=0pt] (current page.south east) rectangle (current page.north west);
 \fill[shadecolor] (-10, -5.5) rectangle (100, 0.75);
 \fill[shadecolor] (-10, -61.25) rectangle (100, -32);
-\fill[shadecolor] (-10, -110) rectangle (100, -92);
+\fill[shadecolor] (-10, -110) rectangle (100, -92.5);
 \end{tikzpicture}
 \begin{columns}[t]
 \begin{column}{0.85\paperwidth}
@@ -200,7 +200,7 @@
                 g_{\sigma}^{(m)}(t \mtx{I}_n - \mtx{A}) = \sum_{l=0}^{m} \mu_l(t) T_l(\mtx{A})
                 \label{equ:chebyshev-expansion}
             \end{equation}
-            is first computed instead. For a fixed $t$, the coefficients $\{\mu_l\}_{l=0}^m$ can
+            is first computed instead. For each $t$, the coefficients $\{\mu_l\}_{l=0}^m$ can
             efficiently be computed through a \gls{DCT}.
             When defining the vector of coefficients $\vct{\mu} \in \mathbb{R}^{m+1}$
             and the vector $\vct{g} \in \mathbb{R}^{m+1}$ with components
@@ -212,7 +212,7 @@
             \end{equation}
             This way of computing the Chebyshev expansion of a function
             can also be used to efficiently square Chebyshev polynomials,
-            which will be useful for our implementation
+            which will be crucial in our implementation
             \begin{equation}
                 \big(\sum_{l=0}^{m} \mu_l T_l(\mtx{A})\big)^2 = \sum_{l=0}^{m} \nu_l T_l(\mtx{A}) \implies \vct{\nu} = \DCT^{-1}\big(\DCT(\vct{\mu})^2\big).
                 \label{equ:DCT-squaring}
@@ -241,13 +241,16 @@
     \begin{column}{0.3\paperwidth}
 
         \begin{block}{Delta-Gauss-Chebyshev}
-            Stochastic trace estimation is usually based on the fact that
-            for a standard Gaussian random vector $\vct{\psi} \in \mathbb{R}^n$
+            For a symmetric matrix $\mtx{B} \in \mathbb{R}^{n \times n}$ and
+            standard Gaussian random vector $\vct{\psi} \in \mathbb{R}^n$ the
+            estimate $\vct{\psi}^{\top} \mtx{B} \vct{\psi}$ satisfies
+            %Stochastic trace estimation is usually based on the fact that
+            %for a standard Gaussian random vector $\vct{\psi} \in \mathbb{R}^n$
             \begin{equation}
                 \Tr(\mtx{B}) = \mathbb{E}\left[\vct{\psi}^{\top} \mtx{B} \vct{\psi}\right].
             \end{equation}
-            The Girard-Hutchinson's trace estimator averages over $n_{\Psi} \in \mathbb{N}$
-            independent realizations of this estimate to construct
+            The Girard-Hutchinson trace estimator averages over $n_{\Psi} \in \mathbb{N}$
+            independent realizations of this estimate to get
             \begin{equation}
                 \Hutch_{n_{\Psi}}(\mtx{B}) = \frac{1}{n_{\Psi}} \sum_{i=1}^{n_{\Psi}} \vct{\psi}_i^{\top} \mtx{B} \vct{\psi}_i.
             \end{equation}
@@ -258,11 +261,12 @@
             \end{equation}
             We can derive the following result for the \gls{DGC} method:
             \begin{thm}{Delta-Gauss-Chebyshev method}{delta-gauss-chebyshev}
-                $\mtx{A} \in \mathbb{R}^{n \times n}$ symmetric, then with high probability
+                If $\mtx{A} \in \mathbb{R}^{n \times n}$ is symmetric, then with high probability
                 \begin{equation*}
                     \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-                    \leq \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 +  \frac{c_{\Psi}}{\sqrt{n n_{\Psi}}} \right) + \frac{c_{\Psi}}{\sqrt{n_{\Psi}}}.
+                    \leq \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 2 + \frac{c_{\Psi}}{\sqrt{n n_{\Psi}}} \right) + \frac{c_{\Psi}}{\sqrt{n_{\Psi}}}
                 \end{equation*}
+                for a constant $c_{\Psi} \geq 0$.
             \end{thm}
         \end{block}
 
@@ -278,19 +282,19 @@
             \begin{equation}
                 \widehat{\mtx{B}} = (\mtx{B} \mtx{\Omega}) (\mtx{\Omega}^{\top} \mtx{B} \mtx{\Omega})^{\dagger} (\mtx{B} \mtx{\Omega})^{\top}.
             \end{equation}
-            Since $g_{\sigma}(t\mtx{I}_n - \mtx{A})$ exhibits a low rank structrue,
+            Since $g_{\sigma}(t\mtx{I}_n - \mtx{A})$ exhibits a low-rank structrue,
             particularly for small \gls{smoothing-parameter}, the \gls{NC}
-            method uses the Nystr\"om approximation $\widehat{g}_{\sigma}^{(m)}$ of \refequ{equ:chebyshev-expansion}
+            method uses the Nystr\"om approximation $\widehat{g}_{\sigma}^{(m)}$ of \refequ{equ:chebyshev-expansion} to compute
             %Error goes down like $\mathcal{O}(\varepsilon^{-2})$ or much faster if $\mtx{B}$ low-rank.
             \begin{equation}
                 \boxed{\widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})).}
             \end{equation}
             An efficient implementation can be achieved due to the cyclic property
-            of the trace, since
+            of the trace, which allows to write
             \begin{equation}
                 \widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\mtx{K}_1(t)^{\dagger} \mtx{K}_2(t))
             \end{equation}
-            for the two matrices 
+            with the two matrices 
             \begin{align}
                 \mtx{K}_1(t) = \mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \mtx{\Omega} \in \mathbb{R}^{n_{\Omega} \times n_{\Omega}} \\
                 \mtx{K}_2(t) = \mtx{\Omega}^{\top} (g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))^2 \mtx{\Omega} \in \mathbb{R}^{n_{\Omega} \times n_{\Omega}}
@@ -304,32 +308,36 @@
 
         \begin{block}{Nystr\"om-Chebyshev++}
             The Nystr\"om++ estimator is a variance-reduced version
-            of the Girard-Hutchinson's estimator. It is defined as
+            of the Girard-Hutchinson estimator. It is defined as
             \begin{equation}
                 \Tr^{++}(\mtx{B}) = \Tr(\widehat{\mtx{B}}) + \Hutch_{n_{\Psi}}(\mtx{\Delta})
             \end{equation}
-            with the residual $\mtx{\Delta} = \mtx{B} - \widehat{\mtx{B}}$.
-            The generalization of this technique to the
-            parameter-dependent case yields the \gls{NCPP} method, which 
-            may be computed by combining the \gls{NC} with the \gls{DGC} method
+            with $\mtx{\Delta} = \mtx{B} - \widehat{\mtx{B}}$.
+            Generalizing it to the parameter-dependent case yields the \gls{NCPP}
+            method, which combines \gls{NC} and \gls{DGC}
             \begin{equation}
                 \boxed{\breve{\phi}_{\sigma}^{(m)}(t) = \widehat{\phi}_{\sigma}^{(m)}(t) + \widetilde{\phi}_{\sigma}^{(m)}(t) - \Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})).}
             \end{equation}
-        In the case where the Chebyshev expansion is exact,
-        we are able to show the following guarantee \cite{he2023parameter}:
-        \begin{thm}{Parameter-dependent Nystr\"om++}{parameter-dependent-nystrom-pp}
-            %$\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
-            %and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
-            %then with high probability
-            %\begin{equation}
-            %    \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
-            %\end{equation}
-            $\mtx{A} \in \mathbb{R}^{n \times n}$ symmetric. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$
-            and we suppose the Chebyshev expansion is exact, then with high probability
-            \begin{equation*}
-                \lVert \phi_{\sigma} - \phi_{\sigma}^{(m)} \rVert _1 \leq \varepsilon.
-            \end{equation*}
-        \end{thm}
+            The lack of theory for Nystr\"om approximations of indefinite matrices
+            only allows results for the shifted density
+            \begin{equation} 
+                \underline{\phi}_{\sigma}(t) = \Tr(\underline{g}_{\sigma}(t\mtx{I}_n - \mtx{A})) = \phi_{\sigma}(t) + n \rho
+                %\underline{g}_{\sigma}(s) = g_{\sigma}(s) + \rho.
+            \end{equation}
+            with $\underline{g}_{\sigma} = g_{\sigma} + \rho$. With \cite{he2023parameter} we get the following result:
+            \begin{thm}{Nystr\"om-Chebyshev++ with shift}{parameter-dependent-nystrom-pp}
+                %$\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
+                %and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
+                %then with high probability
+                %\begin{equation}
+                %    \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+                %\end{equation}
+                Let $\mtx{A} \in \mathbb{R}^{n \times n}$ be symmetric. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$
+                and $\rho \geq \frac{\sqrt{2}}{n\sigma^2}(1 + \sigma)^{-m}$, then with high probability
+                \begin{equation*}
+                    \lVert \underline{\phi}_{\sigma} - \underline{\breve{\phi}}_{\sigma}^{(m)} \rVert _1 \leq (1 + \varepsilon)\frac{2\sqrt{2}}{\sigma^2}(1 + \sigma)^{-m} + \varepsilon (1 + 2 n \rho).
+                \end{equation*}
+            \end{thm}
     \end{block}
 
     \end{column}
@@ -409,12 +417,12 @@
     \setbeamercolor{block body}{fg=black,bg=shadecolor}
     \begin{column}{0.45\paperwidth}
         \begin{block}{Conclusion}
-            We were able to significantly improve many algorithmic aspects of these
+            We were able to significantly improve many algorithmic aspects of the
             methods. The development of an alternative expansion framework based on
             the \gls{DCT} allowed us to vastly simplify the Chebyshev expansion,
             while obtaining provable accuracy, all
             this in addition to making this stage orders of magnitude faster in many cases.
-            Furthermore, we derived theoretical error guarantees for all the encountered methods.
+            Furthermore, we derived theoretical error bounds for all the methods.
         \end{block}
     \end{column}
     \begin{column}{0.45\paperwidth}
