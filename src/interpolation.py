@@ -74,7 +74,7 @@ def exponentiate_chebyshev_coefficients_cosine_transform(mu, k=2, m=None):
     M_mu = mu.shape[1] - 1
     if m is None:
         m = k * M_mu
-    mu_tilde = np.hstack((mu, np.zeros((mu.shape[0], m + 1 - M_mu))))
+    mu_tilde = np.hstack((mu, np.zeros((mu.shape[0], m - M_mu))))
 
     # Rescale coefficients due to type-2 DCT convention
     mu_tilde[:, 1:M_mu] /= 2
