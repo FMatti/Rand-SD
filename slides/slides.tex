@@ -51,6 +51,8 @@
     \end{centering}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Introduction}
 
 \begin{frame}{Spectral density}
@@ -120,7 +122,7 @@
                 \end{equation}
                 \item \gls{NCPP}
                 \begin{align}
-                    \breve{\phi}_{\sigma}^{(m)}(t) &= \widetilde{\phi}_{\sigma}^{(m)}(t) + \widehat{\phi}_{\sigma}^{(m)}(t) \notag \\
+                    \breve{\phi}_{\sigma}^{(m)}(t) &= \widehat{\phi}_{\sigma}^{(m)}(t) + \widetilde{\phi}_{\sigma}^{(m)}(t) \notag \\
                     &\hspace{10pt}- \Hutch_{n_{\Psi}}(\widehat{g}_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))
                 \end{align}
             \end{itemize}
@@ -131,17 +133,22 @@
     \end{columns}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Theoretical analysis}
 
 \begin{frame}{Delta-Gauss-Chebyshev method}
     \begin{block}{Theorem: Error of Delta-Gauss-Chebyshev method}
-        $\widetilde{\phi}_{\sigma}^{(m)}(t)$ result from \gls{DGC} method
-        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$.
+        $\widetilde{\phi}_{\sigma}^{(m)}(t)$ with \gls{DGC} method
+        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$
+        and Gaussian smoothing kernel \gls{smoothing-kernel}.
         With high probability
         \begin{equation}
             \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
-            \leq \underbrace{ \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 1 + c_{\Psi} \frac{1}{\sqrt{n n_{\Psi}}} \right)}_{\text{interpolation error and bias}} + \underbrace{c_{\Psi} \frac{1}{\sqrt{n_{\Psi}}}}_{\text{trace estimation}}
+            \leq \underbrace{ \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 2 + c_{\Psi} \frac{1}{\sqrt{n n_{\Psi}}} \right)}_{\text{interpolation error and bias}}
+            + \underbrace{c_{\Psi} \frac{1}{\sqrt{n_{\Psi}}}}_{\text{trace estimation}}
         \end{equation}
+        for some constant $c_{\Psi} \geq 0$.
     \end{block}
     \begin{itemize}
         \item Even for \enquote{good} Chebyshev expansion, only $\mathcal{O}(\varepsilon^{-2})$ approximation
@@ -149,23 +156,23 @@
 \end{frame}
 
 \begin{frame}{Numerical rank}
-    \begin{columns}
-        \begin{column}{0.55\textwidth}
+    %\begin{columns}
+    %    \begin{column}{0.55\textwidth}
             \begin{itemize}
             \item Numerical rank
             \begin{equation}
                 r_{\varepsilon, \cdot}(g_{\sigma}(t\mtx{I}_n - \mtx{A})) \leq \#\{i: |t - \lambda_i| < C_{\varepsilon, \cdot}(\sigma)\}
             \end{equation}
-            \item Constant (e.g. for nuclear norm)
+            \item Constant (e.g. for nuclear norm $\lVert \cdot \rVert _{\ast}$)
             \begin{equation}
                 C_{\varepsilon, \ast}(\sigma) = \sigma \sqrt{-2 \log(\sqrt{2 \pi n} \sigma \varepsilon)}
             \end{equation}
             \end{itemize}
-        \end{column}
-        \begin{column}{0.45\textwidth}
-            \scalebox{0.6}{\input{../thesis/figures/singular_value_decay.tex}}
-        \end{column}
-    \end{columns}
+    %    \end{column}
+    %    \begin{column}{0.45\textwidth}
+    %        \scalebox{0.6}{\input{../thesis/figures/singular_value_decay.tex}}
+    %    \end{column}
+    %\end{columns}
     \centering
     \scalebox{1.0}{\input{../thesis/figures/numerical_rank.tex}}
 \end{frame}
@@ -191,28 +198,28 @@
 
 \begin{frame}{Nystr\"om-Chebyshev method}
     \begin{block}{Theorem: Error of Nystr\"om-Chebyshev method with shift}
-        $\underline{\widehat{\phi}}_{\sigma}^{(m)}(t)$ result from \gls{NC} method
-        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$.
-        Shifted smoothing kernel $\underline{g}_{\sigma}=g_{\sigma} + \rho$.
-        If $\rho \geq 0$ large enough and $r \geq r_{\varepsilon, \ast}(g_{\sigma}(t\mtx{I}_n - \mtx{A}))$,
-        then with high probability
+        $\underline{\widehat{\phi}}_{\sigma}^{(m)}(t)$ with \gls{NC} method
+        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$
+        and shifted Gaussian smoothing kernel $\underline{g}_{\sigma}=g_{\sigma} + \rho$.
+        If $\rho$ large enough and $n_{\Omega} \gg r_{\varepsilon, \ast}(g_{\sigma}(t\mtx{I}_n - \mtx{A}))$
+        for all $t$, then with high probability
         \begin{equation}
             \lVert \underline{\phi}_{\sigma} - \widehat{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
-            \leq \underbrace{\frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}}_{\text{interpolation error}}
-             + \underbrace{2 \gamma^2(1 + r) (2 \varepsilon + 4 \rho (n-r))}_{\text{biased approximation error}}
+            \lessapprox \underbrace{\frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}}_{\text{interpolation error}}
+             + \underbrace{4 n (\varepsilon + 2 \rho n)}_{\text{biased approximation error}}
         \end{equation}
     \end{block}
-    %\begin{itemize}
-    %    \item Even for \enquote{good} Chebyshev expansion, only $\mathcal{O}(\varepsilon^{-2})$ approximation
-    %\end{itemize}
+    \begin{itemize}
+        \item Significant approximation error because $\underline{g}_{\sigma}$ has a heavy tail
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Nystr\"om-Chebyshev++ method}
     \begin{block}{Theorem: Error of Nystr\"om-Chebyshev++ method with shift}
-        $\underline{\breve{\phi}}_{\sigma}^{(m)}(t)$ result from \gls{NCPP} method
-        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$.
-        Shifted smoothing kernel $\underline{g}_{\sigma}=g_{\sigma} + \rho$.
-        If $\rho \geq 0$ large enough and $n_{\Psi} + n_{\Omega} = \mathcal{O}(\log(1/\delta)/\varepsilon)$,
+        $\underline{\breve{\phi}}_{\sigma}^{(m)}(t)$ with \gls{NCPP} method
+        on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$
+        and shifted Gaussian smoothing kernel $\underline{g}_{\sigma}=g_{\sigma} + \rho$.
+        If $\rho$ large enough and $n_{\Psi} + n_{\Omega} = \mathcal{O}(\varepsilon^{-1})$,
         then with high probability
         \begin{equation}
             \lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
@@ -225,6 +232,8 @@
     %\end{itemize}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Algorithmic improvements}
 
 \begin{frame}{Discrete cosine transform}
@@ -236,15 +245,24 @@
                 \begin{equation}
                     \big\{ f(\cos(\pi i / m)) \big\}_{i=0}^m \stackrel{\DCT}{\longleftrightarrow} \{ \mu_l \}_{l=0}^m 
                 \end{equation}
-                \item Fast expansion in \gls{NC} for
-                \begin{equation}
-                    \widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\mtx{K}_1(t)^{\dagger} \mtx{K}_2(t))
-                \end{equation}
-                with
-                \begin{align}
-                    \mtx{K}_1(t) = \mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \mtx{\Omega} \\
-                    \mtx{K}_2(t) = \mtx{\Omega}^{\top} (g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))^2 \mtx{\Omega}
-                \end{align}
+                \item In the \gls{NC} method we need to know
+                $(g_{\sigma}(t\mtx{I}_n - \mtx{A}))^2$, e.g., with
+                \begin{itemize}
+                    \item $\textcolor{darkblue}{\text{$(g_{\sigma}^2)^{(m)}(t\mtx{I}_n - \mtx{A})$ (interpolation)}}$
+                    \item $\textcolor{darkorange}{\text{$(g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}))^2$ (squaring)}}$
+                \end{itemize}
+                %\begin{align}
+                %    \mtx{K}_1(t) = \mtx{\Omega}^{\top} \textcolor{darkorange}{g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})} \mtx{\Omega} \\
+                %    \mtx{K}_2(t) = \mtx{\Omega}^{\top} (\textcolor{darkorange}{g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})})^2 \mtx{\Omega}
+                %\end{align}
+                %\begin{align}
+                %    \mtx{K}_1(t) = \mtx{\Omega}^{\top} \textcolor{darkorange}{g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})} \mtx{\Omega} \\
+                %    \mtx{K}_2(t) = \mtx{\Omega}^{\top} (\textcolor{darkorange}{g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A})})^2 \mtx{\Omega}
+                %\end{align}
+                %to compute
+                %\begin{equation}
+                %    \widehat{\phi}_{\sigma}^{(m)}(t) = \Tr(\mtx{K}_1(t)^{\dagger} \mtx{K}_2(t))
+                %\end{equation}
             \end{itemize}
         \end{column}
         \begin{column}{0.45\textwidth}
@@ -253,23 +271,7 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Non-zero check}
-    \begin{itemize}
-        \item Problem: If $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \approx \mtx{0}$, pseudo-inverse $\mtx{K}_1(t)^{\dagger}$ bad idea
-        \item Solution: If $\frac{1}{n_{\Omega}} \Tr(\mtx{K}_1(t)) < \kappa$ $\implies$ set $\widehat{\phi}_{\sigma}^{(m)}(t) = 0$
-    \end{itemize}
-    \centering
-    \scalebox{0.8}{\input{../thesis/plots/short_circuit_mechanism.pgf}}
-\end{frame}
-
-\begin{frame}{Filter tolerance}
-    \begin{itemize}
-        \item Problem: Filter \enquote{unrealistic} values outside range of \gls{smoothing-kernel} $[0, 1/n\sqrt{2\pi\sigma^2}]$
-        \item Solution: Add tolerance $\eta$ to range $[0, (1 + \eta)/n\sqrt{2\pi\sigma^2}]$
-    \end{itemize}
-    \centering
-    \scalebox{0.8}{\input{../thesis/plots/filter_tolerance.pgf}}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Numerical results}
 
@@ -306,10 +308,6 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Allocation of matrix-vector products}
-    \input{../thesis/plots/electronic_structure_matvec_mixture.pgf}
-\end{frame}
-
 \begin{frame}{Haydock method}
     \begin{itemize}
         \item Lorentzian smoothing kernel $\implies$ Haydock method \cite{lin2016review}
@@ -341,18 +339,23 @@
 \begin{frame}{Conclusion}
     Main contributions
     \begin{itemize}
-        \item Improved and simplified algorithms from \cite{lin2017randomized}
-        \item Theoretical guarantees for methods
+        %\item Improved and simplified algorithms from \cite{lin2017randomized}
+        \item Developed a unified family of algorithms 
+        \item Introduced multiple improvements over \cite{lin2017randomized}
+        \item Derived error bounds for all methods
     \end{itemize}
     Outlook
     \begin{itemize}
-        \item Theoretical analysis without shift
+        \item Make theoretical analysis without shift
+        \item Find alternative to interpolation
     \end{itemize}
 \end{frame}
 
 \begin{frame}[allowframebreaks]{Bibliography}
     \bibliographystyle{apalike}\bibliography{../thesis/bibliography.bib}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \appendix
 \section{Additional slides}
@@ -374,7 +377,23 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{Nystr\"om-Chebyshev (error guarantee)}
+\begin{frame}{Delta-Gauss-Chebyshev (details)}
+    \begin{block}{Theorem: Error of Delta-Gauss-Chebyshev method}
+        Let $\widetilde{\phi}_{\sigma}^{(m)}(t)$ be computed with the \gls{DGC} method
+        on a symmetric matrix $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$ using
+        a Gaussian \glsfirst{smoothing-kernel} with
+        \glsfirst{smoothing-parameter} $>0$, \glsfirst{chebyshev-degree} $\in \mathbb{N}$, and
+        \glsfirst{num-hutchinson-queries} $\in \mathbb{N}$. For $\delta \in (0, e^{-1})$ it holds with
+        probability $\geq 1-\delta$, that
+        \begin{equation}
+            \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
+            \leq \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 2 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
+        \end{equation}
+        for $c_{\Psi} \geq 24e$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev (ingredients)}
     \begin{itemize}
         \item Parameter-dependent Nystr\"om approximation
         \begin{equation}
@@ -391,6 +410,26 @@
                 < c (1 + r) \int_{a}^{b} \sum_{i = r+1}^n \sigma_i(t) \mathrm{d}t
         \end{equation}
         where $\sigma_i(t)$ are the (ordered) eigenvalues of $f(\mtx{A}, t)$ at $t$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Nystr\"om-Chebyshev (details)}
+    \begin{block}{Theorem: Error of Nystr\"om-Chebyshev method with shift}
+        Let $\widehat{\underline{\phi}}_{\sigma}^{(m)}$ be computed with
+        the \gls{NC} method on a symmetric matrix
+        $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$
+        using a shifted Gaussian smoothing kernel $\underline{g}_{\sigma} = g_{\sigma} + \rho$
+        with \glsfirst{smoothing-parameter} $>0$, \glsfirst{chebyshev-degree} $\in \mathbb{N}$, and
+        \gls{sketch-size} $=r + p$ for some numbers $r \geq 2$, $p \geq 4$.
+        If \gls{shift} $\geq \frac{\sqrt{2}}{n \sigma^2}  (1 + \sigma)^{-m}$
+        and $r \geq r_{\varepsilon, \ast}(g_{\sigma}(t\mtx{I}_n - \mtx{A}))$ for all
+        $t \in [-1, 1]$, then for all $\gamma \geq 1$, the inequality
+        \begin{equation}
+            \lVert \underline{\phi}_{\sigma} - \widehat{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
+            \leq 2 \gamma^2(1 + r) (2 \varepsilon + 4 \rho (n-r))
+            + \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}
+        \end{equation}
+        holds with probability $\geq 1-\gamma^{-p}$.
     \end{block}
 \end{frame}
 
@@ -429,19 +468,58 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{Nystr\"om-Chebyshev++ (error guarantee)}
-    \begin{block}{Corollary: Parameter dependent Nystr\"om++}
-        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
-        and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
-        then with high probability
+\begin{frame}{Nystr\"om-Chebyshev++ (details)}
+    \begin{block}{Theorem: Error of Nystr\"om-Chebyshev++ method with shift}
+        Let $\breve{\underline{\phi}}_{\sigma}^{(m)}$ be computed with the
+        \gls{NCPP} method on a symmetric matrix
+        $\mtx{A} \in \mathbb{R}^{n \times n}$ with its spectrum contained in $[-1, 1]$
+        using a shifted Gaussian smoothing kernel $\underline{g}_{\sigma} = g_{\sigma} + \rho$
+        and with the parameters \gls{smoothing-parameter} $>0$, \gls{chebyshev-degree} $\in \mathbb{N}$, and
+        \gls{num-hutchinson-queries} $+$ \gls{sketch-size} $=\mathcal{O}(\log(1/\delta)/\varepsilon)$
+        with even \gls{sketch-size} $\geq 8 \log(1/\delta)$.
+        If \gls{shift} $\geq \frac{\sqrt{2}}{n\sigma^2} (1 + \sigma)^{-m}$, then
+        for $\delta \in (0, e^{-1})$ with probability $\geq 1-\delta$
         \begin{equation}
-            \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+            \lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
+            \leq (1 + \varepsilon)  \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} + \varepsilon(1 + 2 n \rho).
         \end{equation}
     \end{block}
+\end{frame}
+%\begin{frame}{Nystr\"om-Chebyshev++ (error guarantee)}
+%    \begin{block}{Corollary: Parameter dependent Nystr\"om++}
+%        $\mtx{B}(t) \in \mathbb{R}^{n \times n}$ is symmetric \gls{PSD}
+%        and continuous in $t \in [a, b]$. If $n_{\Omega} = n_{\Psi} = \mathcal{O}\left( \varepsilon^{-1} \right)$,
+%        then with high probability
+%        \begin{equation}
+%            \int_{a}^{b} |\Tr(\mtx{B}(t)) - \Tr^{++}(\mtx{B}(t))| \mathrm{d}t \leq \varepsilon \int_{a}^{b}\Tr(\mtx{B}(t)) \mathrm{d}t
+%        \end{equation}
+%    \end{block}
+%    \begin{itemize}
+%        \item Caveat: only applies to NC++ if we assume Chebyshev expansion to be exact
+%        \item Loss of positive semi-definiteness in expansion is the problem
+%    \end{itemize}
+%\end{frame}
+
+\begin{frame}{Non-zero check}
     \begin{itemize}
-        \item Caveat: only applies to NC++ if we assume Chebyshev expansion to be exact
-        \item Loss of positive semi-definiteness in expansion is the problem
+        \item Problem: If $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \approx \mtx{0}$, pseudo-inverse $\mtx{K}_1(t)^{\dagger}$ bad idea
+        \item Solution: If $\frac{1}{n_{\Omega}} \Tr(\mtx{K}_1(t)) < \kappa$ directly set $\widehat{\phi}_{\sigma}^{(m)}(t) = 0$
     \end{itemize}
+    \centering
+    \scalebox{0.8}{\input{../thesis/plots/short_circuit_mechanism.pgf}}
+\end{frame}
+
+\begin{frame}{Filter tolerance}
+    \begin{itemize}
+        \item Problem: Values just slightly outside range of \gls{smoothing-kernel} are filtered out% $[0, 1/n\sqrt{2\pi\sigma^2}]$
+        \item Solution: Add tolerance $\eta$ to range $[0, (1 + \eta)/n\sqrt{2\pi\sigma^2}]$
+    \end{itemize}
+    \centering
+    \scalebox{0.8}{\input{../thesis/plots/filter_tolerance.pgf}}
+\end{frame}
+
+\begin{frame}{Allocation of matrix-vector products}
+    \input{../thesis/plots/electronic_structure_matvec_mixture.pgf}
 \end{frame}
 
 \end{document}
