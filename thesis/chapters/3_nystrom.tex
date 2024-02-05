@@ -63,7 +63,7 @@ notion of the \gls{numerical-rank} \cite[definition~1.1]{noga2013rank}.
     The \glsfirst{numerical-rank} of a matrix $\mtx{B} \in \mathbb{R}^{n \times n}$
     in the norm $\lVert \cdot \rVert _{\cdot}$ is the number
     \begin{equation}
-        r_{\varepsilon, \cdot}(\mtx{B}) = \min \{\rank(\mtx{C}): \mtx{C} \in \mathbb{R}^{n \times n}: \lVert \mtx{B} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}.
+        r_{\varepsilon, \cdot}(\mtx{B}) = \min \{\rank(\mtx{C}): \mtx{C} \in \mathbb{R}^{n \times n}: \lVert \mtx{B} - \mtx{C} \rVert _{\cdot} \leq \varepsilon \}
         \label{equ:3-nystrom-def-numerical-rank}
     \end{equation}
     for a small tolerance $\varepsilon \geq 0$.
@@ -352,7 +352,7 @@ for Gaussian \gls{smoothing-kernel} to be
     \end{subfigure}
     \caption{Examples of an unevenly and an evenly distributed spectrum
     with some comments about the expected numerical rank of $g_{\sigma}(t\mtx{I}_n - \mtx{A})$
-    at a certain values of \gls{spectral-parameter}.
+    at certain values of \gls{spectral-parameter}.
     The dots represent eigenvalues.}
     \label{fig:3-nystrom-evenly-distributed-spectrum}
 \end{figure}
@@ -776,7 +776,7 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
     $t \in [-1, 1]$, then for all $\gamma \geq 1$, the inequality
     \begin{equation}
         \lVert \underline{\phi}_{\sigma} - \widehat{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
-        \leq 2 \gamma^2(1 + r) (2 \varepsilon + 4 \rho (n-r))
+        \leq 4 \gamma^2(1 + r) (\varepsilon + 2 \rho (n-r))
         + \frac{2\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m}
     \end{equation}
     holds with probability $\geq 1-\gamma^{-p}$.
@@ -800,7 +800,7 @@ For the shifted smooth spectral density $\underline{\phi}_{\sigma}$ we can prove
     \end{equation}
     The second term can be bounded with \refthm{thm:3-nystrom-frobenius-norm}:
     \begin{equation}
-        \lVert \widehat{\underline{\phi}}_{\sigma} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
+        \lVert \widehat{\underline{\phi}}_{\sigma}^{(m)} - \underline{\phi}_{\sigma}^{(m)} \rVert _1
         \leq \gamma^2(1 + r) \int_{-1}^{1} \sum_{i=r+1}^{n} \underline{\sigma}_i^{(m)}(t) \mathrm{d}t
         \label{equ:3-nystrom-nystrom-chebyshev-proof-bound}
     \end{equation}

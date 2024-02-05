@@ -314,7 +314,7 @@ in this thesis (Gaussian, Lorentzian), we only need to rescale their
     \bar{\sigma} = \frac{2\sigma}{b - a},
     \label{equ:2-chebyshev-sigma-transformation}
 \end{equation}
-run \refalg{alg:2-chebyshev-DGC} on $\bar{\mtx{A}}$ with $\bar{g}_{\sigma}$
+run \refalg{alg:2-chebyshev-DGC} on $\bar{\mtx{A}}$ with $g_{\bar{\sigma}}$
 on the transformed evaluation points $\{ \tau(t_i) \}_{i=1}^{n_t}$ and finally
 multiply the resulting approximation with $\frac{2}{b-a}$.
 In all our examples, this procedure will be used to compute spectral densities
@@ -483,7 +483,7 @@ result for the accuracy of the \gls{DGC} method.
         \lVert \phi_{\sigma} - \widetilde{\phi}_{\sigma}^{(m)}\rVert _1
         \leq \frac{\sqrt{2}}{\sigma^2} (1 + \sigma)^{-m} \left( 2 + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n n_{\Psi}}} \right) + c_{\Psi} \frac{\log(1/\delta)}{\sqrt{n_{\Psi}}}
     \end{equation}
-    for $c_{\Psi} \geq 24e$.
+    for $c_{\Psi} = 24e$.
 \end{theorem}
 
 \begin{proof}
