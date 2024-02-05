@@ -219,7 +219,7 @@
         $\underline{\breve{\phi}}_{\sigma}^{(m)}(t)$ with \gls{NCPP} method
         on symmetric $\mtx{A} \in \mathbb{R}^{n \times n}$ with spectrum in $[-1, 1]$
         and shifted Gaussian smoothing kernel $\underline{g}_{\sigma}=g_{\sigma} + \rho$.
-        If $\rho$ large enough and $n_{\Psi} + n_{\Omega} = \mathcal{O}(\varepsilon^{-1})$,
+        If $\rho$ large enough and $n_{\Psi} = n_{\Omega} = \mathcal{O}(\varepsilon^{-1})$,
         then with high probability
         \begin{equation}
             \lVert \underline{\phi}_{\sigma} - \breve{\underline{\phi}}_{\sigma}^{(m)} \rVert _1
@@ -269,6 +269,15 @@
             \scalebox{0.65}{\input{../thesis/plots/interpolation_issue.pgf}}
         \end{column}
     \end{columns}
+\end{frame}
+
+\begin{frame}{Non-zero check}
+    \begin{itemize}
+        \item Problem: If $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \approx \mtx{0}$, then $(\mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \mtx{\Omega})^{\dagger}$ bad idea
+        \item Solution: If $\frac{1}{n_{\Omega}} \Tr(\mtx{\Omega}^{\top} g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \mtx{\Omega}) < \kappa$ directly set $\widehat{\phi}_{\sigma}^{(m)}(t) = 0$
+    \end{itemize}
+    \centering
+    \scalebox{0.8}{\input{../thesis/plots/short_circuit_mechanism.pgf}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -500,15 +509,6 @@
 %    \end{itemize}
 %\end{frame}
 
-\begin{frame}{Non-zero check}
-    \begin{itemize}
-        \item Problem: If $g_{\sigma}^{(m)}(t\mtx{I}_n - \mtx{A}) \approx \mtx{0}$, pseudo-inverse $\mtx{K}_1(t)^{\dagger}$ bad idea
-        \item Solution: If $\frac{1}{n_{\Omega}} \Tr(\mtx{K}_1(t)) < \kappa$ directly set $\widehat{\phi}_{\sigma}^{(m)}(t) = 0$
-    \end{itemize}
-    \centering
-    \scalebox{0.8}{\input{../thesis/plots/short_circuit_mechanism.pgf}}
-\end{frame}
-
 \begin{frame}{Filter tolerance}
     \begin{itemize}
         \item Problem: Values just slightly outside range of \gls{smoothing-kernel} are filtered out% $[0, 1/n\sqrt{2\pi\sigma^2}]$
@@ -518,7 +518,13 @@
     \scalebox{0.8}{\input{../thesis/plots/filter_tolerance.pgf}}
 \end{frame}
 
+\begin{frame}{Combined algorithmic improvements}
+    \centering
+    \scalebox{0.8}{\input{../thesis/plots/algorithmic_improvements.pgf}}
+\end{frame}
+
 \begin{frame}{Allocation of matrix-vector products}
+    \centering
     \input{../thesis/plots/electronic_structure_matvec_mixture.pgf}
 \end{frame}
 
