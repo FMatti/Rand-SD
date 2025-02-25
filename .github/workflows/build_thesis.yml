@@ -21,10 +21,10 @@ jobs:
 
     steps:
       - name: Set up Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python environment
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
@@ -85,7 +85,7 @@ jobs:
           python setup/generate_poster.py
 
       - name: Upload thesis as PDF artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: outcomes
           path: |
