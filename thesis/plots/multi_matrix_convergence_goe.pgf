@@ -21,7 +21,19 @@
 %% Matplotlib used the following preamble
 %%   \def\mathdefault#1{#1}
 %%   \everymath=\expandafter{\the\everymath\displaystyle}
+%%   \IfFileExists{scrextend.sty}{
+%%     \usepackage[fontsize=12.000000pt]{scrextend}
+%%   }{
+%%     \renewcommand{\normalsize}{\fontsize{12.000000}{14.400000}\selectfont}
+%%     \normalsize
+%%   }
 %%   
+%%   \ifdefined\pdftexversion\else  % non-pdftex case.
+%%     \usepackage{fontspec}
+%%     \setmainfont{DejaVuSans.ttf}[Path=\detokenize{/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/}]
+%%     \setsansfont{DejaVuSans.ttf}[Path=\detokenize{/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/}]
+%%     \setmonofont{DejaVuSansMono.ttf}[Path=\detokenize{/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/}]
+%%   \fi
 %%   \makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
 %%
 \begingroup%
@@ -608,7 +620,7 @@
 \pgfpathlineto{\pgfqpoint{1.973843in}{1.732348in}}%
 \pgfpathlineto{\pgfqpoint{2.262802in}{1.318528in}}%
 \pgfpathlineto{\pgfqpoint{2.548334in}{1.072730in}}%
-\pgfpathlineto{\pgfqpoint{2.834422in}{1.060796in}}%
+\pgfpathlineto{\pgfqpoint{2.834422in}{1.060797in}}%
 \pgfusepath{stroke}%
 \end{pgfscope}%
 \begin{pgfscope}%
@@ -661,7 +673,7 @@
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgfsys@transformshift{2.834422in}{1.060796in}%
+\pgfsys@transformshift{2.834422in}{1.060797in}%
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \end{pgfscope}%
@@ -749,7 +761,7 @@
 \pgfpathmoveto{\pgfqpoint{1.073059in}{1.500858in}}%
 \pgfpathlineto{\pgfqpoint{1.385544in}{1.128353in}}%
 \pgfpathlineto{\pgfqpoint{1.683717in}{0.912010in}}%
-\pgfpathlineto{\pgfqpoint{1.973843in}{0.726417in}}%
+\pgfpathlineto{\pgfqpoint{1.973843in}{0.726418in}}%
 \pgfpathlineto{\pgfqpoint{2.262802in}{0.694270in}}%
 \pgfpathlineto{\pgfqpoint{2.548334in}{0.636573in}}%
 \pgfpathlineto{\pgfqpoint{2.834422in}{0.674781in}}%
@@ -793,7 +805,7 @@
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgfsys@transformshift{1.973843in}{0.726417in}%
+\pgfsys@transformshift{1.973843in}{0.726418in}%
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%

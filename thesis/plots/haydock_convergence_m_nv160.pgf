@@ -21,7 +21,19 @@
 %% Matplotlib used the following preamble
 %%   \def\mathdefault#1{#1}
 %%   \everymath=\expandafter{\the\everymath\displaystyle}
+%%   \IfFileExists{scrextend.sty}{
+%%     \usepackage[fontsize=12.000000pt]{scrextend}
+%%   }{
+%%     \renewcommand{\normalsize}{\fontsize{12.000000}{14.400000}\selectfont}
+%%     \normalsize
+%%   }
 %%   
+%%   \ifdefined\pdftexversion\else  % non-pdftex case.
+%%     \usepackage{fontspec}
+%%     \setmainfont{DejaVuSans.ttf}[Path=\detokenize{/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/}]
+%%     \setsansfont{DejaVuSans.ttf}[Path=\detokenize{/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/}]
+%%     \setmonofont{DejaVuSansMono.ttf}[Path=\detokenize{/opt/hostedtoolcache/Python/3.12.9/x64/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/}]
+%%   \fi
 %%   \makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
 %%
 \begingroup%
@@ -952,8 +964,8 @@
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetdash{}{0pt}%
 \pgfpathmoveto{\pgfqpoint{0.809982in}{1.948150in}}%
-\pgfpathlineto{\pgfqpoint{1.108820in}{1.523005in}}%
-\pgfpathlineto{\pgfqpoint{1.401255in}{1.298028in}}%
+\pgfpathlineto{\pgfqpoint{1.108820in}{1.521914in}}%
+\pgfpathlineto{\pgfqpoint{1.401255in}{1.298044in}}%
 \pgfpathlineto{\pgfqpoint{1.694529in}{1.297587in}}%
 \pgfpathlineto{\pgfqpoint{1.986285in}{1.297587in}}%
 \pgfpathlineto{\pgfqpoint{2.278958in}{1.297587in}}%
@@ -990,11 +1002,11 @@
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgfsys@transformshift{1.108820in}{1.523005in}%
+\pgfsys@transformshift{1.108820in}{1.521914in}%
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgfsys@transformshift{1.401255in}{1.298028in}%
+\pgfsys@transformshift{1.401255in}{1.298044in}%
 \pgfsys@useobject{currentmarker}{}%
 \end{pgfscope}%
 \begin{pgfscope}%
