@@ -11,6 +11,12 @@
 ![](https://img.shields.io/badge/SciPy-white?style=flat-square&logo=scipy&color=white&logoColor=white&labelColor=gray)
 ![](https://img.shields.io/badge/Matplotlib-white?style=flat-square&logo=python&color=white&logoColor=white&labelColor=gray)
 
+## Outcomes
+
+[![](https://img.shields.io/badge/thesis.pdf-white?style=flat-square&color=white&logoColor=white&labelColor=gray)](thesis/thesis.pdf)
+[![](https://img.shields.io/badge/slides.pdf-white?style=flat-square&color=white&logoColor=white&labelColor=gray)](slides/slides.pdf)
+[![](https://img.shields.io/badge/poster.pdf-white?style=flat-square&color=white&logoColor=white&labelColor=gray)](poster/poster.pdf)
+
 ## Quick start
 
 ### Prerequisites
